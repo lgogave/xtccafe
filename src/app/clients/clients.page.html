@@ -1,0 +1,57 @@
+<ion-header>
+  <ion-toolbar  color="primary">
+    <ion-buttons>
+      <ion-button>
+        <ion-menu-button slot="start"></ion-menu-button>
+        
+      </ion-button>
+      <ion-icon name="people" slot="end"></ion-icon>
+      <ion-title>Clients</ion-title>
+      <ion-buttons slot="primary">
+        <ion-button [routerLink]="['/','clients','new']">
+          <ion-icon name="add" slot="icon-only"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+<ion-grid>
+  <ion-row>
+    <ion-col>
+      <div *ngIf="isLoading" class="ion-text-center">
+        <ion-spinner color="primary" ></ion-spinner>
+      </div>
+      <div *ngIf="!isLoading && loadedClients.length<=0" class="ion-text-center">
+        <p>No Clients found! please create one first!</p>
+        <ion-button color="primary" routerLink="/clients/new">Add Client</ion-button>
+      </div>
+      <ion-list *ngIf="!isLoading && loadedClients.length>0">
+        <ion-item-sliding *ngFor="let client of loadedClients" #slidingClients>
+        <ion-item detail  [routerLink]="['/','clients','detail',client.id]" >
+          <ion-icon name="person" slot="start"></ion-icon>
+         <div>
+           <h5>{{client.name}}</h5>
+           <h6><ion-icon name="call" slot="start"></ion-icon> {{client.contactNumber}}</h6>
+         </div>
+        </ion-item>
+        <ion-item-options>
+          <ion-item-option color="secondary">
+            <ion-icon name="create" slot="icon-only"  [routerLink]="['/','clients','edit',client.id]"></ion-icon>
+          </ion-item-option>
+          <ion-item-option color="danger"  (click)="onDeleteClient(client.id,slidingClients)">
+            <ion-icon name="trash" slot="icon-only"></ion-icon>
+          </ion-item-option>
+        </ion-item-options>
+      </ion-item-sliding>
+      </ion-list>
+    </ion-col>
+  </ion-row>
+</ion-grid>
+
+</ion-content>

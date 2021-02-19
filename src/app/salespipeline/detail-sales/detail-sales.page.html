@@ -1,0 +1,74 @@
+<ion-header>
+  <ion-toolbar  color="primary">
+    <ion-buttons>
+      <ion-back-button defaultHref="/salespipeline">
+      </ion-back-button>
+      <ion-title>{{isLoading?'Loading...':salespipeline.client}}</ion-title>
+      <ion-button  [routerLink]="['/','salespipeline','edit',salesId]">
+        <ion-icon name="create" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div *ngIf="isLoading" class="ion-text-center"> 
+<ion-spinner color="primary"></ion-spinner>
+  </div>
+  <ion-grid class="ion-no-padding" *ngIf="!isLoading">
+    <ion-row>
+      <ion-col size-sm="6" offset-sm="3">
+        <ion-list>
+          <ion-item>
+            <span>Brewer : {{salespipeline.brewer}}</span>
+          </ion-item>
+          <ion-item>
+            <span>FM : {{salespipeline.fm}}</span>
+          </ion-item>
+          <ion-item>
+            <span>B2C : {{salespipeline.btoc}}</span>
+          </ion-item>
+          <ion-item>
+            <span>Pre Mix : {{salespipeline.preMix}}</span>
+          </ion-item>
+          <ion-item>
+            <span>Mtrl in kg / mth : {{salespipeline.mtrl}}</span>
+          </ion-item>
+          <ion-item>
+            <span>Amount / mth (in Thousand) : {{salespipeline.amount}}</span>
+          </ion-item>
+
+          <ion-item>
+            <span>Current Status : {{salespipeline.currentStatus}}</span>
+          </ion-item>
+          <ion-item>
+            <span>Potential Status : {{salespipeline.potentialStatus}}</span>
+          </ion-item>
+          <ion-item>
+            <span>Closure Date : {{salespipeline.closuredate}}</span>
+          </ion-item>
+          <ion-item>
+            <span>Region : {{salespipeline.region}}</span>
+          </ion-item>
+          <ion-item>
+            <span>Location : {{salespipeline.location}}</span>
+          </ion-item>
+          <ion-item>
+            <span>Comments : {{salespipeline.comments}}</span>
+          </ion-item>
+          <ion-item>
+            <span>Win % : {{salespipeline.win}}</span>
+          </ion-item>
+          <ion-item>
+            <span>Value : {{salespipeline.value}}</span>
+          </ion-item>
+
+
+        </ion-list>
+      </ion-col>
+    </ion-row>
+    
+  </ion-grid>
+
+
+</ion-content>

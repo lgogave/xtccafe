@@ -1,0 +1,213 @@
+<ion-header>
+  <ion-toolbar  color="primary">
+    <ion-buttons>
+      <ion-back-button defaultHref="/salespipeline">
+      </ion-back-button>
+      <ion-title>Edit Salespipeline</ion-title>
+      <ion-button (click)="onUpdateSalespipeline()" [disabled]="!form?.valid">
+        <ion-icon name="checkmark" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+  <ion-content>
+    <div *ngIf="isLoading" class="ion-text-center">
+      <ion-spinner></ion-spinner>
+    </div>
+  <form [formGroup]="form" *ngIf="!isLoading">
+    <ion-grid>
+      <ion-row>
+        <ion-col size-sm="6" offset-sm="3">
+          <ion-item>    
+            <ion-label position="floating" >Client</ion-label>
+            <ion-input type="text" autocomplete autocorrect formControlName="client"></ion-input>
+      </ion-item>
+      </ion-col>
+      </ion-row>
+      <ion-row *ngIf="!form.get('client').valid && form.get('client').touched">
+        <ion-col size-sm="6" offset-sm="3">
+          <p>Client must not be empty.</p>
+        </ion-col>
+      </ion-row>
+  
+      <ion-row>
+        <ion-col size-sm="6" offset-sm="3">
+          <ion-item>    
+            <ion-label position="floating" >Brewer Count</ion-label>
+            <ion-input type="text" autocomplete autocorrect formControlName="brewer"></ion-input>
+      </ion-item>
+      </ion-col>
+      </ion-row>
+      
+      <ion-row>
+        <ion-col size-sm="6" offset-sm="3">
+          <ion-item>    
+            <ion-label position="floating" >FM Count</ion-label>
+            <ion-input type="text" autocomplete autocorrect formControlName="fm"></ion-input>
+      </ion-item>
+      </ion-col>
+      </ion-row>
+
+      <ion-row>
+        <ion-col size-sm="6" offset-sm="3">
+          <ion-item>    
+            <ion-label position="floating" >B2C Count</ion-label>
+            <ion-input type="text" formControlName="btoc"></ion-input>
+      </ion-item>
+      </ion-col>
+      </ion-row>
+
+      <ion-row>
+        <ion-col size-sm="6" offset-sm="3">
+          <ion-item>    
+            <ion-label position="floating" >PreMix Count</ion-label>
+            <ion-input type="text" autocomplete autocorrect formControlName="preMix"></ion-input>
+      </ion-item>
+      </ion-col>
+      </ion-row>
+
+      <ion-row>
+        <ion-col size-sm="6" offset-sm="3">
+          <ion-item>    
+            <ion-label position="floating" >Mtrl in kg/mth</ion-label>
+            <ion-input type="text" autocomplete autocorrect formControlName="mtrl"></ion-input>
+      </ion-item>
+      </ion-col>
+      </ion-row>
+   
+
+
+      <ion-row>
+        <ion-col size-sm="6" offset-sm="3">
+          <ion-item>    
+            <ion-label position="floating" >Amount / mth (in Thousand)</ion-label>
+            <ion-input type="text" autocomplete autocorrect formControlName="amount"></ion-input>
+      </ion-item>
+      </ion-col>
+      </ion-row>
+      <ion-row *ngIf="!form.get('amount').valid && form.get('amount').touched">
+        <ion-col size-sm="6" offset-sm="3">
+          <p>Amount must not be empty.</p>
+        </ion-col>
+      </ion-row>
+
+      <ion-row>
+        <ion-col size-sm="6" offset-sm="3">
+          <ion-item>    
+            <ion-label position="floating" >Current Status</ion-label>
+            <ion-input type="text" autocomplete autocorrect formControlName="currentStatus"></ion-input>
+      </ion-item>
+      </ion-col>
+      </ion-row>
+      <ion-row *ngIf="!form.get('currentStatus').valid && form.get('currentStatus').touched">
+        <ion-col size-sm="6" offset-sm="3">
+          <p>Current Status must not be empty.</p>
+        </ion-col>
+      </ion-row>
+
+
+      <ion-row>
+        <ion-col size-sm="6" offset-sm="3">
+          <ion-item>    
+            <ion-label position="floating" >Potential Status</ion-label>
+            <ion-input type="text" autocomplete autocorrect formControlName="potentialStatus"></ion-input>
+      </ion-item>
+      </ion-col>
+      </ion-row>
+      <ion-row *ngIf="!form.get('potentialStatus').valid && form.get('potentialStatus').touched">
+        <ion-col size-sm="6" offset-sm="3">
+          <p>Potential Status must not be empty.</p>
+        </ion-col>
+      </ion-row>
+
+      <ion-row>
+        <ion-col size-sm="6" offset-sm="3">
+          <ion-item>    
+            <ion-label position="floating" >Closure Date</ion-label>
+            <ion-datetime min="2019-01-01" max="2050-12-31"  formControlName="closuredate"></ion-datetime>
+      </ion-item>
+      </ion-col>
+      </ion-row>
+
+
+      <ion-row>
+        <ion-col size-sm="6" offset-sm="3">
+          <ion-item>    
+            <ion-label position="floating" >Region</ion-label>
+            <ion-input type="text" autocomplete autocorrect formControlName="region"></ion-input>
+      </ion-item>
+      </ion-col>
+      </ion-row>
+      <ion-row *ngIf="!form.get('region').valid && form.get('region').touched">
+        <ion-col size-sm="6" offset-sm="3">
+          <p>Region Nature must not be empty.</p>
+        </ion-col>
+      </ion-row>
+
+
+      <ion-row>
+        <ion-col size-sm="6" offset-sm="3">
+          <ion-item>    
+            <ion-label position="floating" >Location</ion-label>
+            <ion-input type="text" autocomplete autocorrect formControlName="location"></ion-input>
+      </ion-item>
+      </ion-col>
+      </ion-row>
+      <ion-row *ngIf="!form.get('location').valid && form.get('location').touched">
+        <ion-col size-sm="6" offset-sm="3">
+          <p>Location must not be empty.</p>
+        </ion-col>
+      </ion-row>
+
+
+      <ion-row>
+        <ion-col size-sm="6" offset-sm="3">
+          <ion-item>    
+            <ion-label position="floating" >Comments</ion-label>
+            <ion-textarea rows="3" formControlName="comments"></ion-textarea>
+      </ion-item>
+      </ion-col>
+      </ion-row>
+      <ion-row *ngIf="!form.get('comments').valid && form.get('comments').touched">
+        <ion-col size-sm="6" offset-sm="3">
+          <p>Comments must not be empty.</p>
+        </ion-col>
+      </ion-row>
+
+
+      <ion-row>
+        <ion-col size-sm="6" offset-sm="3">
+          <ion-item>    
+            <ion-label position="floating" >Win</ion-label>
+            <ion-input type="text" autocomplete autocorrect formControlName="win"></ion-input>
+      </ion-item>
+      </ion-col>
+      </ion-row>
+      <ion-row *ngIf="!form.get('win').valid && form.get('win').touched">
+        <ion-col size-sm="6" offset-sm="3">
+          <p>Win Nature must not be empty.</p>
+        </ion-col>
+      </ion-row>
+
+
+      <ion-row>
+        <ion-col size-sm="6" offset-sm="3">
+          <ion-item>    
+            <ion-label position="floating" >Value</ion-label>
+            <ion-input type="text" autocomplete autocorrect formControlName="value"></ion-input>
+      </ion-item>
+      </ion-col>
+      </ion-row>
+      <ion-row *ngIf="!form.get('value').valid && form.get('value').touched">
+        <ion-col size-sm="6" offset-sm="3">
+          <p>Value must not be empty.</p>
+        </ion-col>
+      </ion-row>
+
+ 
+
+    </ion-grid>
+  </form>
+  </ion-content>
+
+

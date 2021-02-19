@@ -1,0 +1,65 @@
+<ion-header>
+  <ion-toolbar  color="primary">
+    <ion-buttons>
+      <ion-button>
+        <ion-menu-button slot="start"></ion-menu-button>
+      </ion-button>
+      <ion-icon name="analytics" slot="end"></ion-icon>
+      <ion-title>Sales Pipeline</ion-title>
+      <ion-buttons slot="primary">
+        <ion-button [routerLink]="['/','salespipeline','new']">
+          <ion-icon name="add" slot="icon-only"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-content>
+    <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+      <ion-refresher-content></ion-refresher-content>
+    </ion-refresher>
+  <ion-grid>
+    <ion-row>
+      <ion-col>
+        <div *ngIf="isLoading" class="ion-text-center">
+          <ion-spinner color="primary" ></ion-spinner>
+        </div>
+        <ion-searchbar showCancelButton="focus" cancelButtonText="Custom Cancel"
+        [(ngModel)]="searchTerm"
+        (ionChange)="filterClient()"
+        ></ion-searchbar>
+
+        <div *ngIf="!isLoading && loadedSalespipeline.length<=0" class="ion-text-center">
+          <p>Data not found! please create one first!</p>
+          <ion-button color="primary" routerLink="/salespipeline/new">Add Entry</ion-button>
+        </div>
+        <ion-list *ngIf="!isLoading && listSalespipeline.length>0">
+          <ion-item-sliding *ngFor="let sales of listSalespipeline" #slidingClients>
+          <ion-item detail  [routerLink]="['/','salespipeline','detail',sales.id]" >
+         
+           <div>
+             <h5> <ion-icon name="people" slot="start" color="primary"></ion-icon>   {{sales.client}}</h5>
+             <h6>Currrent Status: {{sales.currentStatus}}</h6>
+             <ion-text color="danger">
+              <h6>Potential Status: {{sales.potentialStatus}}</h6>
+            </ion-text>
+             <h6>Closure Date: {{sales.closuredate| date}}</h6>
+             <h6>Win: {{sales.win}}</h6>
+           </div>
+          </ion-item>
+          <ion-item-options>
+            <ion-item-option color="secondary">
+              <ion-icon name="create" slot="icon-only"  [routerLink]="['/','salespipeline','edit',sales.id]"></ion-icon>
+            </ion-item-option>
+            <ion-item-option color="danger"  (click)="onDeleteSalespipeline(sales.id,slidingClients)">
+              <ion-icon name="trash" slot="icon-only"></ion-icon>
+            </ion-item-option>
+          </ion-item-options>
+        </ion-item-sliding>
+        </ion-list>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+  </ion-content>
