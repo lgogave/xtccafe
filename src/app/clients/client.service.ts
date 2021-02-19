@@ -29,6 +29,7 @@ export class ClientService {
   }
 
   getClient(id: string) {
+    console.log('test');
     return this.authService.token.pipe(take(1),
       switchMap((token) => {
         return this.http.get<ClientData>(
