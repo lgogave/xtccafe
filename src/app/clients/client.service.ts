@@ -4,6 +4,9 @@ import { BehaviorSubject, of } from 'rxjs';
 import { map, switchMap, take, tap } from 'rxjs/operators';
 import { AuthService } from '../auth/auth.service';
 import { Client } from './client.model';
+import { AngularFirestore, AngularFirestoreModule } from '@angular/fire/firestore';
+import * as firebase from 'firebase/app';
+import 'firebase/firestore';
 
 interface ClientData{
   name: string,
@@ -22,19 +25,16 @@ interface ClientData{
 })
 export class ClientService {
   private _clients = new BehaviorSubject<Client[]>([]);
-  constructor(private authService: AuthService, private http: HttpClient) { }
+  constructor(private authService: AuthService, private http: HttpClient,private firebaseService:AngularFirestore) { }
 
   get clients(){
     return this._clients.asObservable();
   }
 
   getClient(id: string) {
-    console.log('test');
     return this.authService.token.pipe(take(1),
       switchMap((token) => {
-        return this.http.get<ClientData>(
-          `https://ionic-angular-course-78008-default-rtdb.firebaseio.com/clients/${id}.json?auth=${token}`
-        );
+       return this.firebaseService.collection('clients').doc<Client>(id).valueChanges();
       }),
       map((resData) => {
         return new Client(
@@ -63,44 +63,17 @@ export class ClientService {
     }),
     take(1),
       switchMap((token) => {
-
-
-        let url:string='';
-        //temp
-        if(fetchedUserId=="Wb5tr6u5oIeu966F1KtqS31qFTn2"){
-          url= `https://ionic-angular-course-78008-default-rtdb.firebaseio.com/clients.json?auth=${token}`
-        }
-        else{
-          url=  `https://ionic-angular-course-78008-default-rtdb.firebaseio.com/clients.json?orderBy="userId"&equalTo="${fetchedUserId}"&auth=${token}`
-        }
-
-
-        return this.http.get<{ [key: string]: ClientData }>(
-         url
+        return this.firebaseService.collection('clients',ref=>ref.where('userId','==',fetchedUserId)).snapshotChanges().pipe(
+        map(clients=> {
+        return clients.map(client=>{
+          var cl= <Client>{...client.payload.doc.data() as {}};
+          cl.id=client.payload.doc.id;
+          return cl;
+          });
+          })
         );
-      }),
-      map((resData) => {
-        const clients = [];
-        for (const key in resData) {
-          if (resData.hasOwnProperty(key)) {
-            clients.push(
-              new Client(
-                key,
-                resData[key].name,
-                resData[key].type,
-                resData[key].contactPerson,
-                resData[key].contactNumber,
-                resData[key].email,
-                resData[key].potentialNature,
-                resData[key].accountOwner,
-                resData[key].userId
-              )
-            );
-          }
-        }
-        return clients;
-      }),
-      tap((clients) => {
+        }),
+       tap((clients) => {
         this._clients.next(clients);
       })
     );
@@ -139,16 +112,14 @@ export class ClientService {
           accountOwner,
           fetchedUserId
         );
-
-
-        return this.http.post<{ name: string }>(
-          `https://ionic-angular-course-78008-default-rtdb.firebaseio.com/clients.json?auth=${token}`,
-          { ...newClient, id: null }
-        );
+        return this.firebaseService.collection('clients').add(Object.assign({}, newClient));
+      }),
+      switchMap(client=>{
+      return client.id;
       }),
       take(1),
       switchMap((resData) => {
-        generatedId = resData.name;
+        generatedId = resData;
         return this.clients;
       }),
       take(1),
@@ -189,11 +160,9 @@ export class ClientService {
           accountOwner,
           oldClient.userId
         );
-        return this.http.put<{ name: string }>(
-          `https://ionic-angular-course-78008-default-rtdb.firebaseio.com/clients/${clientId}.json?auth=${fetchedToken}`,
-          { ...updatedClients[updatedClientIndex], id: null }
-        );
+        return this.firebaseService.collection('clients').doc(clientId).update(Object.assign({}, updatedClients[updatedClientIndex]));
       }),
+      take(1),
       tap(() => {
         this._clients.next(updatedClients);
       })
@@ -201,15 +170,23 @@ export class ClientService {
   }
 
   deleteClient(clientId:string) {
-    return this.authService.token.pipe(take(1),switchMap(token=>{
-      return this.http.delete(
-        `https://ionic-angular-course-78008-default-rtdb.firebaseio.com/clients/${clientId}.json?auth=${token}`
-      )
-    }),take(1),switchMap(()=>{
-    return this.clients;
-    }), take(1),tap(clients=>{
-      this._clients.next(clients.filter(b=>b.id!==clientId));
-    }));
+    return this.authService.token.pipe(
+      take(1),
+      switchMap((token) => {
+        return this.firebaseService
+          .collection('clients')
+          .doc(clientId)
+          .delete();
+      }),
+      take(1),
+      switchMap(() => {
+        return this.clients;
+      }),
+      take(1),
+      tap((clients) => {
+        this._clients.next(clients.filter((b) => b.id !== clientId));
+      })
+    );
   }
 
 }

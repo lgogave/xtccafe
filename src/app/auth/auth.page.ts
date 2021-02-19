@@ -35,7 +35,6 @@ else{
 
 authObs.subscribe(
   (resData) => {
-    console.log(resData);
     this.isLoading = false;
     loadingEl.dismiss();
     this.router.navigateByUrl("/home");
@@ -58,7 +57,7 @@ authObs.subscribe(
     }
     this.showAlert(message);
   }
-);     
+);
     });
     this.isLoading = true;
   }

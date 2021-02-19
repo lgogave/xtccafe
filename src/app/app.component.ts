@@ -12,10 +12,10 @@ import { Subscription } from 'rxjs';
 export class AppComponent  implements OnInit,OnDestroy{
   private authSub:Subscription;
   private _previousAuthState=false;
-  
+
   constructor(  private authService:AuthService,
     private router:Router) {
-     
+
     }
 
     ngOnInit(){

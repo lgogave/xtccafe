@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { AngularFirestore } from '@angular/fire/firestore';
 import { BehaviorSubject, of } from 'rxjs';
 import { map, switchMap, take, tap } from 'rxjs/operators';
 import { AuthService } from '../auth/auth.service';
@@ -30,19 +31,17 @@ interface SalespipelineData{
 })
 export class SalespipelineService {
   private _salespipeline = new BehaviorSubject<Salespipeline[]>([]);
-  constructor(private authService: AuthService, private http: HttpClient) { }
+  constructor(private authService: AuthService, private http: HttpClient,private firebaseService:AngularFirestore) { }
 
   get salespipeline(){
     return this._salespipeline.asObservable();
   }
 
   getSalespipeline(id: string) {
-    return this.authService.token.pipe(take(1), 
-      switchMap((token) => {
-        return this.http.get<SalespipelineData>(
-          `https://ionic-angular-course-78008-default-rtdb.firebaseio.com/salespipeline/${id}.json?auth=${token}`
-        );
-      }),
+    return this.authService.token.pipe(take(1),
+    switchMap((token) => {
+     return this.firebaseService.collection('salespipeline').doc<Salespipeline>(id).valueChanges();
+    }),
       map((resData) => {
         return new Salespipeline(
           id,
@@ -78,15 +77,23 @@ export class SalespipelineService {
     }),
     take(1),
       switchMap((token) => {
-       let url:string='';
-        //temp
-        if(fetchedUserId=="Wb5tr6u5oIeu966F1KtqS31qFTn2"){
-          url=`https://ionic-angular-course-78008-default-rtdb.firebaseio.com/salespipeline.json?auth=${token}`
-        }
-        else{
-          url= `https://ionic-angular-course-78008-default-rtdb.firebaseio.com/salespipeline.json?orderBy="userId"&equalTo="${fetchedUserId}"&auth=${token}`
-        }
-        return this.http.get<{ [key: string]: SalespipelineData }>(url);
+      //  let url:string='';
+      //   //temp
+      //   if(fetchedUserId=="Wb5tr6u5oIeu966F1KtqS31qFTn2"){
+      //     url=`https://ionic-angular-course-78008-default-rtdb.firebaseio.com/salespipeline.json?auth=${token}`
+      //   }
+      //   else{
+      //     url= `https://ionic-angular-course-78008-default-rtdb.firebaseio.com/salespipeline.json?orderBy="userId"&equalTo="${fetchedUserId}"&auth=${token}`
+      //   }
+      //   return this.http.get<{ [key: string]: SalespipelineData }>(url);
+      return this.firebaseService.collection('salespipeline',ref=>ref.where('userId','==',fetchedUserId))
+      .snapshotChanges().pipe(map(sales=>{
+        return sales.map(sale=>{
+          var sl= <Salespipeline>{...sale.payload.doc.data() as {}};
+          sl.id=sale.payload.doc.id;
+          return sl;
+        })
+      }));
       }),
       map((resData) => {
         const salespipeline = [];
@@ -172,14 +179,14 @@ export class SalespipelineService {
           value,
           fetchedUserId
         );
-        return this.http.post<{ name: string }>(
-          `https://ionic-angular-course-78008-default-rtdb.firebaseio.com/salespipeline.json?auth=${token}`,
-          { ...newSalespipeline, id: null }
-        );
+        return this.firebaseService.collection('salespipeline').add(Object.assign({}, newSalespipeline));
+      }),
+      switchMap(sale=>{
+        return sale.id;
       }),
       take(1),
       switchMap((resData) => {
-        generatedId = resData.name;
+        generatedId = resData;
         return this.salespipeline;
       }),
       take(1),
@@ -245,10 +252,7 @@ export class SalespipelineService {
           value,
           oldSales.userId
         );
-        return this.http.put<{ name: string }>(
-          `https://ionic-angular-course-78008-default-rtdb.firebaseio.com/salespipeline/${salesId}.json?auth=${fetchedToken}`,
-          { ...updatedSales[updatedSalesIndex], id: null }
-        );
+        return this.firebaseService.collection('salespipeline').doc(salesId).update(Object.assign({}, updatedSales[updatedSalesIndex]));
       }),
       tap(() => {
         this._salespipeline.next(updatedSales);
@@ -258,15 +262,19 @@ export class SalespipelineService {
 
   deleteSalespipeline(saleId:string) {
 
-    return this.authService.token.pipe(take(1),switchMap(token=>{
-      return this.http.delete(
-        `https://ionic-angular-course-78008-default-rtdb.firebaseio.com/salespipeline/${saleId}.json?auth=${token}`
-      )
-    }),take(1),switchMap(()=>{
+    return this.authService.token.pipe(
+      take(1),
+      switchMap((token) => {
+        return this.firebaseService
+          .collection('salespipeline')
+          .doc(saleId)
+          .delete();
+      }),
+      take(1),switchMap(()=>{
     return this.salespipeline;
     }), take(1),tap(sales=>{
       this._salespipeline.next(sales.filter(b=>b.id!==saleId));
-    })); 
+    }));
   }
 
 }

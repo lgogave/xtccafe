@@ -5,6 +5,7 @@ import { BehaviorSubject,from } from 'rxjs';
 import { map,tap } from 'rxjs/operators';
 import { User } from './user.model';
 import {Plugins} from '@capacitor/core'
+import { AngularFireAuth } from '@angular/fire/auth';
 
 export interface AuthResponseData {
   idToken: string;
@@ -21,7 +22,7 @@ export interface AuthResponseData {
 export class AuthService implements OnDestroy {
   private _user = new BehaviorSubject<User>(null);
   private _activeLogoutTime: any;
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient,private firebaseAuth:AngularFireAuth) {}
 
   autoLogin() {
     return from(Plugins.Storage.get({ key: "authData" })).pipe(
@@ -96,6 +97,7 @@ export class AuthService implements OnDestroy {
   }
 
   login(email: string, password: string) {
+    this.firebaseAuth.signInWithEmailAndPassword(email,password).then(value=>{}).catch(err=>{});
     return this.http
       .post<AuthResponseData>(
         `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${environment.firebaseAPIKey}`,
@@ -103,6 +105,7 @@ export class AuthService implements OnDestroy {
       )
       .pipe(tap(this.setUserData.bind(this)));
     //this._userIsAutheticated = true;
+
   }
   logout() {
     if(this._activeLogoutTime){
@@ -110,6 +113,7 @@ export class AuthService implements OnDestroy {
     }
     this._user.next(null);
     Plugins.Storage.remove({ key: "authData" });
+    this.firebaseAuth.signOut();
   }
 
   private autoLogout(duration: number) {
