@@ -12,18 +12,20 @@ import { Subscription } from 'rxjs';
 export class AppComponent  implements OnInit,OnDestroy{
   private authSub:Subscription;
   private _previousAuthState=false;
-
+  userName:string;
   constructor(  private authService:AuthService,
     private router:Router) {
-
     }
-
     ngOnInit(){
-      this.authSub=this.authService.userIsAutheticated.subscribe(isAuth=>{
-        if(!isAuth && this._previousAuthState!==isAuth){
+      this.authSub=this.authService.userdetail.subscribe(isAuth=>{
+        console.log(isAuth.isAutheticated);
+        if(!isAuth.isAutheticated){
           this.router.navigateByUrl('/auth');
         }
-        this._previousAuthState=isAuth;
+        else{
+          this._previousAuthState=isAuth.isAutheticated;
+          this.userName=isAuth.name;
+        }
       });
   }
   onLogout(){

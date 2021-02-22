@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { IonItemSliding, LoadingController } from '@ionic/angular';
+import { AlertController, IonItemSliding, LoadingController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import { Client } from './client.model';
 import { ClientService } from './client.service';
@@ -15,7 +15,7 @@ export class ClientsPage implements OnInit,OnDestroy {
   isLoading=false;
   private clientSub:Subscription;
 
-  constructor(private clientService:ClientService,private loadingCtrl:LoadingController) { }
+  constructor(private clientService:ClientService,private loadingCtrl:LoadingController,private alertCtrl:AlertController) { }
 
   ngOnInit() {
     this.clientSub = this.clientService.clients.subscribe((clients) => {
@@ -42,14 +42,36 @@ export class ClientsPage implements OnInit,OnDestroy {
     }
   }
 
-  onDeleteClient(clientId:string,slidingEl:IonItemSliding){
-    slidingEl.close();
-    this.loadingCtrl.create({ keyboardClose: true,message:'Deleteing...' }).then((loadingEl) => {
-      loadingEl.present();
-    this.clientService.deleteClient(clientId).subscribe(()=>{
-      loadingEl.dismiss();
-    });
-  });
+onDeleteClient(clientName:string,clientId:string,slidingEl:IonItemSliding){
+this.alertCtrl.create({
+  header:'Delete!',
+  message:'<strong>Are you sure you want to delete the '+clientName+'?</strong>',
+  buttons:[
+    {
+      text:'Cancel',
+      role:'cancel',
+      handler:(()=>{
+        slidingEl.close();
+      })
+    },
+    {
+      text:'Okay',
+      handler:(()=>{
+        slidingEl.close();
+        this.loadingCtrl.create({ keyboardClose: true,message:'Deleteing...' }).then((loadingEl) => {
+          loadingEl.present();
+        this.clientService.deleteClient(clientId).subscribe(()=>{
+          loadingEl.dismiss();
+        });
+      });
+      })
+    },
+  ]
+}).then(alertEl=>{
+  alertEl.present();
+})
+
+
   }
 
 }

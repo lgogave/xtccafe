@@ -2,10 +2,12 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { BehaviorSubject,from } from 'rxjs';
-import { map,tap } from 'rxjs/operators';
+import { map,switchMap,take,tap } from 'rxjs/operators';
 import { User } from './user.model';
 import {Plugins} from '@capacitor/core'
 import { AngularFireAuth } from '@angular/fire/auth';
+import { AngularFirestore } from '@angular/fire/firestore';
+import { rejects } from 'assert';
 
 export interface AuthResponseData {
   idToken: string;
@@ -14,6 +16,9 @@ export interface AuthResponseData {
   expiresIn: string;
   localId: string;
   registered?: boolean;
+  uid: string;
+  roles:string[];
+  name:string;
 }
 
 @Injectable({
@@ -22,7 +27,7 @@ export interface AuthResponseData {
 export class AuthService implements OnDestroy {
   private _user = new BehaviorSubject<User>(null);
   private _activeLogoutTime: any;
-  constructor(private http: HttpClient,private firebaseAuth:AngularFireAuth) {}
+  constructor(private http: HttpClient,private firebaseAuth:AngularFireAuth,private firebaseService:AngularFirestore) {}
 
   autoLogin() {
     return from(Plugins.Storage.get({ key: "authData" })).pipe(
@@ -35,6 +40,8 @@ export class AuthService implements OnDestroy {
           token: string;
           tokenExpirationDate: string;
           email: string;
+          roles:string[];
+          name:string;
         };
         const expirationTime = new Date(parsedData.tokenExpirationDate);
         if (expirationTime <= new Date()) {
@@ -44,7 +51,9 @@ export class AuthService implements OnDestroy {
           parsedData.userId,
           parsedData.email,
           parsedData.token,
-          expirationTime
+          expirationTime,
+          parsedData.roles,
+          parsedData.name
         );
         return user;
       }),
@@ -72,11 +81,37 @@ export class AuthService implements OnDestroy {
     );
   }
 
+  get userdetail() {
+    return this._user.asObservable().pipe(
+      map((user) => {
+        if (user) {
+          return {isAutheticated:!!user.token,name:user.name}
+
+        } else {
+          return {isAutheticated:false,name:''}
+        }
+      })
+    );
+  }
+
   get userId() {
     return this._user.asObservable().pipe(
       map((user) => {
         if (user) {
           return user.id;
+        } else {
+          return null;
+        }
+      })
+    );
+  }
+
+
+  get userName() {
+    return this._user.asObservable().pipe(
+      map((user) => {
+        if (user) {
+          return user.name;
         } else {
           return null;
         }
@@ -96,17 +131,40 @@ export class AuthService implements OnDestroy {
     );
   }
 
-  login(email: string, password: string) {
-    this.firebaseAuth.signInWithEmailAndPassword(email,password).then(value=>{}).catch(err=>{});
-    return this.http
-      .post<AuthResponseData>(
-        `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${environment.firebaseAPIKey}`,
-        { email: email, password: password, returnSecureToken: true }
-      )
-      .pipe(tap(this.setUserData.bind(this)));
-    //this._userIsAutheticated = true;
+  // login_old(email: string, password: string) {
+  //   this.firebaseAuth.signInWithEmailAndPassword(email,password).then(value=>{}).catch(err=>{});
+  //   return this.http
+  //     .post<AuthResponseData>(
+  //       `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${environment.firebaseAPIKey}`,
+  //       { email: email, password: password, returnSecureToken: true }
+  //     )
+  //     .pipe(tap(this.setUserData.bind(this)));
+  //   //this._userIsAutheticated = true;
+  // }
 
+  login(email: string, password: string) {
+  var userAuthData:AuthResponseData;
+    return from(this.firebaseAuth.signInWithEmailAndPassword(email,password).then(value=>{
+      return <AuthResponseData> (value.user as {});
+      }).catch(err=>{ throw err})  as Promise<AuthResponseData>).pipe(
+        tap(user=>{
+          userAuthData=user;
+          return user;
+        }),take(1),switchMap(user=>{
+          return this.firebaseService.collection('user-roles',ref=>ref.where('userId','==',user.uid)).valueChanges();
+        }),take(1),map(userrole=>{
+          console.log(userrole);
+          console.log(userrole[0]['roles']);
+          userAuthData.roles=userrole[0]['roles'];
+          userAuthData.name=userrole[0]['name'];
+           this.setUserData(userAuthData);
+           return userAuthData;
+          //return this.setUserData.bind(userAuthData);
+        }));
   }
+
+
+
   logout() {
     if(this._activeLogoutTime){
       clearTimeout(this._activeLogoutTime);
@@ -133,7 +191,8 @@ export class AuthService implements OnDestroy {
       .pipe(tap(this.setUserData.bind(this)));
   }
   setUserData(userData: AuthResponseData) {
-    const expirationTime = new Date(
+    console.log(userData);
+    /*const expirationTime = new Date(
       new Date().getTime() + +userData.expiresIn * 1000
     );
     const user = new User(
@@ -142,15 +201,31 @@ export class AuthService implements OnDestroy {
       userData.idToken,
       expirationTime
     );
+    */
+   const expirationTime = new Date(
+    new Date().getTime() + 360 * 1000
+  );
+  const user = new User(
+    userData.uid,
+    userData.email,
+    userData.refreshToken,
+    expirationTime,
+    userData.roles,
+    userData.name
+  );
+
+
     this._user.next(
       user
     );
     this.autoLogout(user.tokenDuration);
     this.storeAuthData(
-      userData.localId,
-      userData.idToken,
+      userData.uid,
+      userData.refreshToken,
       expirationTime.toISOString(),
-      userData.email
+      userData.email,
+      userData.roles,
+      userData.name
     );
   }
 
@@ -158,13 +233,17 @@ export class AuthService implements OnDestroy {
     userId: string,
     token: string,
     tokenExpirationDate: string,
-    email: string
+    email: string,
+    roles:string[],
+    name:string
   ) {
     const data = JSON.stringify({
       userId: userId,
       token: token,
       tokenExpirationDate: tokenExpirationDate,
       email: email,
+      roles:roles,
+      name:name
     });
     Plugins.Storage.set({ key: "authData", value: data });
   }

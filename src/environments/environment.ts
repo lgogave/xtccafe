@@ -4,14 +4,15 @@
 
 export const environment = {
   production: false,
-  firebaseAPIKey:'AIzaSyCxaeuDspnKJ3Q5YL_mhPRi4hvatshj080',
-  firebaseConfig:{
-    apiKey:'AIzaSyCxaeuDspnKJ3Q5YL_mhPRi4hvatshj080',
-    authDomain: "ionic-angular-course-78008.firebaseapp.com",
-    databaseURL: "https://ionic-angular-course-78008.firebaseio.com",
-    projectId: "ionic-angular-course-78008",
-    storageBucket: "ionic-angular-course-78008appspot.com",
-    appId: "1:7011251714:android:6d0662cbc815202879591b",
+  firebaseAPIKey:'AIzaSyAwd927lekPm-EWbc353WqhGCVSyPCg98A',
+  firebaseConfig : {
+    apiKey: "AIzaSyAwd927lekPm-EWbc353WqhGCVSyPCg98A",
+    authDomain: "db-xtc-cafe.firebaseapp.com",
+    projectId: "db-xtc-cafe",
+    storageBucket: "db-xtc-cafe.appspot.com",
+    messagingSenderId: "800211055983",
+    appId: "1:800211055983:web:d872721b5c4a5065dee49a",
+    measurementId: "G-G0V2LS3SG0"
   }
 
 };

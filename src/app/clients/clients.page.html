@@ -3,7 +3,7 @@
     <ion-buttons>
       <ion-button>
         <ion-menu-button slot="start"></ion-menu-button>
-        
+
       </ion-button>
       <ion-icon name="people" slot="end"></ion-icon>
       <ion-title>Clients</ion-title>
@@ -44,7 +44,7 @@
           <ion-item-option color="secondary">
             <ion-icon name="create" slot="icon-only"  [routerLink]="['/','clients','edit',client.id]"></ion-icon>
           </ion-item-option>
-          <ion-item-option color="danger"  (click)="onDeleteClient(client.id,slidingClients)">
+          <ion-item-option color="danger"  (click)="onDeleteClient(client.name,client.id,slidingClients)">
             <ion-icon name="trash" slot="icon-only"></ion-icon>
           </ion-item-option>
         </ion-item-options>

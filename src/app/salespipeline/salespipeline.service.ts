@@ -261,7 +261,6 @@ export class SalespipelineService {
   }
 
   deleteSalespipeline(saleId:string) {
-
     return this.authService.token.pipe(
       take(1),
       switchMap((token) => {

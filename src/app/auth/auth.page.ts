@@ -41,7 +41,7 @@ authObs.subscribe(
   },
   (errorRes) => {
     loadingEl.dismiss();
-    const code = errorRes.error.error.message;
+    const code = errorRes.message;
     let message = "Could not signup you up, please try again";
     if (code === "EMAIL_EXISTS") {
       message = "This Email address exist already.";
