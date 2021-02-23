@@ -203,7 +203,7 @@ export class AuthService implements OnDestroy {
     );
     */
    const expirationTime = new Date(
-    new Date().getTime() + 360 * 1000
+    new Date().getTime() + 3600 * 1000
   );
   const user = new User(
     userData.uid,
