@@ -7,11 +7,19 @@
       <ion-icon name="glasses" slot="end"></ion-icon>
       <ion-title>About</ion-title>
       <ion-back-button defaultHref="/home"></ion-back-button>
-      
+
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
+  <ion-list>
+    <ion-item>
+      <ion-label>Application Name: {{name}}</ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>Version: {{version}}</ion-label>
+    </ion-item>
+  </ion-list>
 
 </ion-content>
