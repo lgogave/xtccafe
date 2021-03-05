@@ -1,12 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, of } from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable, observable, of, pipe } from 'rxjs';
 import { map, switchMap, take, tap } from 'rxjs/operators';
 import { AuthService } from '../auth/auth.service';
 import { Client } from './client.model';
 import { AngularFirestore, AngularFirestoreModule } from '@angular/fire/firestore';
 import * as firebase from 'firebase/app';
 import 'firebase/firestore';
+import { areAllEquivalent } from '@angular/compiler/src/output/output_ast';
 
 interface ClientData{
   name: string,
@@ -46,11 +47,32 @@ export class ClientService {
           resData.email,
           resData.potentialNature,
           resData.accountOwner,
-          resData.userId
+          resData.userId,
+          resData.divisionId,
+          resData.division,
+          resData.typeId,
+          resData.group,
+          resData.gstNumber,
+          resData.potentialNatureId,
+          resData.mtBrewer,
+          resData.mtFM,
+          resData.mtBTC,
+          resData.mtPreMix,
+          resData.mtTapriKg,
+          resData.amount,
+          resData.country,
+          resData.region,
+          resData.subRegion,
+          resData.state,
+          resData.city,
+          resData.locationId,
+          resData.updatedOn
         );
       })
     );
   }
+
+
 
   fetchClients() {
     let fetchedUserId:string;
@@ -85,7 +107,26 @@ export class ClientService {
     contactNumber: number,
     email: string,
     potentialNature: string,
-    accountOwner: string
+    accountOwner: string,
+    divisionId:string,
+    division: string,
+    typeId: string,
+    group: string,
+    gstNumber: string,
+    potentialNatureId: string,
+    mtBrewer: string,
+    mtFM: string,
+    mtBTC: string,
+    mtPreMix: string,
+    mtTapriKg: string,
+    amount: string,
+    country:string,
+    region:string,
+    subRegion:string,
+    state:string,
+    city:string,
+    locationId:string,
+    updatedOn:Date
   ) {
     let generatedId: string;
     let newClient: Client;
@@ -110,7 +151,26 @@ export class ClientService {
           email,
           potentialNature,
           accountOwner,
-          fetchedUserId
+          fetchedUserId,
+          divisionId,
+          division,
+          typeId,
+          group,
+          gstNumber,
+          potentialNatureId,
+          mtBrewer,
+          mtFM,
+          mtBTC,
+          mtPreMix,
+          mtTapriKg,
+          amount,
+          country,
+          region,
+          subRegion,
+          state,
+          city,
+          locationId,
+          updatedOn
         );
         return this.firebaseService.collection('clients').add(Object.assign({}, newClient));
       }),
@@ -130,7 +190,28 @@ export class ClientService {
     );
   }
 
-  editClient(clientId: string, name: string, type: string, contactPerson: string, contactNumber: number, email: string, potentialNature: string, accountOwner: string) {
+  editClient(clientId: string, name: string, type: string, contactPerson: string, contactNumber: number, email: string, potentialNature: string, accountOwner: string,
+    divisionId:string,
+    division: string,
+    typeId: string,
+    group: string,
+    gstNumber: string,
+    potentialNatureId: string,
+    mtBrewer: string,
+    mtFM: string,
+    mtBTC: string,
+    mtPreMix: string,
+    mtTapriKg: string,
+    amount: string,
+    country:string,
+    region:string,
+    subRegion:string,
+    state:string,
+    city:string,
+    locationId:string,
+    updatedOn:Date
+
+    ) {
     let updatedClients: Client[];
     let fetchedToken:string;
     return this.authService.token.pipe(take(1),switchMap(token=>{
@@ -158,7 +239,26 @@ export class ClientService {
           email,
           potentialNature,
           accountOwner,
-          oldClient.userId
+          oldClient.userId,
+          divisionId,
+          division,
+          typeId,
+          group,
+          gstNumber,
+          potentialNatureId,
+          mtBrewer,
+          mtFM,
+          mtBTC,
+          mtPreMix,
+          mtTapriKg,
+          amount,
+          country,
+          region,
+          subRegion,
+          state,
+          city,
+         locationId,
+          updatedOn
         );
         return this.firebaseService.collection('clients').doc(clientId).update(Object.assign({}, updatedClients[updatedClientIndex]));
       }),
@@ -188,5 +288,88 @@ export class ClientService {
       })
     );
   }
+
+getLocations(){
+return this.firebaseService.collection('location').valueChanges().pipe(
+switchMap(locs=>{
+  const cityIds=locs.map(l=>l['cityId']);
+  const countryIds=locs.map(l=>l['countryId']);
+  const regionIds=locs.map(l=>l['regionId']);
+  const subregionIds=locs.map(l=>l['subregionId']);
+  const stateIds=locs.map(l=>l['stateId']);
+  return combineLatest([
+    of(locs),
+    combineLatest(
+      cityIds.map((cityId) =>
+      {
+
+       return this.firebaseService
+         .collection('city', (ref) => ref.where('id', '==', cityId))
+         .valueChanges()
+         .pipe(map((cities) => cities[0]));
+      }
+      )
+    ),
+    combineLatest(
+      countryIds.map((contryId) =>
+      {
+       return this.firebaseService
+         .collection('country', (ref) => ref.where('id', '==', contryId))
+         .valueChanges()
+         .pipe(map((countries) => countries[0]));
+      }
+      )
+    ),
+    combineLatest(
+      regionIds.map((regionId) =>
+      {
+       return this.firebaseService
+         .collection('region', (ref) => ref.where('id', '==', regionId))
+         .valueChanges()
+         .pipe(map((regions) => regions[0]));
+      }
+      )
+    ),
+    combineLatest(
+      subregionIds.map((subregionId) =>
+      {
+       return this.firebaseService
+         .collection('subregion', (ref) => ref.where('id', '==', subregionId))
+         .valueChanges()
+         .pipe(map((subregion) => subregion[0]));
+      }
+      )
+    ),
+    combineLatest(
+      stateIds.map((stateId) =>
+      {
+       return this.firebaseService
+         .collection('state', (ref) => ref.where('id', '==', stateId))
+         .valueChanges()
+         .pipe(map((states) => states[0]));
+      }
+      )
+    )]
+  )
+})
+,map(([locs,cities,countries,regions,subregions,states])=>{
+  return locs.map(loc=>{
+    return {
+      ...loc as {},
+      cityId:cities.find(a=>a['id']===loc['cityId']),
+      countryId:countries.find(a=>a['id']===loc['countryId']),
+      regionId:regions.find(a=>a['id']===loc['regionId']),
+      subregionId:subregions.find(a=>a['id']===loc['subregionId']),
+      stateId:states.find(a=>a['id']===loc['stateId']),
+    }
+  })
+}),
+take(1)
+)}
+
+
+
+
+
 
 }

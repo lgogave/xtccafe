@@ -10,14 +10,15 @@ import { ClientService } from './client.service';
   styleUrls: ['./clients.page.scss'],
 })
 export class ClientsPage implements OnInit,OnDestroy {
-
   loadedClients:Client[];
   isLoading=false;
   private clientSub:Subscription;
 
   constructor(private clientService:ClientService,private loadingCtrl:LoadingController,private alertCtrl:AlertController) { }
-
   ngOnInit() {
+    //   this.clientService.getLocations().subscribe(location=>{
+    // console.log(location);
+    //  });
     this.clientSub = this.clientService.clients.subscribe((clients) => {
       this.loadedClients = clients;
     });

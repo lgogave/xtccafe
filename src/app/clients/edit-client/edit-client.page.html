@@ -18,7 +18,24 @@
   <ion-grid>
     <ion-row>
       <ion-col size-sm="6" offset-sm="3">
-        <ion-item>    
+        <ion-item>
+          <ion-label position="floating" >Division</ion-label>
+          <ion-select placeholder="Select One"  interface="popover" formControlName="divisionId">
+            <ion-select-option *ngFor="let division of divisionList" [value]="division.id">{{division.name}}
+            </ion-select-option>
+          </ion-select>
+    </ion-item>
+    </ion-col>
+    </ion-row>
+    <ion-row *ngIf="!form.get('divisionId').valid && form.get('divisionId').touched">
+      <ion-col size-sm="6" offset-sm="3">
+        <p>Division must not be empty.</p>
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col size-sm="6" offset-sm="3">
+        <ion-item>
           <ion-label position="floating" >Name</ion-label>
           <ion-input type="text" autocomplete autocorrect formControlName="name"></ion-input>
     </ion-item>
@@ -32,7 +49,7 @@
 
     <ion-row>
       <ion-col size-sm="6" offset-sm="3">
-        <ion-item>    
+        <ion-item>
           <ion-label position="floating" >Type</ion-label>
           <ion-input type="text" autocomplete autocorrect formControlName="type"></ion-input>
     </ion-item>
@@ -47,7 +64,7 @@
 
     <ion-row>
       <ion-col size-sm="6" offset-sm="3">
-        <ion-item>    
+        <ion-item>
           <ion-label position="floating" >Contact Person</ion-label>
           <ion-input type="text" autocomplete autocorrect formControlName="contactPerson"></ion-input>
     </ion-item>
@@ -62,7 +79,7 @@
 
     <ion-row>
       <ion-col size-sm="6" offset-sm="3">
-        <ion-item>    
+        <ion-item>
           <ion-label position="floating" >Contact Number</ion-label>
           <ion-input type="number" formControlName="contactNumber"></ion-input>
     </ion-item>
@@ -76,7 +93,7 @@
 
     <ion-row>
       <ion-col size-sm="6" offset-sm="3">
-        <ion-item>    
+        <ion-item>
           <ion-label position="floating" >Email</ion-label>
           <ion-input type="text" autocomplete autocorrect formControlName="email"></ion-input>
     </ion-item>
@@ -91,7 +108,7 @@
 
     <ion-row>
       <ion-col size-sm="6" offset-sm="3">
-        <ion-item>    
+        <ion-item>
           <ion-label position="floating" >Potential Nature</ion-label>
           <ion-input type="text" autocomplete autocorrect formControlName="potentialNature"></ion-input>
     </ion-item>
@@ -106,7 +123,7 @@
 
     <ion-row>
       <ion-col size-sm="6" offset-sm="3">
-        <ion-item>    
+        <ion-item>
           <ion-label position="floating" >Account Owner</ion-label>
           <ion-input type="text" autocomplete autocorrect formControlName="accountOwner"></ion-input>
     </ion-item>
@@ -117,7 +134,7 @@
         <p>Account Owner Nature must not be empty.</p>
       </ion-col>
     </ion-row>
-    
+
   </ion-grid>
 </form>
 

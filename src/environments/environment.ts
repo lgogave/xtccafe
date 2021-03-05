@@ -4,15 +4,15 @@
 
 export const environment = {
   production: false,
-  firebaseAPIKey:'AIzaSyAwd927lekPm-EWbc353WqhGCVSyPCg98A',
+  firebaseAPIKey:'AIzaSyDgCRLM4MnehywkTps-5WeVQeHQMKIRGrc',
   firebaseConfig : {
-    apiKey: "AIzaSyAwd927lekPm-EWbc353WqhGCVSyPCg98A",
-    authDomain: "db-xtc-cafe.firebaseapp.com",
-    projectId: "db-xtc-cafe",
-    storageBucket: "db-xtc-cafe.appspot.com",
-    messagingSenderId: "800211055983",
-    appId: "1:800211055983:web:d872721b5c4a5065dee49a",
-    measurementId: "G-G0V2LS3SG0"
+    apiKey: "AIzaSyDgCRLM4MnehywkTps-5WeVQeHQMKIRGrc",
+    authDomain: "db-xtc-cafe-dev.firebaseapp.com",
+    projectId: "db-xtc-cafe-dev",
+    storageBucket: "db-xtc-cafe-dev.appspot.com",
+    messagingSenderId: "678229863683",
+    appId: "1:678229863683:web:cf91d1d003f1b448e1cd36",
+    measurementId: "G-58CENDS2S6"
   }
 
 };

@@ -11,6 +11,7 @@ import { AddClientPage } from './add-client.page';
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    FormsModule,
     IonicModule,
     AddClientPageRoutingModule
   ],

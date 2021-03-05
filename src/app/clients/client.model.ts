@@ -8,6 +8,25 @@ export class Client {
     public email: string,
     public potentialNature: string,
     public accountOwner: string,
-    public userId: string
+    public userId: string,
+    public divisionId: string,
+    public division: string,
+    public typeId: string,
+    public group: string,
+    public gstNumber: string,
+    public potentialNatureId: string,
+    public mtBrewer: string,
+    public mtFM: string,
+    public mtBTC: string,
+    public mtPreMix: string,
+    public mtTapriKg: string,
+    public amount: string,
+    public country:string,
+    public region:string,
+    public subRegion:string,
+    public state:string,
+    public city:string,
+    public locationId:string,
+    public updatedOn:Date
   ) {}
 }
