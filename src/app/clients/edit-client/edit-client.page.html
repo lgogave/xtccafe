@@ -36,43 +36,60 @@
     <ion-row>
       <ion-col size-sm="6" offset-sm="3">
         <ion-item>
-          <ion-label position="floating" >Name</ion-label>
+          <ion-label position="floating" >Client Name <span style="color: #FF6347;">*</span></ion-label>
           <ion-input type="text" autocomplete autocorrect formControlName="name"></ion-input>
     </ion-item>
     </ion-col>
     </ion-row>
     <ion-row *ngIf="!form.get('name').valid && form.get('name').touched">
       <ion-col size-sm="6" offset-sm="3">
-        <p>Name must not be empty.</p>
+        <p style="font-size: small;color:#FF6347">Client Name must not be empty.</p>
       </ion-col>
     </ion-row>
+
 
     <ion-row>
       <ion-col size-sm="6" offset-sm="3">
         <ion-item>
-          <ion-label position="floating" >Type</ion-label>
-          <ion-input type="text" autocomplete autocorrect formControlName="type"></ion-input>
+          <ion-label position="floating" >GST Number <span style="color: #FF6347;">*</span></ion-label>
+          <ion-input type="text" autocomplete autocorrect formControlName="gstNumber"></ion-input>
     </ion-item>
     </ion-col>
     </ion-row>
-    <ion-row *ngIf="!form.get('type').valid && form.get('type').touched">
+    <ion-row *ngIf="!form.get('gstNumber').valid && form.get('gstNumber').touched">
       <ion-col size-sm="6" offset-sm="3">
-        <p>Type must not be empty.</p>
+        <p style="font-size: small;color:#FF6347">GST number must not be empty & It should be 15-digit number</p>
       </ion-col>
     </ion-row>
-
 
     <ion-row>
       <ion-col size-sm="6" offset-sm="3">
         <ion-item>
-          <ion-label position="floating" >Contact Person</ion-label>
+          <ion-label position="floating" >Client Type <span style="color: #FF6347;">*</span></ion-label>
+          <ion-select placeholder="Select One"  interface="popover" formControlName="typeId">
+            <ion-select-option *ngFor="let clientType of clientTypeList" [value]="clientType.id">{{clientType.name}}
+            </ion-select-option>
+          </ion-select>
+    </ion-item>
+    </ion-col>
+    </ion-row>
+    <ion-row *ngIf="!form.get('typeId').valid && form.get('typeId').touched">
+      <ion-col size-sm="6" offset-sm="3">
+        <p style="font-size: small;color:#FF6347">Client Type must not be empty.</p>
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col size-sm="6" offset-sm="3">
+        <ion-item>
+          <ion-label position="floating" >Contact Person <span style="color: #FF6347;">*</span></ion-label>
           <ion-input type="text" autocomplete autocorrect formControlName="contactPerson"></ion-input>
     </ion-item>
     </ion-col>
     </ion-row>
     <ion-row *ngIf="!form.get('contactPerson').valid && form.get('contactPerson').touched">
       <ion-col size-sm="6" offset-sm="3">
-        <p>Contact Person must not be empty.</p>
+        <p style="font-size: small;color:#FF6347">Contact Person must not be empty.</p>
       </ion-col>
     </ion-row>
 
@@ -80,28 +97,28 @@
     <ion-row>
       <ion-col size-sm="6" offset-sm="3">
         <ion-item>
-          <ion-label position="floating" >Contact Number</ion-label>
+          <ion-label position="floating" >Contact Number <span style="color: #FF6347;">*</span></ion-label>
           <ion-input type="number" formControlName="contactNumber"></ion-input>
     </ion-item>
     </ion-col>
     </ion-row>
     <ion-row *ngIf="!form.get('contactNumber').valid && form.get('contactNumber').touched">
       <ion-col size-sm="6" offset-sm="3">
-        <p>Contact Number must not be empty.</p>
+        <p style="font-size: small;color:#FF6347">Contact Number must not be empty.</p>
       </ion-col>
     </ion-row>
 
     <ion-row>
       <ion-col size-sm="6" offset-sm="3">
         <ion-item>
-          <ion-label position="floating" >Email</ion-label>
+          <ion-label position="floating" >Email <span style="color: #FF6347;">*</span></ion-label>
           <ion-input type="text" autocomplete autocorrect formControlName="email"></ion-input>
     </ion-item>
     </ion-col>
     </ion-row>
     <ion-row *ngIf="!form.get('email').valid && form.get('email').touched">
       <ion-col size-sm="6" offset-sm="3">
-        <p>Should be a valid email address.</p>
+        <p style="font-size: small;color:#FF6347">Should be a valid email address.</p>
       </ion-col>
     </ion-row>
 
@@ -109,31 +126,168 @@
     <ion-row>
       <ion-col size-sm="6" offset-sm="3">
         <ion-item>
-          <ion-label position="floating" >Potential Nature</ion-label>
-          <ion-input type="text" autocomplete autocorrect formControlName="potentialNature"></ion-input>
+          <ion-label position="floating" >Potential Nature <span style="color: #FF6347;">*</span></ion-label>
+          <ion-select placeholder="Select One"  interface="popover" formControlName="potentialNatureId">
+            <ion-select-option *ngFor="let pn of potentialNatureList" [value]="pn.id">{{pn.name}}
+            </ion-select-option>
+          </ion-select>
     </ion-item>
     </ion-col>
     </ion-row>
-    <ion-row *ngIf="!form.get('potentialNature').valid && form.get('potentialNature').touched">
+    <ion-row *ngIf="!form.get('potentialNatureId').valid && form.get('potentialNatureId').touched">
       <ion-col size-sm="6" offset-sm="3">
-        <p>Potential Nature must not be empty.</p>
+        <p style="font-size: small;color:#FF6347">Potential Nature must not be empty.</p>
       </ion-col>
     </ion-row>
 
 
+
+      <ion-row>
+        <ion-col size-sm="6" offset-sm="3">
+          <ion-item>
+            <ion-label position="floating" >Employee Strength</ion-label>
+            <ion-input type="number" formControlName="employeeStrength"></ion-input>
+      </ion-item>
+      </ion-col>
+      </ion-row>
+    <div class='componentWrapper'><div class="header" size-sm="6" offset-sm="3">Machine Type</div>
+      <ion-row>
+        <ion-col size-sm="6" offset-sm="3">
+          <ion-item>
+            <ion-label position="floating" >Brewer</ion-label>
+            <ion-input type="number" formControlName="brewer"></ion-input>
+      </ion-item>
+      </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size-sm="6" offset-sm="3">
+          <ion-item>
+            <ion-label position="floating" >FM</ion-label>
+            <ion-input type="number" formControlName="fm"></ion-input>
+      </ion-item>
+      </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size-sm="6" offset-sm="3">
+          <ion-item>
+            <ion-label position="floating" >B2C</ion-label>
+            <ion-input type="number" formControlName="btc"></ion-input>
+      </ion-item>
+      </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size-sm="6" offset-sm="3">
+          <ion-item>
+            <ion-label position="floating" >Pre Mix</ion-label>
+            <ion-input type="number" formControlName="preMix"></ion-input>
+      </ion-item>
+      </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size-sm="6" offset-sm="3">
+          <ion-item>
+            <ion-label position="floating" >Tapri (Mtrl in kg / mth)</ion-label>
+            <ion-input type="number" formControlName="tapriMtrl"></ion-input>
+      </ion-item>
+      </ion-col>
+      </ion-row>
+    </div>
+      <ion-row>
+        <ion-col size-sm="6" offset-sm="3">
+          <ion-item>
+            <ion-label position="floating" >Amount</ion-label>
+            <ion-input type="number" formControlName="amount"></ion-input>
+      </ion-item>
+      </ion-col>
+      </ion-row>
+
     <ion-row>
-      <ion-col size-sm="6" offset-sm="3">
+    <ion-col size-sm="6" offset-sm="3">
         <ion-item>
-          <ion-label position="floating" >Account Owner</ion-label>
+          <ion-label position="floating" >Account Owner <span style="color: #FF6347;">*</span></ion-label>
           <ion-input type="text" autocomplete autocorrect formControlName="accountOwner"></ion-input>
     </ion-item>
     </ion-col>
     </ion-row>
     <ion-row *ngIf="!form.get('accountOwner').valid && form.get('accountOwner').touched">
       <ion-col size-sm="6" offset-sm="3">
-        <p>Account Owner Nature must not be empty.</p>
+        <p style="font-size: small;color:#FF6347">Account Owner Nature must not be empty.</p>
       </ion-col>
     </ion-row>
+
+    <ion-row>
+      <ion-col size-sm="6" offset-sm="3">
+        <ion-item>
+          <ion-label position="floating" >Client Group</ion-label>
+          <ion-input type="text" formControlName="clientGroup"></ion-input>
+    </ion-item>
+    </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col size-sm="6" offset-sm="3">
+        <ion-item>
+          <ion-label position="floating" >Country</ion-label>
+          <ion-select placeholder="Select One"  interface="popover" (ionChange)="onChangeCountry($event)" formControlName="ddCountry">
+            <ion-select-option *ngFor="let country of countries" [value]="country">{{country}}
+            </ion-select-option>
+          </ion-select>
+    </ion-item>
+    </ion-col>
+    </ion-row>
+
+
+    <ion-row>
+      <ion-col size-sm="6" offset-sm="3">
+        <ion-item>
+          <ion-label position="floating" >Region</ion-label>
+          <ion-select  placeholder="Select One"  interface="popover" (ionChange)="onChangeRegion($event)" formControlName="ddRegion">
+            <ion-select-option *ngFor="let region of regions" [value]="region">{{region}}
+            </ion-select-option>
+          </ion-select>
+    </ion-item>
+    </ion-col>
+    </ion-row>
+
+
+    <ion-row>
+      <ion-col size-sm="6" offset-sm="3">
+        <ion-item>
+          <ion-label position="floating" >Sub Region</ion-label>
+          <ion-select placeholder="Select One"  interface="popover" (ionChange)="onChangeSubRegion($event)" formControlName="ddSubRegion">
+            <ion-select-option *ngFor="let subregion of subregions" [value]="subregion">{{subregion}}
+            </ion-select-option>
+          </ion-select>
+    </ion-item>
+    </ion-col>
+    </ion-row>
+
+
+    <ion-row>
+      <ion-col size-sm="6" offset-sm="3">
+        <ion-item>
+          <ion-label position="floating" >State</ion-label>
+          <ion-select placeholder="Select One"  interface="popover" (ionChange)="onChangeStates($event)"  formControlName="ddState">
+            <ion-select-option *ngFor="let state of states" [value]="state">{{state}}
+            </ion-select-option>
+          </ion-select>
+    </ion-item>
+    </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col size-sm="6" offset-sm="3">
+        <ion-item>
+          <ion-label position="floating" >City</ion-label>
+          <ion-select placeholder="Select One"  interface="popover"   formControlName="ddCity">
+            <ion-select-option *ngFor="let city of cities" [value]="city">{{city}}
+            </ion-select-option>
+          </ion-select>
+    </ion-item>
+    </ion-col>
+    </ion-row>
+
+
 
   </ion-grid>
 </form>

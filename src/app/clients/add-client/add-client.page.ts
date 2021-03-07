@@ -11,6 +11,7 @@ import { DivisionService } from '../../services/division.service';
 import { LocationService } from '../../services/location.service';
 import { PotentialnatureService } from 'src/app/services/potentialnature.service';
 import { ClientService } from '../client.service';
+import { Potentialnature } from '../../models/Potentialnature.model';
 
 @Component({
   selector: 'app-add-client',
@@ -22,7 +23,7 @@ export class AddClientPage implements OnInit {
   isLoading = false;
   divisionList: Division[];
   clientTypeList: ClientType[];
-  potentialNatureList: ClientType[];
+  potentialNatureList: Potentialnature[];
   locationList:Location[];
   countries:string[];
   regions:string[];
@@ -91,7 +92,6 @@ export class AddClientPage implements OnInit {
       }),
       brewer: new FormControl(null, {
         updateOn: 'blur',
-
       }),
       fm: new FormControl(null, {
         updateOn: 'blur',
@@ -99,11 +99,9 @@ export class AddClientPage implements OnInit {
       }),
       btc: new FormControl(null, {
         updateOn: 'blur',
-
       }),
       preMix: new FormControl(null, {
         updateOn: 'blur',
-
       }),
       tapriMtrl: new FormControl(null, {
         updateOn: 'blur',
@@ -159,6 +157,20 @@ export class AddClientPage implements OnInit {
 
     this.loadingCtrl.create({ keyboardClose: true }).then((loadingEl) => {
       loadingEl.present();
+
+      let nlocId="";
+      let nlocation=this.locationList.filter(item=>
+        item.country==(this.form.value.ddCountry==null?"":this.form.value.ddCountry) &&
+        item.region==(this.form.value.ddRegion==null?"":this.form.value.ddRegion) &&
+        item.subregion==(this.form.value.ddSubRegion==null?"":this.form.value.ddSubRegion) &&
+        item.state==(this.form.value.ddState==null?"":this.form.value.ddState) &&
+        item.city==(this.form.value.ddCity==null?"":this.form.value.ddCity)
+      );
+
+      if(nlocation.length>0){
+        nlocId = nlocation[0].id;
+      }
+
       this.clientService
         .addClient(
           this.form.value.name,
@@ -171,8 +183,9 @@ export class AddClientPage implements OnInit {
           this.form.value.divisionId,
           this.divisionList.filter(div=>div.id==this.form.value.divisionId)[0].name,
           this.form.value.typeId,
-          '',
+          this.form.value.clientGroup,
           this.form.value.gstNumber,
+          this.form.value.employeeStrength,
           this.form.value.potentialNatureId,
           this.form.value.brewer,
           this.form.value.fm,
@@ -185,13 +198,7 @@ export class AddClientPage implements OnInit {
           this.form.value.ddSubRegion==null?"":this.form.value.ddSubRegion,
           this.form.value.ddState==null?"":this.form.value.ddState,
           this.form.value.ddCity==null?"":this.form.value.ddCity,
-          this.locationList.filter(item=>
-            item.country==(this.form.value.ddCountry==null?"":this.form.value.ddCountry) &&
-            item.region==(this.form.value.ddRegion==null?"":this.form.value.ddRegion) &&
-            item.subregion==(this.form.value.ddSubRegion==null?"":this.form.value.ddSubRegion) &&
-            item.state==(this.form.value.ddState==null?"":this.form.value.ddState) &&
-            item.city==(this.form.value.ddCity==null?"":this.form.value.ddCity)
-          )[0].id,
+          nlocId,
           new Date()
         )
         .subscribe(() => {

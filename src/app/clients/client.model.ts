@@ -14,6 +14,7 @@ export class Client {
     public typeId: string,
     public group: string,
     public gstNumber: string,
+    public employeeStrength: string,
     public potentialNatureId: string,
     public mtBrewer: string,
     public mtFM: string,
