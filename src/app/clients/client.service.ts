@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, combineLatest, Observable, observable, of, pipe } from 'rxjs';
-import { map, switchMap, take, tap } from 'rxjs/operators';
+import { first, map, switchMap, take, tap } from 'rxjs/operators';
 import { AuthService } from '../auth/auth.service';
 import { Client } from './client.model';
 import { AngularFirestore, AngularFirestoreModule } from '@angular/fire/firestore';
@@ -41,38 +41,38 @@ export class ClientService {
         return new Client(
           id,
           resData.name,
-          resData.type,
           resData.contactPerson,
           resData.contactNumber,
           resData.email,
           resData.potentialNature,
           resData.accountOwner,
           resData.userId,
-          resData.divisionId,
-          resData.division,
-          resData.typeId,
           resData.group,
           resData.gstNumber,
           resData.employeeStrength,
           resData.potentialNatureId,
-          resData.mtBrewer,
-          resData.mtFM,
-          resData.mtBTC,
-          resData.mtPreMix,
-          resData.mtTapriKg,
-          resData.amount,
           resData.country,
           resData.region,
           resData.subRegion,
           resData.state,
           resData.city,
           resData.locationId,
-          resData.updatedOn
+          resData.updatedOn,
+          resData.divisionIds,
+          resData.divisions,
+          resData.clientTypeIds,
+          resData.clientTypes,
+
         );
       })
     );
   }
 
+  async getClientList(): Promise<any> {
+    const clientList = await this.firebaseService.collection('clients',ref=>ref.where('group','!=','null'))
+      .valueChanges().pipe(first()).toPromise();
+    return clientList as Client[];
+  }
 
 
   fetchClients() {
@@ -103,32 +103,26 @@ export class ClientService {
   }
   addClient(
     name: string,
-    type: string,
     contactPerson: string,
     contactNumber: number,
     email: string,
     potentialNature: string,
     accountOwner: string,
-    divisionId:string,
-    division: string,
-    typeId: string,
     group: string,
     gstNumber: string,
     employeeStrength:string,
     potentialNatureId: string,
-    mtBrewer: string,
-    mtFM: string,
-    mtBTC: string,
-    mtPreMix: string,
-    mtTapriKg: string,
-    amount: string,
     country:string,
     region:string,
     subRegion:string,
     state:string,
     city:string,
     locationId:string,
-    updatedOn:Date
+    updatedOn:Date,
+    divisionIds?: string[],
+    divisions?: string[],
+    typeIds?: string[],
+    types?: string[],
   ) {
     let generatedId: string;
     let newClient: Client;
@@ -147,33 +141,27 @@ export class ClientService {
         newClient = new Client(
           Math.random().toString(),
           name,
-          type,
           contactPerson,
           contactNumber,
           email,
           potentialNature,
           accountOwner,
           fetchedUserId,
-          divisionId,
-          division,
-          typeId,
           group,
           gstNumber,
           employeeStrength,
           potentialNatureId,
-          mtBrewer,
-          mtFM,
-          mtBTC,
-          mtPreMix,
-          mtTapriKg,
-          amount,
           country,
           region,
           subRegion,
           state,
           city,
           locationId,
-          updatedOn
+          updatedOn,
+          divisionIds,
+          divisions,
+          typeIds,
+          types
         );
         return this.firebaseService.collection('clients').add(Object.assign({}, newClient));
       }),
@@ -193,28 +181,29 @@ export class ClientService {
     );
   }
 
-  editClient(clientId: string, name: string, type: string, contactPerson: string, contactNumber: number, email: string, potentialNature: string, accountOwner: string,
-    divisionId:string,
-    division: string,
-    typeId: string,
+  editClient(
+    clientId: string,
+    name: string,
+    contactPerson: string,
+    contactNumber: number,
+    email: string,
+    potentialNature: string,
+    accountOwner: string,
     group: string,
     gstNumber: string,
     employeeStrength:string,
     potentialNatureId: string,
-    mtBrewer: string,
-    mtFM: string,
-    mtBTC: string,
-    mtPreMix: string,
-    mtTapriKg: string,
-    amount: string,
     country:string,
     region:string,
     subRegion:string,
     state:string,
     city:string,
     locationId:string,
-    updatedOn:Date
-
+    updatedOn:Date,
+    divisionIds?: string[],
+    divisions?: string[],
+    typeIds?:string[],
+    types?:string[]
     ) {
     let updatedClients: Client[];
     let fetchedToken:string;
@@ -237,33 +226,27 @@ export class ClientService {
         updatedClients[updatedClientIndex] = new Client(
           clientId,
           name,
-          type,
           contactPerson,
           contactNumber,
           email,
           potentialNature,
           accountOwner,
           oldClient.userId,
-          divisionId,
-          division,
-          typeId,
           group,
           gstNumber,
           employeeStrength,
           potentialNatureId,
-          mtBrewer,
-          mtFM,
-          mtBTC,
-          mtPreMix,
-          mtTapriKg,
-          amount,
           country,
           region,
           subRegion,
           state,
           city,
-         locationId,
-          updatedOn
+          locationId,
+          updatedOn,
+          divisionIds,
+          divisions,
+          typeIds,
+          types
         );
         return this.firebaseService.collection('clients').doc(clientId).update(Object.assign({}, updatedClients[updatedClientIndex]));
       }),

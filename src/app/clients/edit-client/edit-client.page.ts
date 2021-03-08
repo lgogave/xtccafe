@@ -35,6 +35,9 @@ export class EditClientPage implements OnInit, OnDestroy {
   subregions:string[];
   states:string[];
   cities:string[];
+  clients:Client[];
+  clientGroup:string[];
+
   constructor(
     private route: ActivatedRoute,
     private navCtrl: NavController,
@@ -47,7 +50,7 @@ export class EditClientPage implements OnInit, OnDestroy {
     private potentialNatureService:PotentialnatureService,
     private locationService:LocationService
   ) {}
-  ngOnInit() {
+  async ngOnInit() {
     this.route.paramMap.subscribe((paramMap) => {
       if (!paramMap.has('clientId')) {
         this.navCtrl.navigateBack('/clients');
@@ -55,6 +58,12 @@ export class EditClientPage implements OnInit, OnDestroy {
       this.clientId = paramMap.get('clientId');
       this.isLoading = true;
       this.loadClient(this.clientId);
+    });
+  this.clients=await this.clientService.getClientList();
+  this.clientGroup = this.clients
+    .map((item) => item.group)
+    .filter((value, index, self) => {
+      if (value != null) return self.indexOf(value) === index;
     });
   }
   loadClient(clientId) {
@@ -109,7 +118,7 @@ export class EditClientPage implements OnInit, OnDestroy {
       }
 
         this.form = new FormGroup({
-          divisionId: new FormControl(this.client.divisionId?this.client.divisionId:null, {
+          divisionId: new FormControl(this.client.divisionIds?this.client.divisionIds:null, {
             updateOn: 'blur',
             validators: [Validators.required],
           }),
@@ -117,7 +126,7 @@ export class EditClientPage implements OnInit, OnDestroy {
             updateOn: 'blur',
             validators: [Validators.required],
           }),
-          typeId: new FormControl(this.client.typeId?this.client.typeId:null, {
+          typeId: new FormControl(this.client.clientTypeIds?this.client.clientTypeIds:null, {
             updateOn: 'blur',
             validators: [Validators.required],
           }),
@@ -148,26 +157,10 @@ export class EditClientPage implements OnInit, OnDestroy {
           employeeStrength: new FormControl(this.client.employeeStrength?this.client.employeeStrength:null, {
             updateOn: 'blur',
           }),
-          brewer: new FormControl(this.client.mtBrewer?this.client.mtBrewer:null, {
+          cmbClientGroup: new FormControl(this.client.group?this.client.group:null, {
             updateOn: 'blur',
           }),
-          fm: new FormControl(this.client.mtFM?this.client.mtFM:null, {
-            updateOn: 'blur',
-          }),
-          btc: new FormControl(this.client.mtBTC?this.client.mtBTC:null, {
-            updateOn: 'blur',
-          }),
-          preMix: new FormControl(this.client.mtPreMix?this.client.mtPreMix:null, {
-            updateOn: 'blur',
-          }),
-          tapriMtrl: new FormControl(this.client.mtTapriKg?this.client.mtTapriKg:null, {
-            updateOn: 'blur',
-
-          }),
-          amount: new FormControl(this.client.amount?this.client.amount:null, {
-            updateOn: 'blur',
-          }),
-          clientGroup: new FormControl(this.client.group?this.client.group:null, {
+          clientGroup: new FormControl(null, {
             updateOn: 'blur',
           }),
           ddCountry: new FormControl(this.client.country?this.client.country:null, {
@@ -208,6 +201,12 @@ export class EditClientPage implements OnInit, OnDestroy {
       }
     );
   }
+
+  updateNewGroup(){
+    this.form.get('cmbClientGroup').reset();
+  }
+
+
   onUpdateClient() {
     if (!this.form.valid) return;
     this.loadingCtrl.create({ keyboardClose: true }).then((loadingEl) => {
@@ -224,36 +223,46 @@ if(nlocation.length>0){
   nlocId = nlocation[0].id;
 }
 
+let ndivisions:string[]=[];
+if(this.form.value.divisionId.length>0){
+  this.form.value.divisionId.forEach(element => {
+  ndivisions.push(this.divisionList.filter(div=>div.id==element)[0].name)
+  });
+}
+
+let nclientTypes: string[] = [];
+if (this.form.value.typeId.length > 0) {
+  this.form.value.typeId.forEach((element) => {
+    nclientTypes.push(
+      this.clientTypeList.filter((div) => div.id == element)[0].name
+    );
+  });
+}
+
       this.clientService
         .editClient(
           this.client.id,
           this.form.value.name,
-          this.clientTypeList.filter(div=>div.id==this.form.value.typeId)[0].name,
           this.form.value.contactPerson,
           this.form.value.contactNumber,
           this.form.value.email,
           this.potentialNatureList.filter(item=>item.id==this.form.value.potentialNatureId)[0].name,
           this.form.value.accountOwner,
-          this.form.value.divisionId,
-          this.divisionList.filter(div=>div.id==this.form.value.divisionId)[0].name,
-          this.form.value.typeId,
-          this.form.value.clientGroup,
+          (this.form.value.cmbClientGroup==null?this.form.value.clientGroup:this.form.value.cmbClientGroup),
           this.form.value.gstNumber,
           this.form.value.employeeStrength,
           this.form.value.potentialNatureId,
-          this.form.value.brewer,
-          this.form.value.fm,
-          this.form.value.btc,
-          this.form.value.preMix,
-          this.form.value.tapriMtrl,
-          this.form.value.amount,
           this.form.value.ddCountry==null?"":this.form.value.ddCountry,
           this.form.value.ddRegion==null?"":this.form.value.ddRegion,
           this.form.value.ddSubRegion==null?"":this.form.value.ddSubRegion,
           this.form.value.ddState==null?"":this.form.value.ddState,
           this.form.value.ddCity==null?"":this.form.value.ddCity,
           nlocId,
-          new Date()
+          new Date(),
+          this.form.value.divisionId,
+          ndivisions,
+          this.form.value.typeId,
+          nclientTypes
         )
         .subscribe(() => {
           loadingEl.dismiss();
@@ -302,7 +311,7 @@ if(nlocation.length>0){
   }
 
 
-  ionViewWillEnter() {
+ionViewWillEnter() {
 
   }
 

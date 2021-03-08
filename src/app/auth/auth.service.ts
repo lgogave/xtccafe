@@ -174,11 +174,14 @@ export class AuthService implements OnDestroy {
     this.firebaseAuth.signOut();
   }
 
+
+
   private autoLogout(duration: number) {
     if(this._activeLogoutTime){
       clearTimeout(this._activeLogoutTime);
     }
     this._activeLogoutTime= setTimeout(() => {
+      //console.log('logout was called');
       this.logout();
     }, duration);
   }
@@ -203,7 +206,7 @@ export class AuthService implements OnDestroy {
     );
     */
    const expirationTime = new Date(
-    new Date().getTime() + 3600 * 1000
+    new Date().getTime() +  9600 * 1000
   );
   const user = new User(
     userData.uid,

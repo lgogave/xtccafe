@@ -18,8 +18,8 @@
         <ion-col size-sm="6" offset-sm="3">
           <ion-item>
             <ion-label position="floating" >Division <span style="color: #FF6347;">*</span></ion-label>
-            <ion-select placeholder="Select One"  interface="popover" formControlName="divisionId">
-              <ion-select-option *ngFor="let division of divisionList" [value]="division.id">{{division.name}}
+            <ion-select placeholder="Select One"  interface="popover" formControlName="divisionId" multiple >
+              <ion-select-option *ngFor="let division of divisionList" [value]="division.id" multiple>{{division.name}}
               </ion-select-option>
             </ion-select>
       </ion-item>
@@ -30,6 +30,9 @@
           <p style="font-size: small;color:#FF6347">Division must not be empty.</p>
         </ion-col>
       </ion-row>
+
+
+
 
       <ion-row>
         <ion-col size-sm="6" offset-sm="3">
@@ -58,11 +61,32 @@
           <p style="font-size: small;color:#FF6347">GST number must not be empty & It should be 15-digit number</p>
         </ion-col>
       </ion-row>
+
+      <ion-row>
+        <ion-col size-sm="6" offset-sm="3">
+          <ion-item>
+            <ion-label position="floating" >Existing Group</ion-label>
+            <ion-select placeholder="Select One"  interface="popover" formControlName="cmbClientGroup">
+              <ion-select-option *ngFor="let clgrp of clientGroup" [value]="clgrp">{{clgrp}}
+              </ion-select-option>
+            </ion-select>
+      </ion-item>
+      </ion-col>
+      <ion-col size-sm="6" offset-sm="3">
+        <ion-item>
+          <ion-label position="floating" style="font-size: 12px;">New Group</ion-label>
+          <ion-input type="text" formControlName="clientGroup" (ionChange)="updateNewGroup()" ></ion-input>
+    </ion-item>
+    </ion-col>
+      </ion-row>
+
+
+
       <ion-row>
         <ion-col size-sm="6" offset-sm="3">
           <ion-item>
             <ion-label position="floating" >Client Type <span style="color: #FF6347;">*</span></ion-label>
-            <ion-select placeholder="Select One"  interface="popover" formControlName="typeId">
+            <ion-select placeholder="Select One"  interface="popover" formControlName="typeId" multiple>
               <ion-select-option *ngFor="let clientType of clientTypeList" [value]="clientType.id">{{clientType.name}}
               </ion-select-option>
             </ion-select>
@@ -148,57 +172,6 @@
         </ion-item>
         </ion-col>
         </ion-row>
-      <div class='componentWrapper'><div class="header" size-sm="6" offset-sm="3">Machine Type</div>
-        <ion-row>
-          <ion-col size-sm="6" offset-sm="3">
-            <ion-item>
-              <ion-label position="floating" >Brewer</ion-label>
-              <ion-input type="number" formControlName="brewer"></ion-input>
-        </ion-item>
-        </ion-col>
-        </ion-row>
-        <ion-row>
-          <ion-col size-sm="6" offset-sm="3">
-            <ion-item>
-              <ion-label position="floating" >FM</ion-label>
-              <ion-input type="number" formControlName="fm"></ion-input>
-        </ion-item>
-        </ion-col>
-        </ion-row>
-        <ion-row>
-          <ion-col size-sm="6" offset-sm="3">
-            <ion-item>
-              <ion-label position="floating" >B2C</ion-label>
-              <ion-input type="number" formControlName="btc"></ion-input>
-        </ion-item>
-        </ion-col>
-        </ion-row>
-        <ion-row>
-          <ion-col size-sm="6" offset-sm="3">
-            <ion-item>
-              <ion-label position="floating" >Pre Mix</ion-label>
-              <ion-input type="number" formControlName="preMix"></ion-input>
-        </ion-item>
-        </ion-col>
-        </ion-row>
-        <ion-row>
-          <ion-col size-sm="6" offset-sm="3">
-            <ion-item>
-              <ion-label position="floating" >Tapri (Mtrl in kg / mth)</ion-label>
-              <ion-input type="number" formControlName="tapriMtrl"></ion-input>
-        </ion-item>
-        </ion-col>
-        </ion-row>
-      </div>
-        <ion-row>
-          <ion-col size-sm="6" offset-sm="3">
-            <ion-item>
-              <ion-label position="floating" >Amount</ion-label>
-              <ion-input type="number" formControlName="amount"></ion-input>
-        </ion-item>
-        </ion-col>
-        </ion-row>
-
       <ion-row>
       <ion-col size-sm="6" offset-sm="3">
           <ion-item>
@@ -213,14 +186,7 @@
         </ion-col>
       </ion-row>
 
-      <ion-row>
-        <ion-col size-sm="6" offset-sm="3">
-          <ion-item>
-            <ion-label position="floating" >Client Group</ion-label>
-            <ion-input type="text" formControlName="clientGroup"></ion-input>
-      </ion-item>
-      </ion-col>
-      </ion-row>
+
 
       <ion-row>
         <ion-col size-sm="6" offset-sm="3">

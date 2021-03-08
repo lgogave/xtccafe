@@ -12,7 +12,7 @@
 </ion-header>
 
 <ion-content>
-  <div *ngIf="isLoading" class="ion-text-center"> 
+  <div *ngIf="isLoading" class="ion-text-center">
 <ion-spinner color="primary"></ion-spinner>
   </div>
   <ion-grid class="ion-no-padding" *ngIf="!isLoading">
@@ -20,7 +20,16 @@
       <ion-col size-sm="6" offset-sm="3">
         <ion-list>
           <ion-item>
-            <span>Type : {{client.type}}</span>
+            <span>Division : {{client.divisions?.join(',')}}</span>
+          </ion-item>
+          <ion-item>
+            <span>GST Number: {{client.gstNumber}}</span>
+          </ion-item>
+          <ion-item>
+            <span>Client Type : {{client.clientTypes?.join(',')}}</span>
+          </ion-item>
+          <ion-item>
+            <span>Client Group: {{client.group}}</span>
           </ion-item>
           <ion-item>
             <span>Contact Person : {{client.contactPerson}}</span>
@@ -35,12 +44,35 @@
             <span>Potential Nature : {{client.potentialNature}}</span>
           </ion-item>
           <ion-item>
+            <span>Employee Strength : {{client.employeeStrength}}</span>
+          </ion-item>
+
+          <ion-item>
             <span>Account Owner : {{client.accountOwner}}</span>
           </ion-item>
+
+          <ion-item>
+            <span>Country : {{client.country}}</span>
+          </ion-item>
+          <ion-item>
+            <span>Region : {{client.region}}</span>
+          </ion-item>
+          <ion-item>
+            <span>Sub Region : {{client.subRegion}}</span>
+          </ion-item>
+          <ion-item>
+            <span>State : {{client.state}}</span>
+          </ion-item>
+          <ion-item>
+            <span>City : {{client.city}}</span>
+          </ion-item>
+
+
+
         </ion-list>
       </ion-col>
     </ion-row>
-    
+
   </ion-grid>
 
 

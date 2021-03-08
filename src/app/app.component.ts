@@ -3,6 +3,7 @@ import { Platform } from '@ionic/angular';
 import { AuthService } from './auth/auth.service';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { AngularFireAuth } from '@angular/fire/auth';
 
 @Component({
   selector: 'app-root',
@@ -14,6 +15,8 @@ export class AppComponent  implements OnInit,OnDestroy{
   private _previousAuthState=false;
   userName:string;
   constructor(  private authService:AuthService,
+    private firebaseAuth:AngularFireAuth,
+    private platform: Platform,
     private router:Router) {
     }
     ngOnInit(){
@@ -27,7 +30,21 @@ export class AppComponent  implements OnInit,OnDestroy{
           this.userName=isAuth.name;
         }
       });
+      //this.initializeApp();
   }
+
+  initializeApp() {
+    this.platform.ready().then(() => {
+      this.firebaseAuth.onAuthStateChanged(user => {
+        if (user) {
+        console.log('auth state changed');
+        console.log(user);
+        }
+      });
+    });
+  }
+
+
   onLogout(){
     this.authService.logout();
   }

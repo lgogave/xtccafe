@@ -12,6 +12,7 @@ import { LocationService } from '../../services/location.service';
 import { PotentialnatureService } from 'src/app/services/potentialnature.service';
 import { ClientService } from '../client.service';
 import { Potentialnature } from '../../models/Potentialnature.model';
+import { Client } from '../client.model';
 
 @Component({
   selector: 'app-add-client',
@@ -30,8 +31,9 @@ export class AddClientPage implements OnInit {
   subregions:string[];
   states:string[];
   cities:string[];
-
-
+  isItemAvailable = false;
+  clients:Client[];
+  clientGroup:string[];
 
 
   private divisionSub: Subscription;
@@ -49,7 +51,7 @@ export class AddClientPage implements OnInit {
     private potentialNatureService:PotentialnatureService,
     private locationService:LocationService
   ) {}
-  ngOnInit() {
+  async  ngOnInit() {
     this.form = new FormGroup({
       divisionId: new FormControl(null, {
         updateOn: "blur",
@@ -90,27 +92,10 @@ export class AddClientPage implements OnInit {
       employeeStrength: new FormControl(null, {
         updateOn: 'blur',
       }),
-      brewer: new FormControl(null, {
-        updateOn: 'blur',
-      }),
-      fm: new FormControl(null, {
-        updateOn: 'blur',
-
-      }),
-      btc: new FormControl(null, {
-        updateOn: 'blur',
-      }),
-      preMix: new FormControl(null, {
-        updateOn: 'blur',
-      }),
-      tapriMtrl: new FormControl(null, {
-        updateOn: 'blur',
-
-      }),
-      amount: new FormControl(null, {
-        updateOn: 'blur',
-      }),
       clientGroup: new FormControl(null, {
+        updateOn: 'blur',
+      }),
+      cmbClientGroup: new FormControl(null, {
         updateOn: 'blur',
       }),
       ddCountry: new FormControl(null, {
@@ -147,7 +132,13 @@ export class AddClientPage implements OnInit {
 
 });
 
-  }
+this.clients=await this.clientService.getClientList();
+this.clientGroup = this.clients
+  .map((item) => item.group)
+  .filter((value, index, self) => {
+    if (value != null) return self.indexOf(value) === index;
+  });
+}
 
   onAddClient() {
     if (!this.form.valid) {
@@ -158,48 +149,76 @@ export class AddClientPage implements OnInit {
     this.loadingCtrl.create({ keyboardClose: true }).then((loadingEl) => {
       loadingEl.present();
 
-      let nlocId="";
-      let nlocation=this.locationList.filter(item=>
-        item.country==(this.form.value.ddCountry==null?"":this.form.value.ddCountry) &&
-        item.region==(this.form.value.ddRegion==null?"":this.form.value.ddRegion) &&
-        item.subregion==(this.form.value.ddSubRegion==null?"":this.form.value.ddSubRegion) &&
-        item.state==(this.form.value.ddState==null?"":this.form.value.ddState) &&
-        item.city==(this.form.value.ddCity==null?"":this.form.value.ddCity)
+      let nlocId = '';
+      let nlocation = this.locationList.filter(
+        (item) =>
+          item.country ==
+            (this.form.value.ddCountry == null
+              ? ''
+              : this.form.value.ddCountry) &&
+          item.region ==
+            (this.form.value.ddRegion == null
+              ? ''
+              : this.form.value.ddRegion) &&
+          item.subregion ==
+            (this.form.value.ddSubRegion == null
+              ? ''
+              : this.form.value.ddSubRegion) &&
+          item.state ==
+            (this.form.value.ddState == null ? '' : this.form.value.ddState) &&
+          item.city ==
+            (this.form.value.ddCity == null ? '' : this.form.value.ddCity)
       );
 
-      if(nlocation.length>0){
+      if (nlocation.length > 0) {
         nlocId = nlocation[0].id;
+      }
+
+      let ndivisions: string[] = [];
+      if (this.form.value.divisionId.length > 0) {
+        this.form.value.divisionId.forEach((element) => {
+          ndivisions.push(
+            this.divisionList.filter((div) => div.id == element)[0].name
+          );
+        });
+      }
+
+      let nclientTypes: string[] = [];
+      if (this.form.value.typeId.length > 0) {
+        this.form.value.typeId.forEach((element) => {
+          nclientTypes.push(
+            this.clientTypeList.filter((div) => div.id == element)[0].name
+          );
+        });
       }
 
       this.clientService
         .addClient(
           this.form.value.name,
-          this.clientTypeList.filter(div=>div.id==this.form.value.typeId)[0].name,
           this.form.value.contactPerson,
           this.form.value.contactNumber,
           this.form.value.email,
-          this.potentialNatureList.filter(item=>item.id==this.form.value.potentialNatureId)[0].name,
+          this.potentialNatureList.filter(
+            (item) => item.id == this.form.value.potentialNatureId
+          )[0].name,
           this.form.value.accountOwner,
-          this.form.value.divisionId,
-          this.divisionList.filter(div=>div.id==this.form.value.divisionId)[0].name,
-          this.form.value.typeId,
-          this.form.value.clientGroup,
+          (this.form.value.cmbClientGroup==null?this.form.value.clientGroup:this.form.value.cmbClientGroup),
           this.form.value.gstNumber,
           this.form.value.employeeStrength,
           this.form.value.potentialNatureId,
-          this.form.value.brewer,
-          this.form.value.fm,
-          this.form.value.btc,
-          this.form.value.preMix,
-          this.form.value.tapriMtrl,
-          this.form.value.amount,
-          this.form.value.ddCountry==null?"":this.form.value.ddCountry,
-          this.form.value.ddRegion==null?"":this.form.value.ddRegion,
-          this.form.value.ddSubRegion==null?"":this.form.value.ddSubRegion,
-          this.form.value.ddState==null?"":this.form.value.ddState,
-          this.form.value.ddCity==null?"":this.form.value.ddCity,
+          this.form.value.ddCountry == null ? '' : this.form.value.ddCountry,
+          this.form.value.ddRegion == null ? '' : this.form.value.ddRegion,
+          this.form.value.ddSubRegion == null
+            ? ''
+            : this.form.value.ddSubRegion,
+          this.form.value.ddState == null ? '' : this.form.value.ddState,
+          this.form.value.ddCity == null ? '' : this.form.value.ddCity,
           nlocId,
-          new Date()
+          new Date(),
+          this.form.value.divisionId,
+          ndivisions,
+          this.form.value.typeId,
+          nclientTypes
         )
         .subscribe(() => {
           this.isLoading = false;
@@ -248,6 +267,13 @@ export class AddClientPage implements OnInit {
     this.cities=[];
     this.cities=this.locationList.filter(item=>item.state===state).map(item=>item.city).filter((value, index, self) => self.indexOf(value) === index);
   }
+
+  updateNewGroup(){
+    this.form.get('cmbClientGroup').reset();
+  }
+
+
+
 
 
 
