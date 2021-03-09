@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { LoadingController } from '@ionic/angular';
+import { LoadingController, ToastController } from '@ionic/angular';
 import { combineLatest, Subscription } from 'rxjs';
 import { ClientType } from '../../models/clientType.model';
 import { Division } from '../../models/division.model';
@@ -13,6 +13,7 @@ import { PotentialnatureService } from 'src/app/services/potentialnature.service
 import { ClientService } from '../client.service';
 import { Potentialnature } from '../../models/Potentialnature.model';
 import { Client } from '../client.model';
+import { NoNegativeNumbers,atLeastOne } from 'src/app/utilities/validators';
 
 @Component({
   selector: 'app-add-client',
@@ -49,7 +50,8 @@ export class AddClientPage implements OnInit {
     private divisionService: DivisionService,
     private clientTypeService:ClientTypeService,
     private potentialNatureService:PotentialnatureService,
-    private locationService:LocationService
+    private locationService:LocationService,
+    public toastController: ToastController
   ) {}
   async  ngOnInit() {
     this.form = new FormGroup({
@@ -71,11 +73,11 @@ export class AddClientPage implements OnInit {
       }),
       contactNumber: new FormControl(null, {
         updateOn: 'blur',
-        validators: [Validators.required, Validators.min(1)],
+        validators: [NoNegativeNumbers],
       }),
       email: new FormControl(null, {
         updateOn: 'blur',
-        validators: [Validators.required, Validators.email],
+
       }),
       potentialNatureId: new FormControl(null, {
         updateOn: 'blur',
@@ -113,7 +115,8 @@ export class AddClientPage implements OnInit {
       ddCity: new FormControl(null, {
         updateOn: 'blur',
       }),
-    });
+    },
+    );
     this.divisionSub = this.divisionService.divisions.subscribe((divisions) => {
       this.divisionList = divisions;
     });
@@ -140,10 +143,21 @@ this.clientGroup = this.clients
   });
 }
 
-  onAddClient() {
+  async onAddClient() {
     if (!this.form.valid) {
       return;
     }
+   var exiclientId=await this.clientService.getClientIdByGSTNumber(this.form.value.gstNumber);
+   if(exiclientId.length>0){
+    this.toastController.create({
+      message: 'Client GST already exist.',
+      duration: 2000,
+      color:'danger',
+    }).then((tost)=>{
+      tost.present();
+    });
+    return;
+   }
 
 
     this.loadingCtrl.create({ keyboardClose: true }).then((loadingEl) => {

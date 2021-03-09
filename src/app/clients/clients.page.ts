@@ -13,6 +13,8 @@ export class ClientsPage implements OnInit,OnDestroy {
   loadedClients:Client[];
   isLoading=false;
   private clientSub:Subscription;
+  private clientSub1:Subscription;
+  private clientSub2:Subscription;
 
   constructor(private clientService:ClientService,private loadingCtrl:LoadingController,private alertCtrl:AlertController) { }
   ngOnInit() {
@@ -26,13 +28,13 @@ export class ClientsPage implements OnInit,OnDestroy {
   }
   ionViewWillEnter(){
     this.isLoading=true;
-    this.clientService.fetchClients().subscribe(() => {
+    this.clientSub2=this.clientService.fetchClients().subscribe(() => {
       this.isLoading = false;
     });
   }
 
   doRefresh(event) {
-    this.clientService.fetchClients().subscribe(() => {
+    this.clientSub1= this.clientService.fetchClients().subscribe(() => {
       event.target.complete();
     });
   }
@@ -40,6 +42,12 @@ export class ClientsPage implements OnInit,OnDestroy {
   ngOnDestroy(){
     if(this.clientSub){
       this.clientSub.unsubscribe();
+    }
+    if(this.clientSub1){
+      this.clientSub1.unsubscribe();
+    }
+    if(this.clientSub2){
+      this.clientSub2.unsubscribe();
     }
   }
 

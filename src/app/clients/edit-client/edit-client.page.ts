@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AlertController, LoadingController, NavController } from '@ionic/angular';
+import { AlertController, LoadingController, NavController, ToastController } from '@ionic/angular';
 import { combineLatest, Subscription } from 'rxjs';
 import { Division } from '../../models/division.model';
 import { ClientTypeService } from '../../services/client-type.service';
@@ -48,7 +48,8 @@ export class EditClientPage implements OnInit, OnDestroy {
     private divisionService: DivisionService,
     private clientTypeService:ClientTypeService,
     private potentialNatureService:PotentialnatureService,
-    private locationService:LocationService
+    private locationService:LocationService,
+    public toastController: ToastController
   ) {}
   async ngOnInit() {
     this.route.paramMap.subscribe((paramMap) => {
@@ -136,11 +137,11 @@ export class EditClientPage implements OnInit, OnDestroy {
           }),
           contactNumber: new FormControl(this.client.contactNumber?this.client.contactNumber:null, {
             updateOn: 'blur',
-            validators: [Validators.required, Validators.min(1)],
+            // validators: [Validators.required, Validators.min(1)],
           }),
           email: new FormControl(this.client.email?this.client.email:null, {
             updateOn: 'blur',
-            validators: [Validators.required, Validators.email],
+            // validators: [Validators.required, Validators.email],
           }),
           potentialNatureId: new FormControl(this.client.potentialNatureId?this.client.potentialNatureId:null, {
             updateOn: 'blur',
@@ -207,8 +208,25 @@ export class EditClientPage implements OnInit, OnDestroy {
   }
 
 
-  onUpdateClient() {
+  async onUpdateClient() {
     if (!this.form.valid) return;
+
+
+    var exiclientId=await this.clientService.getClientIdByGSTNumber(this.form.value.gstNumber);
+    if(exiclientId.length>0 && exiclientId[0]!=this.clientId){
+     this.toastController.create({
+       message: 'Client GST already exist.',
+       duration: 2000,
+       color:'danger',
+     }).then((tost)=>{
+       tost.present();
+     });
+     return;
+    }
+
+
+
+
     this.loadingCtrl.create({ keyboardClose: true }).then((loadingEl) => {
       loadingEl.present();
 let nlocId="";

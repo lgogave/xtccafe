@@ -124,9 +124,9 @@
       </ion-item>
       </ion-col>
       </ion-row>
-      <ion-row *ngIf="!form.get('contactNumber').valid && form.get('contactNumber').touched">
+      <ion-row *ngIf="form.get('contactNumber').errors?.negativeNumber && form.get('contactNumber').touched">
         <ion-col size-sm="6" offset-sm="3">
-          <p style="font-size: small;color:#FF6347">Contact Number must not be empty.</p>
+          <p style="font-size: small;color:#FF6347">Contact Number should not be negative number.</p>
         </ion-col>
       </ion-row>
 
@@ -138,11 +138,11 @@
       </ion-item>
       </ion-col>
       </ion-row>
-      <ion-row *ngIf="!form.get('email').valid && form.get('email').touched">
+      <!-- <ion-row *ngIf="!form.errors?.contactDetail &&  form.get('email').touched &&  form.get('contactNumber').touched">
         <ion-col size-sm="6" offset-sm="3">
-          <p style="font-size: small;color:#FF6347">Should be a valid email address.</p>
+          <p style="font-size: small;color:#FF6347">Please enter email address/Contact number.</p>
         </ion-col>
-      </ion-row>
+      </ion-row> -->
 
 
       <ion-row>

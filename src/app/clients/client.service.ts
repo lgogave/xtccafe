@@ -74,6 +74,12 @@ export class ClientService {
     return clientList as Client[];
   }
 
+  async getClientIdByGSTNumber(gstNumber:string): Promise<any> {
+    const clientList = await this.firebaseService.collection('clients',ref=>ref.where('gstNumber','==',gstNumber))
+      .snapshotChanges().pipe(first()).toPromise();
+    return clientList.map(cl=>cl.payload.doc.id);
+  }
+
 
   fetchClients() {
     let fetchedUserId:string;
@@ -276,6 +282,8 @@ export class ClientService {
       })
     );
   }
+
+
 
 getLocations(){
 return this.firebaseService.collection('location').valueChanges().pipe(
