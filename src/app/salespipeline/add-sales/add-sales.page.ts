@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup, Validators,FormArray } from '@angular/forms';
 import { Router } from '@angular/router';
 import { LoadingController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
@@ -14,9 +14,73 @@ import { SalespipelineService } from '../salespipeline.service';
 })
 export class AddSalesPage implements OnInit {
   form: FormGroup;
+  formArray: FormArray;
   isLoading = false;
   loadedClients:Client[];
+  entryForm: FormGroup;
+
   private clientSub:Subscription;
+
+  get alternetEmail(){
+    return this.form.get('dataEntry') as FormArray;
+  }
+  addAlternetEmail(){
+    this.alternetEmail.push(this.buildDataEntryForm());
+  }
+  deleteAlternetEmail(index){
+    this.alternetEmail.removeAt(index);
+  }
+
+  getMachineDetails(fg:FormGroup){
+   let test=fg.get('machineDetails') as FormArray;
+    return fg.get('machineDetails') as FormArray;
+  }
+  addMachineDetails(fg:FormGroup){
+    this.getMachineDetails(fg).push(this.buildMachineDetailForm());
+  }
+  deleteMachineDetails(fg:FormGroup,index){
+    this.getMachineDetails(fg).removeAt(index);
+  }
+
+
+ buildDataEntryForm(){
+  return new FormGroup({
+    machineDetails: new FormArray([this.buildMachineDetailForm()]),
+    city: new FormControl(null, {
+      updateOn: "blur",
+      validators: [Validators.required],
+    }),
+    address: new FormControl(null, {
+      updateOn: "blur",
+      validators: [Validators.required],
+    }),
+  });
+}
+buildMachineDetailForm(){
+  return new FormGroup({
+    machineName: new FormControl(null, {
+      updateOn: "blur",
+      validators: [Validators.required],
+    }),
+    machineType: new FormControl(null, {
+      updateOn: "blur",
+      validators: [Validators.required],
+    }),
+    volumeType: new FormControl(null, {
+      updateOn: "blur",
+      validators: [Validators.required],
+    }),
+    machineCount: new FormControl(null, {
+      updateOn: "blur",
+      validators: [Validators.required],
+    }),
+    rate: new FormControl(null, {
+      updateOn: "blur",
+      validators: [Validators.required],
+    }),
+  });
+}
+
 
   constructor(private salespipeline:SalespipelineService,private route:Router,private loadingCtrl:LoadingController,private clientService:ClientService) { }
   ngOnInit() {
@@ -24,6 +88,7 @@ export class AddSalesPage implements OnInit {
       this.loadedClients = clients;
     });
     this.form = new FormGroup({
+      dataEntry: new FormArray([this.buildDataEntryForm()]),
       client: new FormControl(null, {
         updateOn: "blur",
         validators: [Validators.required],
@@ -79,11 +144,11 @@ export class AddSalesPage implements OnInit {
       win: new FormControl(null, {
         updateOn: "blur",
         validators: [Validators.required],
-      }), 
+      }),
       value: new FormControl(null, {
         updateOn: "blur",
         //validators: [Validators.required],
-      }), 
+      }),
     });
   }
   ionViewWillEnter(){
