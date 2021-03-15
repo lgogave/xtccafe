@@ -1,51 +1,56 @@
-<ion-header>
-  <ion-toolbar  color="primary">
-    <ion-item lines="none">
-    <ion-thumbnail slot="start">
-      <img src="../../assets/icon/xtclogo.png">
-    </ion-thumbnail>
-    <ion-label>
-    <ion-title  class="ion-padding">{{isLogin? 'Login':'Signup' }}</ion-title>
-  </ion-label>
-</ion-item>
-  </ion-toolbar>
-</ion-header>
+
 <ion-content>
   <!-- <div class="ion-text-center">
     <ion-spinner color="primary" *ngIf="isLoading"></ion-spinner>
   </div> -->
   <form #f="ngForm" (ngSubmit)="onSubmit(f)">
   <ion-grid>
-    <ion-row>
-      <ion-col size-sm="6" offset-sm="3">
-        <ion-list>
-          <ion-item>
-            <ion-label position='floating'>E-Mail</ion-label>
-            <ion-input  ngModel name="email" required email #emailCtrl="ngModel"></ion-input>
-          </ion-item>
-          <ion-item *ngIf="!emailCtrl.valid && emailCtrl.touched" lines="none">
-            <ion-label>Should be a valid email address.</ion-label>
-          </ion-item>
-          <ion-item>
-            <ion-label position='floating'>Password</ion-label>
-            <ion-input type="password" ngModel name="password" required minlength="6" #passCtrl="ngModel"></ion-input>
-          </ion-item>
-          <ion-item *ngIf="!passCtrl.valid && passCtrl.touched" lines="none">
-            <ion-label>Should at least be 6 characters long.</ion-label>
-          </ion-item>
-        </ion-list>
-      
-      </ion-col>
-    </ion-row>
+
     <ion-row>
       <ion-col  size-sm="6" offset-sm="3">
-        <!-- <ion-button type="button" color="primary" fill="clear" expand="full"
-        (click)="onSwithAuthMode()"
-        >Switch to {{isLogin? 'Signup':'Login' }}</ion-button> -->
-        <!-- [disabled]="!f.valid" -->
-        <ion-button type="submit" color="primary"  expand="block" [disabled]="!f.valid">  {{isLogin? 'Login':'Signup' }}</ion-button>
+        <div class="login-wrap">
+          <div class="login-html">
+
+
+            <ion-icon name="lock-closed" style="font-size:35px;color: #e55d87;padding-right: 10px;"></ion-icon>
+          <input id="tab-1" type="radio" name="tab" class="sign-in" checked><label for="tab-1" class="tab"> Sign In</label>
+
+            <input id="tab-2" type="radio" name="tab" class="sign-up"><label for="tab-2" class="tab" style="display: none;">Sign Up</label>
+            <div class="login-form">
+              <div class="sign-in-htm">
+                <div class="group">
+                  <label for="user" class="label">Email</label>
+                  <ion-input id="user" type="text" class="input" ngModel name="email" required email #emailCtrl="ngModel"></ion-input>
+                </div>
+
+                <div class="group" *ngIf="!emailCtrl.valid && emailCtrl.touched" lines="none">
+                  <label for="user" class="label-error">Should be a valid email address.</label>
+                </div>
+
+                <div class="group">
+                  <label for="pass" class="label">Password</label>
+                  <ion-input id="pass" type="password" class="input" data-type="password" ngModel name="password" required minlength="6" #passCtrl="ngModel"></ion-input>
+                </div>
+
+                <div class="group" *ngIf="!passCtrl.valid && passCtrl.touched" lines="none">
+                  <label for="user" class="label-error">Should be a valid password</label>
+                </div>
+
+                <div class="group">
+                  <input type="submit"   [ngClass]="['button', !f.valid?'button-deactive':'button-active']" value="Sign In" [disabled]="!f.valid">
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
       </ion-col>
+
+
     </ion-row>
+
+
+
   </ion-grid>
 </form>
 </ion-content>

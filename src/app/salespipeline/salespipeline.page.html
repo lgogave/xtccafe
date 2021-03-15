@@ -31,29 +31,23 @@
         (ionChange)="filterClient()"
         ></ion-searchbar>
 
-        <div *ngIf="!isLoading && loadedSalespipeline.length<=0" class="ion-text-center">
+        <div *ngIf="!isLoading && loadedClientSales.length<=0" class="ion-text-center">
           <p>Data not found! please create one first!</p>
           <ion-button color="primary" routerLink="/salespipeline/new">Add Entry</ion-button>
         </div>
-        <ion-list *ngIf="!isLoading && listSalespipeline.length>0">
-          <ion-item-sliding *ngFor="let sales of listSalespipeline" #slidingClients>
+        <ion-list *ngIf="!isLoading && loadedClientSales.length>0">
+          <ion-item-sliding *ngFor="let sales of loadedClientSales" #slidingClients>
           <ion-item detail  [routerLink]="['/','salespipeline','detail',sales.id]" >
-         
            <div>
              <h5> <ion-icon name="people" slot="start" color="primary"></ion-icon>   {{sales.client}}</h5>
-             <h6>Currrent Status: {{sales.currentStatus}}</h6>
-             <ion-text color="danger">
-              <h6>Potential Status: {{sales.potentialStatus}}</h6>
-            </ion-text>
-             <h6>Closure Date: {{sales.closuredate| date}}</h6>
-             <h6>Win: {{sales.win}}</h6>
+             <h6>Comment: {{sales.comment}}</h6>
            </div>
           </ion-item>
           <ion-item-options>
             <ion-item-option color="secondary">
               <ion-icon name="create" slot="icon-only"  [routerLink]="['/','salespipeline','edit',sales.id]"></ion-icon>
             </ion-item-option>
-            <ion-item-option color="danger"  (click)="onDeleteSalespipeline(sales.id,slidingClients)">
+            <ion-item-option color="danger"  (click)="onDeleteSalespipeline(sales.id,sales.clientId,slidingClients)">
               <ion-icon name="trash" slot="icon-only"></ion-icon>
             </ion-item-option>
           </ion-item-options>

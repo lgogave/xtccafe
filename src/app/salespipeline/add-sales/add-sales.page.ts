@@ -5,6 +5,7 @@ import { LoadingController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import { Client } from 'src/app/clients/client.model';
 import { ClientService } from 'src/app/clients/client.service';
+import { ClientSalesPipeline, Location, Machine, SalesPipeline } from '../salespipeline.model';
 import { SalespipelineService } from '../salespipeline.service';
 
 @Component({
@@ -21,14 +22,14 @@ export class AddSalesPage implements OnInit {
 
   private clientSub:Subscription;
 
-  get alternetEmail(){
+  get locations(){
     return this.form.get('dataEntry') as FormArray;
   }
-  addAlternetEmail(){
-    this.alternetEmail.push(this.buildDataEntryForm());
+  addLocations(){
+    this.locations.push(this.buildDataEntryForm());
   }
-  deleteAlternetEmail(index){
-    this.alternetEmail.removeAt(index);
+  deleteLocatios(index){
+    this.locations.removeAt(index);
   }
 
   getMachineDetails(fg:FormGroup){
@@ -51,6 +52,14 @@ export class AddSalesPage implements OnInit {
       validators: [Validators.required],
     }),
     address: new FormControl(null, {
+      updateOn: "blur",
+      validators: [Validators.required],
+    }),
+    currentStatus: new FormControl(null, {
+      updateOn: "blur",
+      validators: [Validators.required],
+    }),
+    closureDate: new FormControl(null, {
       updateOn: "blur",
       validators: [Validators.required],
     }),
@@ -82,72 +91,24 @@ buildMachineDetailForm(){
 }
 
 
-  constructor(private salespipeline:SalespipelineService,private route:Router,private loadingCtrl:LoadingController,private clientService:ClientService) { }
+  constructor(private salespipeline:SalespipelineService,private route:Router,private loadingCtrl:LoadingController,private clientService:ClientService,
+  private salesPipelineService:SalespipelineService,) { }
   ngOnInit() {
     this.clientSub = this.clientService.clients.subscribe((clients) => {
       this.loadedClients = clients;
     });
     this.form = new FormGroup({
       dataEntry: new FormArray([this.buildDataEntryForm()]),
+      group: new FormControl(null, {
+        updateOn: "blur",
+      }),
       client: new FormControl(null, {
-        updateOn: "blur",
-        validators: [Validators.required],
-      }),
-      brewer: new FormControl(null, {
-        updateOn: "blur",
-        //validators: [Validators.required, Validators.min(0)],
-      }),
-      fm: new FormControl(null, {
-        updateOn: "blur",
-        //validators:  [Validators.required, Validators.min(0)],
-      }),
-      btoc: new FormControl(null, {
-        updateOn: "blur",
-        //validators: [Validators.required, Validators.min(0)],
-      }),
-      preMix: new FormControl(null, {
-        updateOn: "blur",
-        //validators:  [Validators.required, Validators.min(0)],
-      }),
-      mtrl: new FormControl(null, {
-        updateOn: "blur",
-        //validators: [Validators.required],
-      }),
-      amount: new FormControl(null, {
-        updateOn: "blur",
-        validators: [Validators.required, Validators.min(0)],
-      }),
-      currentStatus: new FormControl(null, {
-        updateOn: "blur",
-        validators: [Validators.required],
-      }),
-      potentialStatus: new FormControl(null, {
-        updateOn: "blur",
-        validators: [Validators.required],
-      }),
-      closuredate: new FormControl(null, {
-        updateOn: "blur",
-        validators: [Validators.required],
-      }),
-      region: new FormControl(null, {
-        updateOn: "blur",
-        validators: [Validators.required],
-      }),
-      location: new FormControl(null, {
         updateOn: "blur",
         validators: [Validators.required],
       }),
       comments: new FormControl(null, {
         updateOn: "blur",
         validators: [Validators.required, Validators.maxLength(180)],
-      }),
-      win: new FormControl(null, {
-        updateOn: "blur",
-        validators: [Validators.required],
-      }),
-      value: new FormControl(null, {
-        updateOn: "blur",
-        //validators: [Validators.required],
       }),
     });
   }
@@ -156,40 +117,102 @@ buildMachineDetailForm(){
     });
   }
   onAddSalespipeline(){
-    if (!this.form.valid) {
-      return;
-    }
+    // if (!this.form.valid) {
+    //   return;
+    // }
+    let salesPipeline:SalesPipeline[]=this.AddSalesPipeline();
     this.loadingCtrl.create({ keyboardClose: true }).then((loadingEl) => {
       loadingEl.present();
-      this.salespipeline.addSalespipeline(
-        this.form.value.client,
-        this.form.value.brewer,
-        this.form.value.fm,
-        this.form.value.btoc,
-        this.form.value.preMix,
-        this.form.value.mtrl,
-        this.form.value.amount,
-        this.form.value.currentStatus,
-        this.form.value.potentialStatus,
-        new Date(this.form.value.closuredate),
-        this.form.value.region,
-        this.form.value.location,
-        this.form.value.comments,
-        this.form.value.win,
-        this.form.value.value
-        ).subscribe(()=>{
-        this.isLoading = false;
-        loadingEl.dismiss();
-        this.form.reset();
-        this.route.navigate(["/salespipeline"]);
+      // Tree Structue Input
+      this.AddClientSalesPipeLine();
+      let arrayLength=salesPipeline.length-1;
+      salesPipeline.forEach((item,index)=>{
+        this.salesPipelineService.addSalesPipeline(item).subscribe((response)=>{
+          console.log(index);
+         if (arrayLength == index) {
+           this.removeLoading(loadingEl);
+          }
+        })
       })
     });
   }
-
-  ngOnDestroy(){
+ removeLoading(loadingEl:HTMLIonLoadingElement){
+  this.isLoading = false;
+  loadingEl.dismiss();
+  this.form.reset();
+  this.route.navigate(["/salespipeline"]);
+ }
+private AddClientSalesPipeLine(){
+  let locations=[];
+    for(let i=0;i<this.form.value.dataEntry.length;i++){
+      let location=this.form.value.dataEntry[i];
+      let machines=[];
+      for(let j=0;j<location.machineDetails.length;j++){
+        let machine=location.machineDetails[j];
+        machines.push(
+          new Machine(
+            machine.machineName,
+            machine.machineType,
+            machine.volumeType,
+            machine.machineCount,
+            machine.rate
+          )
+        );
+      }
+      locations.push(new Location(location.city,
+        location.address,
+        location.currentStatus,
+        new Date(location.closureDate),
+        machines.map((obj)=> {return Object.assign({}, obj)})
+        ))
+    }
+    let clientSalesPipeline: ClientSalesPipeline = new ClientSalesPipeline(
+      '',
+      this.form.value.group,
+      this.form.value.client,
+      this.loadedClients.filter(
+        (item) => item.id == this.form.value.client
+      )[0].name,
+      this.form.value.comments,
+      '',
+      new Date(),
+      locations.map((obj)=> {return Object.assign({}, obj)})
+    );
+    this.salesPipelineService.addClientSalesPipeline(clientSalesPipeline).subscribe((response)=>{
+})
+}
+private AddSalesPipeline():SalesPipeline[]{
+  let salesPipeline:SalesPipeline[]=[];
+    for(let i=0;i<this.form.value.dataEntry.length;i++){
+      let location=this.form.value.dataEntry[i];
+      for(let j=0;j<location.machineDetails.length;j++){
+        let machine=location.machineDetails[j];
+        salesPipeline.push(new SalesPipeline("",
+        this.form.value.group,
+        this.form.value.client,
+        this.loadedClients.filter(
+          (item) => item.id == this.form.value.client
+        )[0].name,
+        this.form.value.comments,
+        location.city,
+        location.address,
+        location.currentStatus,
+        new Date(location.closureDate),
+        machine.machineName,
+        machine.machineType,
+        machine.volumeType,
+        machine.machineCount,
+        machine.rate,
+        "",
+        new Date(),
+        ))
+      }
+    }
+    return salesPipeline;
+}
+ngOnDestroy(){
     if(this.clientSub){
       this.clientSub.unsubscribe();
     }
-  }
-
+}
 }

@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { IonItemSliding, LoadingController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
-import { Salespipeline } from './salespipeline.model';
+import { ClientSales, ClientSalesPipeline, Salespipeline } from './salespipeline.model';
 import { SalespipelineService } from './salespipeline.service';
 
 @Component({
@@ -12,53 +12,59 @@ import { SalespipelineService } from './salespipeline.service';
 export class SalespipelinePage implements OnInit, OnDestroy {
   listSalespipeline: Salespipeline[];
   loadedSalespipeline: Salespipeline[];
+  loadedClientSales: ClientSalesPipeline[];
   isLoading = false;
   searchTerm: string = '';
-  private SalespipelineSub: Subscription;
+  private salespipelineSub: Subscription;
 
   constructor(
-    private SalespipelineService: SalespipelineService,
+    private salespipelineService: SalespipelineService,
     private loadingCtrl: LoadingController
   ) {}
 
   ngOnInit() {
-    this.SalespipelineSub = this.SalespipelineService.salespipeline.subscribe(
-      (salespipelines) => {
-        this.loadedSalespipeline = salespipelines;
-        this.listSalespipeline = salespipelines;
-      }
-    );
+    // this.SalespipelineSub = this.SalespipelineService.salespipeline.subscribe(
+    //   (salespipelines) => {
+    //     this.loadedSalespipeline = salespipelines;
+    //     this.listSalespipeline = salespipelines;
+    //   }
+    // );
+    this.salespipelineSub =this.salespipelineService.clientSalepipeline.subscribe((clientSales) => {
+    this.loadedClientSales=clientSales;
+    });
+
   }
   ionViewWillEnter() {
     this.isLoading = true;
-    this.SalespipelineService.fetchSalespipeline().subscribe(() => {
-      this.filterClient();
+    this.salespipelineService.fetchClientSalesPipeline().subscribe(() => {
       this.isLoading = false;
     });
   }
 
   ngOnDestroy() {
-    if (this.SalespipelineSub) {
-      this.SalespipelineSub.unsubscribe();
+    if (this.salespipelineSub) {
+      this.salespipelineSub.unsubscribe();
     }
   }
 
-  onDeleteSalespipeline(SalespipelineId: string, slidingEl: IonItemSliding) {
+  onDeleteSalespipeline(id: string,clientId:string, slidingEl: IonItemSliding) {
     slidingEl.close();
     this.loadingCtrl
       .create({ keyboardClose: true, message: 'Deleteing...' })
       .then((loadingEl) => {
         loadingEl.present();
-        this.SalespipelineService.deleteSalespipeline(
-          SalespipelineId
-        ).subscribe(() => {
+        this.salespipelineService.deleteClientSalesPipeline(id).subscribe(() => {
+          //this.filterClient();
+        });
+        this.salespipelineService.deleteSalesPipeline(clientId).subscribe(() => {
           this.filterClient();
           loadingEl.dismiss();
         });
+
       });
   }
   doRefresh(event) {
-    this.SalespipelineService.fetchSalespipeline().subscribe(() => {
+    this.salespipelineService.fetchSalespipeline().subscribe(() => {
       this.filterClient();
       event.target.complete();
     });
@@ -66,8 +72,8 @@ export class SalespipelinePage implements OnInit, OnDestroy {
 
   filterClient() {
     // item.title.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1;
-    this.listSalespipeline = this.loadedSalespipeline.filter((sales) => {
-     return sales.client.toLowerCase().indexOf(this.searchTerm.toLowerCase()) > -1;
-    });
+    // this.listSalespipeline = this.loadedSalespipeline.filter((sales) => {
+    //  return sales.client.toLowerCase().indexOf(this.searchTerm.toLowerCase()) > -1;
+    // });
   }
 }

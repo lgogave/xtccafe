@@ -4,7 +4,8 @@
       <ion-back-button defaultHref="/clients">
       </ion-back-button>
       <ion-title>Salespipeline Entry</ion-title>
-      <ion-button (click)="onAddSalespipeline()" [disabled]="!form.valid">
+      <!-- <ion-button (click)="onAddSalespipeline()" [disabled]="!form.valid"> -->
+        <ion-button (click)="onAddSalespipeline()">
         <ion-icon name="checkmark" slot="icon-only"></ion-icon>
       </ion-button>
     </ion-buttons>
@@ -17,8 +18,8 @@
       <ion-row>
         <ion-col size-sm="6" offset-sm="3">
           <ion-item>
-            <ion-label position="floating" >Client Group</ion-label>
-            <ion-select placeholder="Select One"  interface="popover">
+            <ion-label>Client Group</ion-label>
+            <ion-select placeholder="Select One"  interface="popover" formControlName="group">
               <ion-select-option *ngFor="let client of loadedClients" [value]="client.name">{{client.name}}
               </ion-select-option>
             </ion-select>
@@ -26,7 +27,7 @@
           <ion-item>
             <ion-label>Client</ion-label>
             <ion-select placeholder="Select One"  interface="popover" formControlName="client">
-              <ion-select-option *ngFor="let client of loadedClients" [value]="client.name">{{client.name}}
+              <ion-select-option *ngFor="let client of loadedClients" [value]="client.id">{{client.name}}
               </ion-select-option>
             </ion-select>
           </ion-item>
@@ -37,6 +38,15 @@
           <p>Client must not be empty.</p>
         </ion-col>
       </ion-row>
+
+      <ion-row>
+        <ion-col size-sm="6" offset-sm="3">
+          <ion-item>
+            <ion-label position="floating" >Comment</ion-label>
+            <ion-textarea row="3" formControlName="comments"></ion-textarea>
+          </ion-item>
+      </ion-col>
+      </ion-row>
 <!-- <div class='componentWrapper'>
   <p class='header'>Data Entry </p><p class="close"> <ion-icon name="close" color="warning" slot="icon-only" color="danger"(click)="deleteAlternetEmail(i)" ></ion-icon>
   </p> -->
@@ -46,8 +56,13 @@
   <ion-row  formArrayName="dataEntry">
     <ion-col size-sm="6" offset-sm="3" style="margin-inline:0px">
       <div [formGroupName]="i">
-        <div style="display: flex;justify-content: flex-end;">
-          <button class="close-icon-info" (click)="deleteAlternetEmail(i)"></button></div>
+
+        <div id="container">
+          <div class="center"><ion-label style="color: #fff;padding-right: 70px;">Location Detail</ion-label></div>
+          <div class="right"><button class="close-icon-info" (click)="deleteLocatios(i)"></button></div>
+        </div>
+
+
 
         <ion-row>
           <ion-col size-sm="6" offset-sm="3">
@@ -62,11 +77,37 @@
             <p class="error-label">City should not be empty.</p>
           </ion-col>
         </ion-row>
+
+
         <ion-row>
           <ion-col size-sm="6" offset-sm="3">
             <ion-item>
               <ion-label position="floating" >Address</ion-label>
               <ion-textarea rows="3"  formControlName="address"></ion-textarea>
+            </ion-item>
+        </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col size-sm="6" offset-sm="3">
+        <ion-item>
+          <ion-label position="floating">Current Status</ion-label>
+          <ion-select placeholder="Select One"  interface="popover" formControlName="currentStatus">
+            <ion-select-option *ngFor="let client of loadedClients" [value]="client.name">{{client.name}}
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+        <ion-row>
+          <ion-col size-sm="6" offset-sm="3">
+            <ion-item>
+              <ion-label position="floating" >Closure Date</ion-label>
+              <!-- <ion-input formControlName="closureDate"></ion-input> -->
+              <ion-datetime
+              formControlName="closureDate"
+              display-format="MMM DD YYYY"
+              picker-format="YY MMM DD"
+              ></ion-datetime>
             </ion-item>
         </ion-col>
         </ion-row>
@@ -79,18 +120,20 @@
           <ion-row  formArrayName="machineDetails">
           <ion-col size-sm="6" offset-sm="3">
             <div [formGroupName]="j">
-              <div style="display: flex;justify-content: flex-end;">
-                <button class="close-icon-accent" (click)="deleteMachineDetails(form.get('dataEntry')['controls'][i])"></button></div>
-              <ion-row>
+                <div id="container">
+                  <div class="center"><ion-label style="color: #fff;padding-right: 70px;"> <ion-icon name="chevron-forward"></ion-icon> Machine Detail</ion-label></div>
+                  <div class="right"><button class="close-icon-accent" (click)="deleteMachineDetails(form.get('dataEntry')['controls'][i])"></button></div>
+                </div>
+                <ion-row>
                 <ion-col size-sm="6" offset-sm="3">
                   <ion-item>
-                    <ion-label position="floating" >Machine</ion-label>
-                    <ion-select placeholder="Select One"  interface="popover">
+                    <ion-label position="floating" >Machine/Material</ion-label>
+                    <ion-select placeholder="Select One"  interface="popover" formControlName="machineName">
                       <ion-select-option value='Brewer'>Brewer</ion-select-option>
-                      <ion-select-option value='Brewer'>FM</ion-select-option>
-                      <ion-select-option value='Brewer'>B2C</ion-select-option>
-                      <ion-select-option value='Brewer'>PreMix</ion-select-option>
-                      <ion-select-option value='Brewer'>Mtl(kg/mth)</ion-select-option>
+                      <ion-select-option value='FM'>FM</ion-select-option>
+                      <ion-select-option value='B2C'>B2C</ion-select-option>
+                      <ion-select-option value='PreMix'>PreMix</ion-select-option>
+                      <ion-select-option value='Mtl(kg/mth)'>Mtl(kg/mth)</ion-select-option>
                     </ion-select>
                   </ion-item>
               </ion-col>
@@ -100,9 +143,9 @@
                 <ion-col size-sm="6" offset-sm="3">
                   <ion-item>
                     <ion-label position="floating" >Type</ion-label>
-                    <ion-select placeholder="Select One"  interface="popover">
-                      <ion-select-option value='Brewer'>Manual</ion-select-option>
-                      <ion-select-option value='Brewer'>Automatic</ion-select-option>
+                    <ion-select placeholder="Select One"  interface="popover" formControlName="machineType">
+                      <ion-select-option value='Manual'>Manual</ion-select-option>
+                      <ion-select-option value='Automatic'>Automatic</ion-select-option>
                     </ion-select>
                   </ion-item>
               </ion-col>
@@ -112,7 +155,7 @@
                 <ion-col size-sm="6" offset-sm="3">
                   <ion-item>
                     <ion-label position="floating" >Category</ion-label>
-                    <ion-select placeholder="Select One"  interface="popover">
+                    <ion-select placeholder="Select One"  interface="popover" formControlName="volumeType">
                       <ion-select-option value='2-Chamber'>2-Chamber</ion-select-option>
                       <ion-select-option value='3-Chamber'>3-Chamber</ion-select-option>
                       <ion-select-option value='4-Chamber'>4-Chamber</ion-select-option>
@@ -137,7 +180,7 @@
                 <ion-col size-sm="6" offset-sm="3">
                   <ion-item>
                     <ion-label position="floating" >Machine Count</ion-label>
-                    <ion-input></ion-input>
+                    <ion-input formControlName="machineCount"></ion-input>
                   </ion-item>
               </ion-col>
               </ion-row>
@@ -146,7 +189,7 @@
                 <ion-col size-sm="6" offset-sm="3">
                   <ion-item>
                     <ion-label position="floating" >Rate</ion-label>
-                    <ion-input></ion-input>
+                    <ion-input formControlName="rate"></ion-input>
                   </ion-item>
               </ion-col>
               </ion-row>
@@ -156,6 +199,10 @@
             </ion-col>
         </ion-row>
         </div>
+
+
+
+
 
         <ion-row>
           <ion-col size-sm="6" offset-sm="3">
@@ -171,7 +218,7 @@
 </div> -->
       <ion-row>
         <ion-col size-sm="6" offset-sm="3">
-          <ion-button (click)="addAlternetEmail()">  <ion-icon name="add" slot="icon-only"></ion-icon> Add Location</ion-button>
+          <ion-button (click)="addLocations()">  <ion-icon name="add" slot="icon-only"></ion-icon> Add Location</ion-button>
         </ion-col>
       </ion-row>
 

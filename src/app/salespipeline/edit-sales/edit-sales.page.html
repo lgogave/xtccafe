@@ -4,24 +4,32 @@
       <ion-back-button defaultHref="/salespipeline">
       </ion-back-button>
       <ion-title>Edit Salespipeline</ion-title>
-      <ion-button (click)="onUpdateSalespipeline()" [disabled]="!form?.valid">
+      <!-- [disabled]="!form?.valid -->
+      <ion-button (click)="onUpdateSalespipeline()">
         <ion-icon name="checkmark" slot="icon-only"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
-  <ion-content>
-    <div *ngIf="isLoading" class="ion-text-center">
-      <ion-spinner></ion-spinner>
-    </div>
+<ion-content>
   <form [formGroup]="form" *ngIf="!isLoading">
     <ion-grid>
       <ion-row>
         <ion-col size-sm="6" offset-sm="3">
-          <ion-item>    
-            <ion-label position="floating" >Client</ion-label>
-            <ion-input type="text" autocomplete autocorrect formControlName="client"></ion-input>
-      </ion-item>
+          <ion-item>
+            <ion-label>Client Group</ion-label>
+            <ion-select placeholder="Select One"  interface="popover" formControlName="group">
+              <ion-select-option *ngFor="let client of loadedClients" [value]="client.name">{{client.name}}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-item>
+            <ion-label>Client</ion-label>
+            <ion-select placeholder="Select One"  interface="popover" formControlName="client">
+              <ion-select-option *ngFor="let client of loadedClients" [value]="client.id">{{client.name}}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
       </ion-col>
       </ion-row>
       <ion-row *ngIf="!form.get('client').valid && form.get('client').touched">
@@ -29,185 +37,175 @@
           <p>Client must not be empty.</p>
         </ion-col>
       </ion-row>
-  
-      <ion-row>
-        <ion-col size-sm="6" offset-sm="3">
-          <ion-item>    
-            <ion-label position="floating" >Brewer Count</ion-label>
-            <ion-input type="text" autocomplete autocorrect formControlName="brewer"></ion-input>
-      </ion-item>
-      </ion-col>
-      </ion-row>
-      
-      <ion-row>
-        <ion-col size-sm="6" offset-sm="3">
-          <ion-item>    
-            <ion-label position="floating" >FM Count</ion-label>
-            <ion-input type="text" autocomplete autocorrect formControlName="fm"></ion-input>
-      </ion-item>
-      </ion-col>
-      </ion-row>
 
       <ion-row>
         <ion-col size-sm="6" offset-sm="3">
-          <ion-item>    
-            <ion-label position="floating" >B2C Count</ion-label>
-            <ion-input type="text" formControlName="btoc"></ion-input>
-      </ion-item>
+          <ion-item>
+            <ion-label position="floating" >Comment</ion-label>
+            <ion-textarea row="3" formControlName="comments"></ion-textarea>
+          </ion-item>
       </ion-col>
       </ion-row>
+
+
+      <ion-card class="card-tab" style="background:#3F51B5" *ngFor="let item of form.get('dataEntry')['controls']; let i = index;">
+        <ion-card-content class="card-content">
+        <ion-row  formArrayName="dataEntry">
+          <ion-col size-sm="6" offset-sm="3" style="margin-inline:0px">
+            <div [formGroupName]="i">
+
+              <div id="container">
+                <div class="center"><ion-label style="color: #fff;padding-right: 70px;">Location Detail</ion-label></div>
+                <div class="right"><button class="close-icon-info" (click)="deleteLocatios(i)"></button></div>
+              </div>
+
+
+
+              <ion-row>
+                <ion-col size-sm="6" offset-sm="3">
+                  <ion-item>
+                    <ion-label position="floating" >City</ion-label>
+                    <ion-input formControlName="city"></ion-input>
+                  </ion-item>
+              </ion-col>
+              </ion-row>
+              <ion-row *ngIf="!form.get('dataEntry')['controls'][i].get('city').valid && form.get('dataEntry')['controls'][i].get('city').touched">
+                <ion-col size-sm="6" offset-sm="3">
+                  <p class="error-label">City should not be empty.</p>
+                </ion-col>
+              </ion-row>
+
+
+              <ion-row>
+                <ion-col size-sm="6" offset-sm="3">
+                  <ion-item>
+                    <ion-label position="floating" >Address</ion-label>
+                    <ion-textarea rows="3"  formControlName="address"></ion-textarea>
+                  </ion-item>
+              </ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col size-sm="6" offset-sm="3">
+              <ion-item>
+                <ion-label position="floating">Current Status</ion-label>
+                <ion-select placeholder="Select One"  interface="popover" formControlName="currentStatus">
+                  <ion-select-option *ngFor="let client of loadedClients" [value]="client.name">{{client.name}}
+                  </ion-select-option>
+                </ion-select>
+              </ion-item>
+            </ion-col>
+          </ion-row>
+              <ion-row>
+                <ion-col size-sm="6" offset-sm="3">
+                  <ion-item>
+                    <ion-label position="floating" >Closure Date</ion-label>
+                    <ion-datetime
+                    formControlName="closureDate"
+                    display-format="MMM DD YYYY"
+                    picker-format="YY MMM DD"
+                    ></ion-datetime>
+                  </ion-item>
+              </ion-col>
+              </ion-row>
+              <ion-row *ngIf="!form.get('dataEntry')['controls'][i].get('address').valid && form.get('dataEntry')['controls'][i].get('address').touched">
+                <ion-col size-sm="6" offset-sm="3">
+                  <p class="error-label">Address should not be empty.</p>
+                </ion-col>
+              </ion-row>
+              <div style="background: #e91e63;margin: 5px;"  *ngFor="let item of form.get('dataEntry')['controls'][i].get('machineDetails')['controls']; let j = index;">
+                <ion-row  formArrayName="machineDetails">
+                <ion-col size-sm="6" offset-sm="3">
+                  <div [formGroupName]="j">
+                      <div id="container">
+                        <div class="center"><ion-label style="color: #fff;padding-right: 70px;"> <ion-icon name="chevron-forward"></ion-icon> Machine Detail</ion-label></div>
+                        <div class="right"><button class="close-icon-accent" (click)="deleteMachineDetails(form.get('dataEntry')['controls'][i])"></button></div>
+                      </div>
+                      <ion-row>
+                      <ion-col size-sm="6" offset-sm="3">
+                        <ion-item>
+                          <ion-label position="floating" >Machine/Material</ion-label>
+                          <ion-select placeholder="Select One"  interface="popover" formControlName="machineName">
+                            <ion-select-option value='Brewer'>Brewer</ion-select-option>
+                            <ion-select-option value='FM'>FM</ion-select-option>
+                            <ion-select-option value='B2C'>B2C</ion-select-option>
+                            <ion-select-option value='PreMix'>PreMix</ion-select-option>
+                            <ion-select-option value='Mtl(kg/mth)'>Mtl(kg/mth)</ion-select-option>
+                          </ion-select>
+                        </ion-item>
+                    </ion-col>
+                    </ion-row>
+
+                    <ion-row>
+                      <ion-col size-sm="6" offset-sm="3">
+                        <ion-item>
+                          <ion-label position="floating" >Type</ion-label>
+                          <ion-select placeholder="Select One"  interface="popover" formControlName="machineType">
+                            <ion-select-option value='Manual'>Manual</ion-select-option>
+                            <ion-select-option value='Automatic'>Automatic</ion-select-option>
+                          </ion-select>
+                        </ion-item>
+                    </ion-col>
+                    </ion-row>
+
+                    <ion-row>
+                      <ion-col size-sm="6" offset-sm="3">
+                        <ion-item>
+                          <ion-label position="floating" >Category</ion-label>
+                          <ion-select placeholder="Select One"  interface="popover" formControlName="volumeType">
+                            <ion-select-option value='2-Chamber'>2-Chamber</ion-select-option>
+                            <ion-select-option value='3-Chamber'>3-Chamber</ion-select-option>
+                            <ion-select-option value='4-Chamber'>4-Chamber</ion-select-option>
+                            <ion-select-option value='Tea'>Tea</ion-select-option>
+                            <ion-select-option value='Coffee'>Coffee</ion-select-option>
+                            <ion-select-option value='Beans'>Beans</ion-select-option>
+                            <ion-select-option value='5 ltr'>5 ltr</ion-select-option>
+                            <ion-select-option value='10 ltr'>10 ltr</ion-select-option>
+                            <ion-select-option value='20 ltr'>20 ltr</ion-select-option>
+                          </ion-select>
+                        </ion-item>
+                    </ion-col>
+                    </ion-row>
+
+                    <ion-row>
+                      <ion-col size-sm="6" offset-sm="3">
+                        <ion-item>
+                          <ion-label position="floating" >Machine Count</ion-label>
+                          <ion-input formControlName="machineCount"></ion-input>
+                        </ion-item>
+                    </ion-col>
+                    </ion-row>
+
+                    <ion-row>
+                      <ion-col size-sm="6" offset-sm="3">
+                        <ion-item>
+                          <ion-label position="floating" >Rate</ion-label>
+                          <ion-input formControlName="rate"></ion-input>
+                        </ion-item>
+                    </ion-col>
+                    </ion-row>
+                  </div>
+                  </ion-col>
+              </ion-row>
+              </div>
+              <ion-row>
+                <ion-col size-sm="6" offset-sm="3">
+                  <ion-button (click)="addMachineDetails(form.get('dataEntry')['controls'][i])" color="warning"><ion-icon name="add" slot="icon-only"></ion-icon> Add Machine </ion-button>
+                </ion-col>
+              </ion-row>
+            </div>
+          </ion-col>
+        </ion-row>
+      </ion-card-content>
+      </ion-card>
 
       <ion-row>
         <ion-col size-sm="6" offset-sm="3">
-          <ion-item>    
-            <ion-label position="floating" >PreMix Count</ion-label>
-            <ion-input type="text" autocomplete autocorrect formControlName="preMix"></ion-input>
-      </ion-item>
-      </ion-col>
-      </ion-row>
-
-      <ion-row>
-        <ion-col size-sm="6" offset-sm="3">
-          <ion-item>    
-            <ion-label position="floating" >Mtrl in kg/mth</ion-label>
-            <ion-input type="text" autocomplete autocorrect formControlName="mtrl"></ion-input>
-      </ion-item>
-      </ion-col>
-      </ion-row>
-   
-
-
-      <ion-row>
-        <ion-col size-sm="6" offset-sm="3">
-          <ion-item>    
-            <ion-label position="floating" >Amount / mth (in Thousand)</ion-label>
-            <ion-input type="text" autocomplete autocorrect formControlName="amount"></ion-input>
-      </ion-item>
-      </ion-col>
-      </ion-row>
-      <ion-row *ngIf="!form.get('amount').valid && form.get('amount').touched">
-        <ion-col size-sm="6" offset-sm="3">
-          <p>Amount must not be empty.</p>
+          <ion-button (click)="addLocations()">  <ion-icon name="add" slot="icon-only"></ion-icon> Add Location</ion-button>
         </ion-col>
       </ion-row>
-
-      <ion-row>
-        <ion-col size-sm="6" offset-sm="3">
-          <ion-item>    
-            <ion-label position="floating" >Current Status</ion-label>
-            <ion-input type="text" autocomplete autocorrect formControlName="currentStatus"></ion-input>
-      </ion-item>
-      </ion-col>
-      </ion-row>
-      <ion-row *ngIf="!form.get('currentStatus').valid && form.get('currentStatus').touched">
-        <ion-col size-sm="6" offset-sm="3">
-          <p>Current Status must not be empty.</p>
-        </ion-col>
-      </ion-row>
-
-
-      <ion-row>
-        <ion-col size-sm="6" offset-sm="3">
-          <ion-item>    
-            <ion-label position="floating" >Potential Status</ion-label>
-            <ion-input type="text" autocomplete autocorrect formControlName="potentialStatus"></ion-input>
-      </ion-item>
-      </ion-col>
-      </ion-row>
-      <ion-row *ngIf="!form.get('potentialStatus').valid && form.get('potentialStatus').touched">
-        <ion-col size-sm="6" offset-sm="3">
-          <p>Potential Status must not be empty.</p>
-        </ion-col>
-      </ion-row>
-
-      <ion-row>
-        <ion-col size-sm="6" offset-sm="3">
-          <ion-item>    
-            <ion-label position="floating" >Closure Date</ion-label>
-            <ion-datetime min="2019-01-01" max="2050-12-31"  formControlName="closuredate"></ion-datetime>
-      </ion-item>
-      </ion-col>
-      </ion-row>
-
-
-      <ion-row>
-        <ion-col size-sm="6" offset-sm="3">
-          <ion-item>    
-            <ion-label position="floating" >Region</ion-label>
-            <ion-input type="text" autocomplete autocorrect formControlName="region"></ion-input>
-      </ion-item>
-      </ion-col>
-      </ion-row>
-      <ion-row *ngIf="!form.get('region').valid && form.get('region').touched">
-        <ion-col size-sm="6" offset-sm="3">
-          <p>Region Nature must not be empty.</p>
-        </ion-col>
-      </ion-row>
-
-
-      <ion-row>
-        <ion-col size-sm="6" offset-sm="3">
-          <ion-item>    
-            <ion-label position="floating" >Location</ion-label>
-            <ion-input type="text" autocomplete autocorrect formControlName="location"></ion-input>
-      </ion-item>
-      </ion-col>
-      </ion-row>
-      <ion-row *ngIf="!form.get('location').valid && form.get('location').touched">
-        <ion-col size-sm="6" offset-sm="3">
-          <p>Location must not be empty.</p>
-        </ion-col>
-      </ion-row>
-
-
-      <ion-row>
-        <ion-col size-sm="6" offset-sm="3">
-          <ion-item>    
-            <ion-label position="floating" >Comments</ion-label>
-            <ion-textarea rows="3" formControlName="comments"></ion-textarea>
-      </ion-item>
-      </ion-col>
-      </ion-row>
-      <ion-row *ngIf="!form.get('comments').valid && form.get('comments').touched">
-        <ion-col size-sm="6" offset-sm="3">
-          <p>Comments must not be empty.</p>
-        </ion-col>
-      </ion-row>
-
-
-      <ion-row>
-        <ion-col size-sm="6" offset-sm="3">
-          <ion-item>    
-            <ion-label position="floating" >Win</ion-label>
-            <ion-input type="text" autocomplete autocorrect formControlName="win"></ion-input>
-      </ion-item>
-      </ion-col>
-      </ion-row>
-      <ion-row *ngIf="!form.get('win').valid && form.get('win').touched">
-        <ion-col size-sm="6" offset-sm="3">
-          <p>Win Nature must not be empty.</p>
-        </ion-col>
-      </ion-row>
-
-
-      <ion-row>
-        <ion-col size-sm="6" offset-sm="3">
-          <ion-item>    
-            <ion-label position="floating" >Value</ion-label>
-            <ion-input type="text" autocomplete autocorrect formControlName="value"></ion-input>
-      </ion-item>
-      </ion-col>
-      </ion-row>
-      <ion-row *ngIf="!form.get('value').valid && form.get('value').touched">
-        <ion-col size-sm="6" offset-sm="3">
-          <p>Value must not be empty.</p>
-        </ion-col>
-      </ion-row>
-
- 
 
     </ion-grid>
-  </form>
-  </ion-content>
+</form>
+</ion-content>
 
 
