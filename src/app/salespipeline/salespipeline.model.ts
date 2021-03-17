@@ -1,26 +1,3 @@
-export class Salespipeline {
-    constructor(
-      public id: string,
-      public client: string,
-      public brewer: string,
-      public fm: string,
-      public btoc: string,
-      public preMix: string,
-      public mtrl: string,
-      public amount: number,
-      public currentStatus: string,
-      public potentialStatus: string,
-      public closuredate: Date,
-      public region: string,
-      public location: string,
-      public comments: string,
-      public win: string,
-      public value: string,
-      public userId: string
-    ) {}
-  }
-
-
   export class SalesPipeline {
     constructor(
       public id?: string,
@@ -37,12 +14,14 @@ export class Salespipeline {
       public machineCategory?: string,
       public machineCount?: string,
       public rate?: string,
+      public mhamount?: number,
+      public locamount?: number,
+      public clientamount?: number,
       public userId?: string,
       public updatedOn?: Date
     ) {}
 
-      }
-
+  }
   export class ClientSales {
         constructor(
           public clientId?: string,
@@ -60,7 +39,9 @@ export class ClientSalesPipeline {
     public comment?: string,
     public userId?: string,
     public updatedOn?: Date,
+    public amount?: number,
     public locations?:Location[],
+
   ) {}
 }
 export class Location {
@@ -69,7 +50,9 @@ export class Location {
     public address?: string,
     public currentStatus?: string,
     public closureDate?: Date,
-    public machines?:Machine[]
+    public amount?: number,
+    public machines?:Machine[],
+
   ) {}
 }
 export class Machine {
@@ -77,8 +60,9 @@ export class Machine {
     public machineName?: string,
       public machineType?: string,
       public machineCategory?: string,
-      public machineCount?: string,
-      public rate?: string,
+      public machineCount?: number,
+      public rate?: number,
+      public amount?: number,
   ) {}
 }
 

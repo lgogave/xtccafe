@@ -214,7 +214,7 @@ export class EditClientPage implements OnInit, OnDestroy {
 
     var exiclientId=await this.clientService.getClientIdByGSTNumber(this.form.value.gstNumber);
     if(exiclientId.length>0 && exiclientId[0]!=this.clientId){
-     this.toastController.create({
+     await this.toastController.create({
        message: 'Client GST already exist.',
        duration: 2000,
        color:'danger',

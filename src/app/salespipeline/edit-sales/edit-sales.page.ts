@@ -5,6 +5,8 @@ import { AlertController, LoadingController, NavController, ToastController } fr
 import { combineLatest, Subscription } from 'rxjs';
 import { Client } from 'src/app/clients/client.model';
 import { ClientService } from 'src/app/clients/client.service';
+import { ClientStatus, MachineDetail } from 'src/app/models/division.model';
+import { DivisionService } from 'src/app/services/division.service';
 import { ClientSalesPipeline, Location, Machine, SalesPipeline } from '../salespipeline.model';
 import { SalespipelineService, } from '../salespipeline.service';
 
@@ -18,9 +20,18 @@ export class EditSalesPage implements OnInit {
   formArray: FormArray;
   isLoading = false;
   loadedClients: Client[];
+  clients:Client[];
+  clientGroup:string[];
+  clientsStatus:ClientStatus[];
   entryForm: FormGroup;
   salesPipeline: ClientSalesPipeline;
   saleId: string;
+  clientId: string;
+  amt:number;
+  machineDetail:MachineDetail[];
+  machines:string[]
+  machineType:string[]
+  machineCategory:string[]
   private salesPipeSub: Subscription;
 
   get locations() {
@@ -63,6 +74,9 @@ export class EditSalesPage implements OnInit {
         updateOn: 'blur',
         validators: [Validators.required],
       }),
+      amount: new FormControl(location!=null?location.amount:null, {
+        updateOn: 'blur',
+      }),
     });
   }
   buildMachineDetailForm(machine?:Machine) {
@@ -87,6 +101,10 @@ export class EditSalesPage implements OnInit {
         updateOn: 'blur',
         validators: [Validators.required],
       }),
+      amount: new FormControl(machine!=null?machine.amount:null, {
+        updateOn: 'blur',
+      }),
+
     });
   }
 
@@ -98,9 +116,10 @@ export class EditSalesPage implements OnInit {
     private loadingCtrl: LoadingController,
     private alertCtrl: AlertController,
     public toastController: ToastController,
-    private salesPipelineService: SalespipelineService
+    private salesPipelineService: SalespipelineService,
+    private divisionService:DivisionService
   ) {}
-  ngOnInit() {
+  async ngOnInit() {
     this.route.paramMap.subscribe((paramMap) => {
       if (!paramMap.has('salesId')) {
         this.navCtrl.navigateBack('/salespipeline');
@@ -109,14 +128,41 @@ export class EditSalesPage implements OnInit {
       this.isLoading = true;
       this.loadSalesPipeline(this.saleId);
     });
+
+
+
+
   }
 loadSalesPipeline(saleId){
 this.salesPipeSub=combineLatest([
   this.salesPipelineService.getClientSalesPipeline(saleId),
-  this.clientService.fetchClients(),
+  this.clientService.getClientList(),
+  this.divisionService.getClientStatusList(),
+  this.divisionService.getMachineDetailList()
 ]).subscribe((res)=>{
 this.salesPipeline=res[0];
-this.loadedClients=res[1];
+this.clients=res[1];
+this.clientsStatus=res[2];
+this.machineDetail=res[3];
+this.machines=this.machineDetail.filter(item=>item.group==0).sort((a,b)=>a.srno-b.srno).map(item=>item.name);
+this.machineType=this.machineDetail.filter(item=>item.group==1).sort((a,b)=>a.srno-b.srno).map(item=>item.name);
+this.machineCategory=this.machineDetail.filter(item=>item.group==2).sort((a,b)=>a.srno-b.srno).map(item=>item.name);
+
+
+
+
+this.clientId=this.salesPipeline.clientId;
+if(this.salesPipeline.group!=null){
+  this.loadedClients=this.clients.filter(item=> item.group===this.salesPipeline.group);
+}
+else {
+  this.loadedClients=this.clients;
+}
+this.clientGroup = this.clients
+  .map((item) => item.group)
+  .filter((value, index, self) => {
+    if (value != null) return self.indexOf(value) === index;
+  });
 
 let locationArray=new FormArray([]);
 this.salesPipeline.locations.forEach((item,i)=>{
@@ -143,11 +189,30 @@ this.form = new FormGroup({
     updateOn: 'blur',
     validators: [Validators.required, Validators.maxLength(180)],
   }),
+  amount: new FormControl(this.salesPipeline.amount, {
+    updateOn: 'blur',
+  }),
 });
+
+this.form.valueChanges.subscribe(val=>{
+  let clientamount:number=0;
+  this.form.get('dataEntry')['controls'].forEach((location,i) => {
+    let locamount:number=0;
+    this.form.get('dataEntry')['controls'][i].get('machineDetails')['controls'].forEach((machine,j) => {
+      let rate:number=this.form.get('dataEntry')['controls'][i].get('machineDetails')['controls'][j].get('rate').value;
+      let mccount:number=this.form.get('dataEntry')['controls'][i].get('machineDetails')['controls'][j].get('machineCount').value;
+      let amt=rate*mccount;
+      locamount=locamount+amt;
+      clientamount=clientamount+amt;
+      this.form.get('dataEntry')['controls'][i].get('machineDetails')['controls'][j].get('amount').patchValue(amt,{emitEvent: false});
+    });
+    this.form.get('dataEntry')['controls'][i].get('amount').patchValue(locamount,{emitEvent: false});
+  });
+  this.form.get('amount').patchValue(clientamount,{emitEvent: false});
+})
 console.log(this.form);
 this.isLoading=false;
 })
-
 }
 
 
@@ -156,13 +221,31 @@ this.isLoading=false;
     this.salesPipelineService.getClientSalesPipeline(this.saleId);
   }
   async onUpdateSalespipeline() {
-    // if (!this.form.valid) {
-    //   return;
-    // }
+
+    console.log(this.clientId);
+    console.log(this.form);
+
+    if (!this.form.valid) {
+      return;
+    }
+
+
+    var exiclientId=await this.salesPipelineService.getClientById(this.form.value.client);
+    console.log(exiclientId);
+    if(exiclientId.length>0  && exiclientId[0]['clientId']!=this.clientId){
+      await this.toastController.create({
+       message: 'Client data is already exist.',
+       duration: 2000,
+       color:'danger',
+     }).then((tost)=>{
+       tost.present();
+     });
+     return;
+    }
 
 
     let salesPipeline: SalesPipeline[] = this.AddSalesPipeline();
-    let extSalepipe=await this.salesPipelineService.deleteSalesPipelineByClietId(this.form.value.client);
+    let extSalepipe=await this.salesPipelineService.deleteSalesPipelineByClietId(this.clientId);
     this.loadingCtrl.create({ keyboardClose: true }).then((loadingEl) => {
       loadingEl.present();
       // Tree Structue Input
@@ -199,7 +282,8 @@ this.isLoading=false;
             machine.machineType,
             machine.volumeType,
             machine.machineCount,
-            machine.rate
+            machine.rate,
+            machine.amount,
           )
         );
       }
@@ -209,6 +293,7 @@ this.isLoading=false;
           location.address,
           location.currentStatus,
           new Date(location.closureDate),
+          location.amount,
           machines.map((obj) => {
             return Object.assign({}, obj);
           })
@@ -219,12 +304,13 @@ this.isLoading=false;
       '',
       this.form.value.group,
       this.form.value.client,
-      this.loadedClients.filter(
+      this.clients.filter(
         (item) => item.id == this.form.value.client
       )[0].name,
       this.form.value.comments,
       '',
       new Date(),
+      this.form.value.amount,
       locations.map((obj) => {
         return Object.assign({}, obj);
       })
@@ -245,7 +331,7 @@ this.isLoading=false;
             '',
             this.form.value.group,
             this.form.value.client,
-            this.loadedClients.filter(
+            this.clients.filter(
               (item) => item.id == this.form.value.client
             )[0].name,
             this.form.value.comments,
@@ -258,6 +344,9 @@ this.isLoading=false;
             machine.volumeType,
             machine.machineCount,
             machine.rate,
+            machine.amount,
+            location.amount,
+            this.form.value.amount,
             '',
             new Date()
           )
@@ -266,6 +355,25 @@ this.isLoading=false;
     }
     return salesPipeline;
   }
+
+  onChangeGroup(event){
+    let grp=event.target.value;
+    this.form.controls['client'].reset();
+    this.loadedClients=[];
+    this.loadedClients=this.clients.filter(item=>item.group===grp);
+  }
+
+  onMachineChange(event,element){
+    let ref=this.machineDetail.filter(item=>item.name==event.target.value)[0].name;
+    element.controls['volumeType'].reset();
+    this.machineCategory=[];
+    this.machineCategory=this.machineDetail.filter(item=>item.ref==ref && item.group==2).sort(
+      (a,b)=>a.srno-b.srno).map(item=>item.name);
+      if(ref=="FM" || ref=="Mtl(kg/mth)"){
+        element.controls['volumeType'].patchValue("Not Applicable",{emitEvent: false})
+      }
+    }
+
 
   ngOnDestroy() {
     if (this.salesPipeSub) {

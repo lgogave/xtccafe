@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators,FormArray } from '@angular/forms';
 import { Router } from '@angular/router';
-import { LoadingController } from '@ionic/angular';
+import { LoadingController, ToastController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import { Client } from 'src/app/clients/client.model';
 import { ClientService } from 'src/app/clients/client.service';
+import { ClientStatus, MachineDetail } from 'src/app/models/division.model';
+import { DivisionService } from 'src/app/services/division.service';
 import { ClientSalesPipeline, Location, Machine, SalesPipeline } from '../salespipeline.model';
 import { SalespipelineService } from '../salespipeline.service';
 
@@ -17,8 +19,17 @@ export class AddSalesPage implements OnInit {
   form: FormGroup;
   formArray: FormArray;
   isLoading = false;
-  loadedClients:Client[];
   entryForm: FormGroup;
+  clients:Client[];
+  loadedClients:Client[];
+  clientGroup:string[];
+  clientsStatus:ClientStatus[];
+  machineDetail:MachineDetail[];
+  machines:string[]
+  machineType:string[]
+  machineCategory:string[]
+
+
 
   private clientSub:Subscription;
 
@@ -63,6 +74,9 @@ export class AddSalesPage implements OnInit {
       updateOn: "blur",
       validators: [Validators.required],
     }),
+    amount: new FormControl(null, {
+      updateOn: 'blur',
+    }),
   });
 }
 buildMachineDetailForm(){
@@ -87,16 +101,16 @@ buildMachineDetailForm(){
       updateOn: "blur",
       validators: [Validators.required],
     }),
+    amount: new FormControl(null, {
+      updateOn: 'blur',
+    }),
   });
 }
 
 
-  constructor(private salespipeline:SalespipelineService,private route:Router,private loadingCtrl:LoadingController,private clientService:ClientService,
-  private salesPipelineService:SalespipelineService,) { }
-  ngOnInit() {
-    this.clientSub = this.clientService.clients.subscribe((clients) => {
-      this.loadedClients = clients;
-    });
+  constructor(private route:Router,private loadingCtrl:LoadingController,private clientService:ClientService,
+  private salesPipelineService:SalespipelineService,private divisionService:DivisionService,private toastController: ToastController) { }
+  async ngOnInit() {
     this.form = new FormGroup({
       dataEntry: new FormArray([this.buildDataEntryForm()]),
       group: new FormControl(null, {
@@ -110,16 +124,69 @@ buildMachineDetailForm(){
         updateOn: "blur",
         validators: [Validators.required, Validators.maxLength(180)],
       }),
+      amount: new FormControl(null, {
+        updateOn: 'blur',
+      }),
     });
-  }
+    this.form.valueChanges.subscribe(val=>{
+      let clientamount:number=0;
+      this.form.get('dataEntry')['controls'].forEach((location,i) => {
+        let locamount:number=0;
+        this.form.get('dataEntry')['controls'][i].get('machineDetails')['controls'].forEach((machine,j) => {
+          let rate:number=this.form.get('dataEntry')['controls'][i].get('machineDetails')['controls'][j].get('rate').value;
+          let mccount:number=this.form.get('dataEntry')['controls'][i].get('machineDetails')['controls'][j].get('machineCount').value;
+          let amt=rate*mccount;
+          locamount=locamount+amt;
+          clientamount=clientamount+amt;
+          this.form.get('dataEntry')['controls'][i].get('machineDetails')['controls'][j].get('amount').patchValue(amt,{emitEvent: false});
+        });
+        let closureDate=new Date(this.form.get('dataEntry')['controls'][i].get('closureDate').value);
+        let extraday=7;
+        let endDate:Date=new Date(closureDate.getFullYear(),2,31);
+        let startDate:Date=new Date(closureDate.getFullYear(),closureDate.getMonth(),closureDate.getDate());
+        startDate.setDate(startDate.getDate()+extraday);
+        let diff:Date=new Date(endDate.valueOf()-startDate.valueOf())
+        // console.log(diff.valueOf()/1000/60/60/24);
+        // console.log((locamount*12)/264 * diff.valueOf()/1000/60/60/24);
+
+        this.form.get('dataEntry')['controls'][i].get('amount').patchValue(locamount,{emitEvent: false});
+      });
+      this.form.get('amount').patchValue(clientamount,{emitEvent: false});
+    })
+    this.clients=await this.clientService.getClientList();
+    this.clientGroup = this.clients
+      .map((item) => item.group)
+      .filter((value, index, self) => {
+        if (value != null) return self.indexOf(value) === index;
+      });
+      this.loadedClients=this.clients;
+      this.clientsStatus=await this.divisionService.getClientStatusList();
+      this.machineDetail=await this.divisionService.getMachineDetailList();
+      this.machines=this.machineDetail.filter(item=>item.group==0).sort((a,b)=>a.srno-b.srno).map(item=>item.name);
+      this.machineType=this.machineDetail.filter(item=>item.group==1).sort((a,b)=>a.srno-b.srno).map(item=>item.name);
+
+    }
   ionViewWillEnter(){
     this.clientService.fetchClients().subscribe(() => {
     });
   }
-  onAddSalespipeline(){
-    // if (!this.form.valid) {
-    //   return;
-    // }
+  async onAddSalespipeline(){
+    if (!this.form.valid) {
+      return;
+    }
+    var exiclientId=await this.salesPipelineService.getClientById(this.form.value.client);
+    if(exiclientId.length>0){
+     await this.toastController.create({
+       message: 'Client data is already exist.',
+       duration: 2000,
+       color:'danger',
+     }).then((tost)=>{
+       tost.present();
+     });
+     return;
+    }
+
+
     let salesPipeline:SalesPipeline[]=this.AddSalesPipeline();
     this.loadingCtrl.create({ keyboardClose: true }).then((loadingEl) => {
       loadingEl.present();
@@ -128,7 +195,7 @@ buildMachineDetailForm(){
       let arrayLength=salesPipeline.length-1;
       salesPipeline.forEach((item,index)=>{
         this.salesPipelineService.addSalesPipeline(item).subscribe((response)=>{
-          console.log(index);
+
          if (arrayLength == index) {
            this.removeLoading(loadingEl);
           }
@@ -155,7 +222,8 @@ private AddClientSalesPipeLine(){
             machine.machineType,
             machine.volumeType,
             machine.machineCount,
-            machine.rate
+            machine.rate,
+            machine.amount
           )
         );
       }
@@ -163,6 +231,7 @@ private AddClientSalesPipeLine(){
         location.address,
         location.currentStatus,
         new Date(location.closureDate),
+        location.amount,
         machines.map((obj)=> {return Object.assign({}, obj)})
         ))
     }
@@ -170,12 +239,13 @@ private AddClientSalesPipeLine(){
       '',
       this.form.value.group,
       this.form.value.client,
-      this.loadedClients.filter(
+      this.clients.filter(
         (item) => item.id == this.form.value.client
       )[0].name,
       this.form.value.comments,
       '',
       new Date(),
+      this.form.value.amount,
       locations.map((obj)=> {return Object.assign({}, obj)})
     );
     this.salesPipelineService.addClientSalesPipeline(clientSalesPipeline).subscribe((response)=>{
@@ -190,7 +260,7 @@ private AddSalesPipeline():SalesPipeline[]{
         salesPipeline.push(new SalesPipeline("",
         this.form.value.group,
         this.form.value.client,
-        this.loadedClients.filter(
+        this.clients.filter(
           (item) => item.id == this.form.value.client
         )[0].name,
         this.form.value.comments,
@@ -203,6 +273,9 @@ private AddSalesPipeline():SalesPipeline[]{
         machine.volumeType,
         machine.machineCount,
         machine.rate,
+        machine.amount,
+        location.amount,
+        this.form.value.amount,
         "",
         new Date(),
         ))
@@ -215,4 +288,34 @@ ngOnDestroy(){
       this.clientSub.unsubscribe();
     }
 }
+
+onChangeGroup(event){
+  let grp=event.target.value;
+  this.form.controls['client'].reset();
+  this.loadedClients=[];
+  this.loadedClients=this.clients.filter(item=>item.group===grp);
+}
+
+financialYearCalculation(closureDate:Date,amount:number){
+  let extraday=7;
+  let endDate:Date=new Date(closureDate.getFullYear(),2,31);
+  let startDate:Date=new Date(closureDate.getFullYear(),closureDate.getMonth(),closureDate.getDate());
+  startDate.setDate(startDate.getDate()+extraday);
+  let diff:Date=new Date(endDate.valueOf()-startDate.valueOf())
+  let days=diff.valueOf()/1000/60/60/24;
+  return (amount*12)/264 * days;
+}
+
+onMachineChange(event,element){
+let ref=this.machineDetail.filter(item=>item.name==event.target.value)[0].name;
+element.controls['volumeType'].reset();
+this.machineCategory=[];
+this.machineCategory=this.machineDetail.filter(item=>item.ref==ref && item.group==2).sort(
+  (a,b)=>a.srno-b.srno).map(item=>item.name);
+  if(ref=="FM" || ref=="Mtl(kg/mth)"){
+    element.controls['volumeType'].patchValue("Not Applicable",{emitEvent: false})
+  }
+}
+
+
 }

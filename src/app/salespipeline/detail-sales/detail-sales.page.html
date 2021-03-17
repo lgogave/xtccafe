@@ -18,77 +18,74 @@
   <ion-grid class="ion-no-padding" *ngIf="!isLoading">
     <ion-row>
       <ion-col size-sm="6" offset-sm="3">
-        <ion-item>Group:{{salespipeline.group}}</ion-item>
-        <ion-item>Comment:{{salespipeline.comment}}</ion-item>
-        <ion-card class="card-tab" style="background:#3F51B5" *ngFor="let location of salespipeline.locations;let i = index;">
-          <ion-card-content class="card-content">
-            <ion-item>City: {{location.city}}</ion-item>
-            <ion-item>Address: {{location.address}}</ion-item>
-            <ion-item>Closure Date: {{convertTimestampToDate(location.closureDate)}}</ion-item>
-            <div style="background: #e91e63"  *ngFor="let machine of location.machines; let j = index;">
-              <ion-item>Machine: {{machine.machineName}}</ion-item>
-              <ion-item>Machine Type: {{machine.machineType}}</ion-item>
-              <ion-item>Machine Category: {{machine.machineCategory}}</ion-item>
-              <ion-item>Count: {{machine.machineCount}}</ion-item>
-              <ion-item>Rate: {{machine.rate}}</ion-item>
-            </div>
+        <ion-card>
+          <ion-card-content>
+
+            <ion-item>
+              <ion-icon name="cafe-outline" size="medium" style="color: #E91E63;padding-right: 5px;"></ion-icon>
+              <ion-label style="font-size: 15px;">
+                 <b> Client Group : </b>{{salespipeline.group}}</ion-label>
+            </ion-item>
+            <ion-item >
+              <ion-icon name="create-outline"  size="medium" style="color: #E91E63;padding-right: 5px;"></ion-icon>
+              <ion-label style="font-size: 15px;">
+                 <b> Comment : </b>{{salespipeline.comment}}</ion-label>
+            </ion-item>
+
+
+            <ion-row class="card-tab" style="background:#3F51B5" *ngFor="let location of salespipeline.locations;let i = index;">
+              <ion-col size-sm="6" offset-sm="3">
+                <ion-item color="success" style="padding-right: 5px;">
+                  <ion-icon name="location-outline"></ion-icon>
+                  <ion-label><b> City : </b> {{location.city}} </ion-label>
+                 </ion-item>
+
+                 <ion-item>
+                  <ion-label><b> Address : </b> {{location.address}} </ion-label>
+                 </ion-item>
+
+                 <ion-item>
+                  <ion-label><b> Closure Date : </b>  {{convertTimestampToDate(location.closureDate)}} </ion-label>
+                 </ion-item>
+
+                <ion-row class="card-tab" style="background:#3F51B5" *ngFor="let machine of location.machines; let j = index;">
+                  <ion-col size-sm="6" offset-sm="3">
+                    <ion-item color="danger">
+                      <ion-icon name="file-tray-stacked-outline" style="padding-right: 5px;"></ion-icon>
+                      <ion-label><b> Machine : </b> {{machine.machineName}} </ion-label>
+                     </ion-item>
+
+                     <ion-item>
+
+                      <ion-label><b> Machine Type : </b> {{machine.machineType}} </ion-label>
+                     </ion-item>
+
+                     <ion-item>
+
+                      <ion-label><b> Machine Category : </b> {{machine.machineCategory}} </ion-label>
+                     </ion-item>
+                     <ion-item>
+
+                      <ion-label><b> Count : </b> {{machine.machineCount}} </ion-label>
+                     </ion-item>
+                     <ion-item>
+
+                      <ion-label><b> Rate : </b> {{machine.rate}} </ion-label>
+                     </ion-item>
+                     <ion-item>
+
+                      <ion-label><b> Machine Type : </b> {{machine.machineType}} </ion-label>
+                     </ion-item>
+                  </ion-col>
+                </ion-row>
+              </ion-col>
+            </ion-row>
           </ion-card-content>
-          </ion-card>
-      </ion-col>
+        </ion-card>
+        <div></div>
+
+        </ion-col>
     </ion-row>
-
-    <!-- <ion-row>
-      <ion-col size-sm="6" offset-sm="3">
-        <ion-list>
-          <ion-item>
-            <span>Brewer : {{salespipeline.brewer}}</span>
-          </ion-item>
-          <ion-item>
-            <span>FM : {{salespipeline.fm}}</span>
-          </ion-item>
-          <ion-item>
-            <span>B2C : {{salespipeline.btoc}}</span>
-          </ion-item>
-          <ion-item>
-            <span>Pre Mix : {{salespipeline.preMix}}</span>
-          </ion-item>
-          <ion-item>
-            <span>Mtrl in kg / mth : {{salespipeline.mtrl}}</span>
-          </ion-item>
-          <ion-item>
-            <span>Amount / mth (in Thousand) : {{salespipeline.amount}}</span>
-          </ion-item>
-
-          <ion-item>
-            <span>Current Status : {{salespipeline.currentStatus}}</span>
-          </ion-item>
-          <ion-item>
-            <span>Potential Status : {{salespipeline.potentialStatus}}</span>
-          </ion-item>
-          <ion-item>
-            <span>Closure Date : {{salespipeline.closuredate}}</span>
-          </ion-item>
-          <ion-item>
-            <span>Region : {{salespipeline.region}}</span>
-          </ion-item>
-          <ion-item>
-            <span>Location : {{salespipeline.location}}</span>
-          </ion-item>
-          <ion-item>
-            <span>Comments : {{salespipeline.comments}}</span>
-          </ion-item>
-          <ion-item>
-            <span>Win % : {{salespipeline.win}}</span>
-          </ion-item>
-          <ion-item>
-            <span>Value : {{salespipeline.value}}</span>
-          </ion-item>
-
-
-        </ion-list>
-      </ion-col>
-    </ion-row> -->
-
   </ion-grid>
 
 

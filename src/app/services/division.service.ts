@@ -1,23 +1,27 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, combineLatest, Observable, observable, of, pipe } from 'rxjs';
-import { map, switchMap, take, tap } from 'rxjs/operators';
+import { first, map, switchMap, take, tap } from 'rxjs/operators';
 import { AuthService } from '../auth/auth.service';
 import { AngularFirestore } from '@angular/fire/firestore';
 import 'firebase/firestore';
-import { Division } from '../models/division.model';
+import { Division,ClientStatus, MachineDetail } from '../models/division.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class DivisionService {
   private _divisions = new BehaviorSubject<Division[]>([]);
+  private _statuses = new BehaviorSubject<ClientStatus[]>([]);
   constructor(
     private authService: AuthService,
     private firebaseService: AngularFirestore
   ) {}
   get divisions() {
     return this._divisions.asObservable();
+  }
+  get clientStatus() {
+    return this._statuses.asObservable();
   }
 
   fetchDivisions() {
@@ -49,4 +53,21 @@ export class DivisionService {
       })
     );
   }
+
+  async getClientStatusList(): Promise<any> {
+    const clientList = await this.firebaseService
+    .collection('client-status',ref=>ref.orderBy('status'))
+      .valueChanges().pipe(first()).toPromise();
+    return clientList as ClientStatus[];
+  }
+
+  async getMachineDetailList(): Promise<any> {
+    const clientList = await this.firebaseService
+    .collection('machine-detail')
+      .valueChanges().pipe(first()).toPromise();
+    return clientList as MachineDetail[];
+  }
+
+
 }
+

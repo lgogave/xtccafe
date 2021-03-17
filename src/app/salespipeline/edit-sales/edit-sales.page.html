@@ -4,8 +4,7 @@
       <ion-back-button defaultHref="/salespipeline">
       </ion-back-button>
       <ion-title>Edit Salespipeline</ion-title>
-      <!-- [disabled]="!form?.valid -->
-      <ion-button (click)="onUpdateSalespipeline()">
+      <ion-button (click)="onUpdateSalespipeline()"  [disabled]="!form?.valid">
         <ion-icon name="checkmark" slot="icon-only"></ion-icon>
       </ion-button>
     </ion-buttons>
@@ -18,8 +17,8 @@
         <ion-col size-sm="6" offset-sm="3">
           <ion-item>
             <ion-label>Client Group</ion-label>
-            <ion-select placeholder="Select One"  interface="popover" formControlName="group">
-              <ion-select-option *ngFor="let client of loadedClients" [value]="client.name">{{client.name}}
+            <ion-select placeholder="Select One"  interface="popover" formControlName="group" (ionChange)="onChangeGroup($event)">
+              <ion-select-option *ngFor="let grp of clientGroup" [value]="grp">{{grp}}
               </ion-select-option>
             </ion-select>
           </ion-item>
@@ -43,6 +42,11 @@
           <ion-item>
             <ion-label position="floating" >Comment</ion-label>
             <ion-textarea row="3" formControlName="comments"></ion-textarea>
+          </ion-item>
+
+          <ion-item color="success">
+            <p>Amount : </p>
+            <ion-input type="number" formControlName="amount"  readonly ></ion-input>
           </ion-item>
       </ion-col>
       </ion-row>
@@ -89,7 +93,7 @@
               <ion-item>
                 <ion-label position="floating">Current Status</ion-label>
                 <ion-select placeholder="Select One"  interface="popover" formControlName="currentStatus">
-                  <ion-select-option *ngFor="let client of loadedClients" [value]="client.name">{{client.name}}
+                  <ion-select-option *ngFor="let client of clientsStatus" [value]="client.status">{{client.status}}
                   </ion-select-option>
                 </ion-select>
               </ion-item>
@@ -104,6 +108,11 @@
                     display-format="MMM DD YYYY"
                     picker-format="YY MMM DD"
                     ></ion-datetime>
+                  </ion-item>
+
+                  <ion-item color="success">
+                    <p>Amount : </p>
+                    <ion-input type="number" formControlName="amount"  readonly></ion-input>
                   </ion-item>
               </ion-col>
               </ion-row>
@@ -124,13 +133,19 @@
                       <ion-col size-sm="6" offset-sm="3">
                         <ion-item>
                           <ion-label position="floating" >Machine/Material</ion-label>
-                          <ion-select placeholder="Select One"  interface="popover" formControlName="machineName">
+                          <!-- <ion-select placeholder="Select One"  interface="popover" formControlName="machineName">
                             <ion-select-option value='Brewer'>Brewer</ion-select-option>
                             <ion-select-option value='FM'>FM</ion-select-option>
                             <ion-select-option value='B2C'>B2C</ion-select-option>
                             <ion-select-option value='PreMix'>PreMix</ion-select-option>
                             <ion-select-option value='Mtl(kg/mth)'>Mtl(kg/mth)</ion-select-option>
-                          </ion-select>
+                          </ion-select> -->
+
+                          <ion-select placeholder="Select One"  interface="popover" formControlName="machineName" (ionChange)="onMachineChange($event,form.get('dataEntry')['controls'][i].get('machineDetails')['controls'][j])">
+                            <ion-select-option *ngFor="let machine of machines" [value]="machine">{{machine}}
+                            </ion-select-option>
+                            </ion-select>
+
                         </ion-item>
                     </ion-col>
                     </ion-row>
@@ -139,10 +154,15 @@
                       <ion-col size-sm="6" offset-sm="3">
                         <ion-item>
                           <ion-label position="floating" >Type</ion-label>
-                          <ion-select placeholder="Select One"  interface="popover" formControlName="machineType">
+
+                    <ion-select placeholder="Select One"  interface="popover" formControlName="machineType">
+                      <ion-select-option *ngFor="let machine of machineType" [value]="machine">{{machine}}
+                      </ion-select-option>
+                      </ion-select>
+                          <!-- <ion-select placeholder="Select One"  interface="popover" formControlName="machineType">
                             <ion-select-option value='Manual'>Manual</ion-select-option>
                             <ion-select-option value='Automatic'>Automatic</ion-select-option>
-                          </ion-select>
+                          </ion-select> -->
                         </ion-item>
                     </ion-col>
                     </ion-row>
@@ -152,6 +172,11 @@
                         <ion-item>
                           <ion-label position="floating" >Category</ion-label>
                           <ion-select placeholder="Select One"  interface="popover" formControlName="volumeType">
+                            <ion-select-option *ngFor="let machine of machineCategory" [value]="machine">{{machine}}
+                            </ion-select-option>
+                            </ion-select>
+                          <!-- <ion-select placeholder="Select One"  interface="popover" formControlName="volumeType">
+                            <ion-select-option value='Not Applicable'>Not Applicable</ion-select-option>
                             <ion-select-option value='2-Chamber'>2-Chamber</ion-select-option>
                             <ion-select-option value='3-Chamber'>3-Chamber</ion-select-option>
                             <ion-select-option value='4-Chamber'>4-Chamber</ion-select-option>
@@ -161,7 +186,7 @@
                             <ion-select-option value='5 ltr'>5 ltr</ion-select-option>
                             <ion-select-option value='10 ltr'>10 ltr</ion-select-option>
                             <ion-select-option value='20 ltr'>20 ltr</ion-select-option>
-                          </ion-select>
+                          </ion-select> -->
                         </ion-item>
                     </ion-col>
                     </ion-row>
@@ -170,7 +195,7 @@
                       <ion-col size-sm="6" offset-sm="3">
                         <ion-item>
                           <ion-label position="floating" >Machine Count</ion-label>
-                          <ion-input formControlName="machineCount"></ion-input>
+                          <ion-input type="number" formControlName="machineCount"></ion-input>
                         </ion-item>
                     </ion-col>
                     </ion-row>
@@ -179,7 +204,11 @@
                       <ion-col size-sm="6" offset-sm="3">
                         <ion-item>
                           <ion-label position="floating" >Rate</ion-label>
-                          <ion-input formControlName="rate"></ion-input>
+                          <ion-input type="number" formControlName="rate"></ion-input>
+                        </ion-item>
+                        <ion-item color="success">
+                          <p>Amount : </p>
+                          <ion-input type="number" formControlName="amount"  readonly></ion-input>
                         </ion-item>
                     </ion-col>
                     </ion-row>

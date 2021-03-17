@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { IonItemSliding, LoadingController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
-import { ClientSales, ClientSalesPipeline, Salespipeline } from './salespipeline.model';
+import { ClientSales, ClientSalesPipeline } from './salespipeline.model';
 import { SalespipelineService } from './salespipeline.service';
 
 @Component({
@@ -10,8 +10,6 @@ import { SalespipelineService } from './salespipeline.service';
   styleUrls: ['./salespipeline.page.scss'],
 })
 export class SalespipelinePage implements OnInit, OnDestroy {
-  listSalespipeline: Salespipeline[];
-  loadedSalespipeline: Salespipeline[];
   loadedClientSales: ClientSalesPipeline[];
   isLoading = false;
   searchTerm: string = '';
@@ -23,16 +21,9 @@ export class SalespipelinePage implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    // this.SalespipelineSub = this.SalespipelineService.salespipeline.subscribe(
-    //   (salespipelines) => {
-    //     this.loadedSalespipeline = salespipelines;
-    //     this.listSalespipeline = salespipelines;
-    //   }
-    // );
     this.salespipelineSub =this.salespipelineService.clientSalepipeline.subscribe((clientSales) => {
     this.loadedClientSales=clientSales;
     });
-
   }
   ionViewWillEnter() {
     this.isLoading = true;
@@ -64,10 +55,10 @@ export class SalespipelinePage implements OnInit, OnDestroy {
       });
   }
   doRefresh(event) {
-    this.salespipelineService.fetchSalespipeline().subscribe(() => {
-      this.filterClient();
-      event.target.complete();
-    });
+    // this.salespipelineService.fetchSalespipeline().subscribe(() => {
+    //   this.filterClient();
+    //   event.target.complete();
+    // });
   }
 
   filterClient() {

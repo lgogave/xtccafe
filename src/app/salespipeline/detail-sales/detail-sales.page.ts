@@ -3,7 +3,7 @@ import { Router,ActivatedRoute } from '@angular/router';
 import { ActionSheetController, ModalController, NavController, LoadingController, AlertController } from '@ionic/angular';
 import { switchMap, take } from 'rxjs/operators';
 import { AuthService } from 'src/app/auth/auth.service';
-import { ClientSalesPipeline, Salespipeline } from '../salespipeline.model';
+import { ClientSalesPipeline } from '../salespipeline.model';
 import { SalespipelineService } from '../salespipeline.service';
 @Component({
   selector: 'app-detail-sales',
