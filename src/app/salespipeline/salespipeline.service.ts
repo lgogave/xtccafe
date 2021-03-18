@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
-import { BehaviorSubject, observable, of } from 'rxjs';
+import { BehaviorSubject, combineLatest, observable, of } from 'rxjs';
 import { first, map, switchMap, take, tap } from 'rxjs/operators';
 import { AuthService } from '../auth/auth.service';
 import { ClientSales, ClientSalesPipeline, SalesPipeline } from './salespipeline.model';
@@ -68,6 +68,11 @@ export class SalespipelineService {
       }),
       switchMap((userId) => {
         salesPipeline.userId = userId;
+        salesPipeline.action="add";
+        this.firebaseService
+        .collection('client-sales-pipeline-log')
+        .add(Object.assign({}, salesPipeline));
+
         return this.firebaseService
           .collection('client-sales-pipeline')
           .add(Object.assign({}, salesPipeline));
@@ -90,6 +95,12 @@ export class SalespipelineService {
       }),
       switchMap((userId) => {
         salesPipeline.userId = userId;
+
+        salesPipeline.action="edit";
+        this.firebaseService
+        .collection('client-sales-pipeline-log')
+        .add(Object.assign({}, salesPipeline));
+
           return this.firebaseService
           .collection('client-sales-pipeline')
           .doc(salesId)
@@ -131,46 +142,46 @@ export class SalespipelineService {
     );
   }
 
-  fetchSalesPipeline() {
-    let clientSales: ClientSales[] = [];
-    return this.authService.userId.pipe(
-      take(1),
-      map((userId) => {
-        if (!userId) {
-          throw new Error('No User Id Found!');
-        }
-        return userId;
-      }),
-      switchMap((userId) => {
-        return this.firebaseService
-          .collection('salespipeline', (ref) =>
-            ref.where('userId', '==', userId).orderBy('updatedOn')
-          )
-          .valueChanges();
-      }),
-      map((clients) => {
-        return clients.map((client) => {
-          if (
-            clientSales.findIndex((x) => x.clientId === client['clientId']) ==
-              -1 &&
-            client['clientId'] != undefined
-          ) {
-            console.log(client['clientId']);
-            clientSales.push(
-              new ClientSales(
-                client['clientId'],
-                client['client'],
-                client['comment']
-              )
-            );
-          }
-        });
-      }),
-      map((clients) => {
-        this._clientSales.next(clientSales);
-      })
-    );
-  }
+  // fetchSalesPipeline() {
+  //   let clientSales: ClientSales[] = [];
+  //   return this.authService.userId.pipe(
+  //     take(1),
+  //     map((userId) => {
+  //       if (!userId) {
+  //         throw new Error('No User Id Found!');
+  //       }
+  //       return userId;
+  //     }),
+  //     switchMap((userId) => {
+  //       return this.firebaseService
+  //         .collection('salespipeline', (ref) =>
+  //           ref.where('userId', '==', userId).orderBy('updatedOn')
+  //         )
+  //         .valueChanges();
+  //     }),
+  //     map((clients) => {
+  //       return clients.map((client) => {
+  //         if (
+  //           clientSales.findIndex((x) => x.clientId === client['clientId']) ==
+  //             -1 &&
+  //           client['clientId'] != undefined
+  //         ) {
+  //           console.log(client['clientId']);
+  //           clientSales.push(
+  //             new ClientSales(
+  //               client['clientId'],
+  //               client['client'],
+  //               client['comment']
+  //             )
+  //           );
+  //         }
+  //       });
+  //     }),
+  //     map((clients) => {
+  //       this._clientSales.next(clientSales);
+  //     })
+  //   );
+  // }
 
   getClientSalesPipeline(id: string) {
     let clientSales: ClientSalesPipeline[] = [];
@@ -271,6 +282,41 @@ export class SalespipelineService {
       .valueChanges().pipe(first()).toPromise();
     return clientList;
   }
+
+  fetchClientAndSaplesPipeline(){
+  return this.firebaseService.collection('client-sales-pipeline').snapshotChanges().pipe(
+    switchMap(sales=>{
+     let salesdata=sales.map(sale=>{
+      return <ClientSalesPipeline> { ...sale.payload.doc.data() as {},
+                id:sale.payload.doc.id
+      }
+      });
+      const clientsIds=salesdata.map(l=>l['clientId']);
+      return combineLatest([
+        of(salesdata),
+        combineLatest(
+          clientsIds.map((clientId) => {
+            return this.firebaseService
+              .collection('clients', (ref) => ref.where('id', '==', clientId))
+              .valueChanges()
+              .pipe(map((clients) => clients[0]));
+          })
+        ),
+      ]);
+    })
+    ,map(([sales,clients])=>{
+      return sales.map(sale=>{
+        return <ClientSales> {
+          clientsale:{...sale as {}},
+          client:clients.find(a=>a['id']===sale['clientId']),
+        }
+      })
+    }),
+    take(1),
+    map(client=>{
+      this._clientSales.next(client);
+    })
+    )}
 
 
  convertTimeStampToDate(date:any):Date{

@@ -37,17 +37,24 @@
         </div>
         <ion-list *ngIf="!isLoading && loadedClientSales.length>0">
           <ion-item-sliding *ngFor="let sales of loadedClientSales" #slidingClients>
-          <ion-item detail  [routerLink]="['/','salespipeline','detail',sales.id]" >
+          <ion-item detail  [routerLink]="['/','salespipeline','detail',sales.clientsale.id]" >
            <div>
-             <h5> <ion-icon name="people" slot="start" color="primary"></ion-icon>   {{sales.client}}</h5>
-             <h6>Comment: {{sales.comment}}</h6>
+             <h5> <ion-icon name="people" slot="start" color="primary"></ion-icon>   {{sales.clientsale.client}}</h5>
+             <h6>Region: {{sales.client.region}}</h6>
+             <h6>Machine Count: {{sales.clientsale.machineCount}}</h6>
+             <h6>Potential Billing : {{sales.clientsale.amount*12 | currency:"INR":"symbol"}}</h6>
+             <h6>Billng for the Year : {{sales.clientsale.billingAmount*12 | currency:"INR":"symbol"}}</h6>
+             <h6>Comment: {{sales.clientsale.comment}}</h6>
+
+
+
            </div>
           </ion-item>
           <ion-item-options>
             <ion-item-option color="secondary">
-              <ion-icon name="create" slot="icon-only"  [routerLink]="['/','salespipeline','edit',sales.id]"></ion-icon>
+              <ion-icon name="create" slot="icon-only"  [routerLink]="['/','salespipeline','edit',sales.clientsale.id]"></ion-icon>
             </ion-item-option>
-            <ion-item-option color="danger"  (click)="onDeleteSalespipeline(sales.id,sales.clientId,slidingClients)">
+            <ion-item-option color="danger"  (click)="onDeleteSalespipeline(sales.clientsale.id,sales.clientsale.clientId,slidingClients)">
               <ion-icon name="trash" slot="icon-only"></ion-icon>
             </ion-item-option>
           </ion-item-options>

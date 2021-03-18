@@ -23,7 +23,7 @@
             </ion-select>
           </ion-item>
           <ion-item>
-            <ion-label>Client</ion-label>
+            <ion-label>Client <span style="color: #FF6347;">*</span></ion-label>
             <ion-select placeholder="Select One"  interface="popover" formControlName="client">
               <ion-select-option *ngFor="let client of loadedClients" [value]="client.id">{{client.name}}
               </ion-select-option>
@@ -40,13 +40,17 @@
       <ion-row>
         <ion-col size-sm="6" offset-sm="3">
           <ion-item>
-            <ion-label position="floating" >Comment</ion-label>
+            <ion-label position="floating" >Comment<span style="color: #FF6347;">*</span></ion-label>
             <ion-textarea row="3" formControlName="comments"></ion-textarea>
           </ion-item>
 
           <ion-item color="success">
             <p>Amount : </p>
             <ion-input type="number" formControlName="amount"  readonly ></ion-input>
+          </ion-item>
+          <ion-item style="display: none;">
+            <ion-input type="number" formControlName="billingAmount" readonly></ion-input>
+            <ion-input type="number" formControlName="machineCount" readonly></ion-input>
           </ion-item>
       </ion-col>
       </ion-row>
@@ -68,7 +72,7 @@
               <ion-row>
                 <ion-col size-sm="6" offset-sm="3">
                   <ion-item>
-                    <ion-label position="floating" >City</ion-label>
+                    <ion-label position="floating" >City<span style="color: #FF6347;">*</span></ion-label>
                     <ion-input formControlName="city"></ion-input>
                   </ion-item>
               </ion-col>
@@ -83,7 +87,7 @@
               <ion-row>
                 <ion-col size-sm="6" offset-sm="3">
                   <ion-item>
-                    <ion-label position="floating" >Address</ion-label>
+                    <ion-label position="floating" >Address<span style="color: #FF6347;">*</span></ion-label>
                     <ion-textarea rows="3"  formControlName="address"></ion-textarea>
                   </ion-item>
               </ion-col>
@@ -91,7 +95,7 @@
               <ion-row>
                 <ion-col size-sm="6" offset-sm="3">
               <ion-item>
-                <ion-label position="floating">Current Status</ion-label>
+                <ion-label position="floating">Current Status <span style="color: #FF6347;">*</span></ion-label>
                 <ion-select placeholder="Select One"  interface="popover" formControlName="currentStatus">
                   <ion-select-option *ngFor="let client of clientsStatus" [value]="client.status">{{client.status}}
                   </ion-select-option>
@@ -102,7 +106,7 @@
               <ion-row>
                 <ion-col size-sm="6" offset-sm="3">
                   <ion-item>
-                    <ion-label position="floating" >Closure Date</ion-label>
+                    <ion-label position="floating" >Closure Date<span style="color: #FF6347;">*</span></ion-label>
                     <ion-datetime
                     formControlName="closureDate"
                     display-format="MMM DD YYYY"
@@ -113,6 +117,10 @@
                   <ion-item color="success">
                     <p>Amount : </p>
                     <ion-input type="number" formControlName="amount"  readonly></ion-input>
+                  </ion-item>
+                  <ion-item style="display: none;">
+                    <ion-input type="number" formControlName="billingAmount" readonly></ion-input>
+                    <ion-input type="number" formControlName="machineCount" readonly></ion-input>
                   </ion-item>
               </ion-col>
               </ion-row>
@@ -132,7 +140,7 @@
                       <ion-row>
                       <ion-col size-sm="6" offset-sm="3">
                         <ion-item>
-                          <ion-label position="floating" >Machine/Material</ion-label>
+                          <ion-label position="floating" >Machine/Material <span style="color: #FF6347;">*</span></ion-label>
                           <!-- <ion-select placeholder="Select One"  interface="popover" formControlName="machineName">
                             <ion-select-option value='Brewer'>Brewer</ion-select-option>
                             <ion-select-option value='FM'>FM</ion-select-option>
@@ -153,7 +161,7 @@
                     <ion-row>
                       <ion-col size-sm="6" offset-sm="3">
                         <ion-item>
-                          <ion-label position="floating" >Type</ion-label>
+                          <ion-label position="floating" >Type <span style="color: #FF6347;">*</span></ion-label>
 
                     <ion-select placeholder="Select One"  interface="popover" formControlName="machineType">
                       <ion-select-option *ngFor="let machine of machineType" [value]="machine">{{machine}}
@@ -170,7 +178,7 @@
                     <ion-row>
                       <ion-col size-sm="6" offset-sm="3">
                         <ion-item>
-                          <ion-label position="floating" >Category</ion-label>
+                          <ion-label position="floating" >Category <span style="color: #FF6347;">*</span></ion-label>
                           <ion-select placeholder="Select One"  interface="popover" formControlName="volumeType">
                             <ion-select-option *ngFor="let machine of machineCategory" [value]="machine">{{machine}}
                             </ion-select-option>
@@ -194,7 +202,7 @@
                     <ion-row>
                       <ion-col size-sm="6" offset-sm="3">
                         <ion-item>
-                          <ion-label position="floating" >Machine Count</ion-label>
+                          <ion-label position="floating" >Machine Count <span style="color: #FF6347;">*</span></ion-label>
                           <ion-input type="number" formControlName="machineCount"></ion-input>
                         </ion-item>
                     </ion-col>
@@ -203,12 +211,19 @@
                     <ion-row>
                       <ion-col size-sm="6" offset-sm="3">
                         <ion-item>
-                          <ion-label position="floating" >Rate</ion-label>
+                          <ion-label position="floating" >Rate <span style="color: #FF6347;">*</span></ion-label>
                           <ion-input type="number" formControlName="rate"></ion-input>
+                        </ion-item>
+                        <ion-item>
+                          <ion-label position="floating" >Confidance Level % <span style="color: #FF6347;">*</span></ion-label>
+                          <ion-input type="number" formControlName="conflevel"></ion-input>
                         </ion-item>
                         <ion-item color="success">
                           <p>Amount : </p>
                           <ion-input type="number" formControlName="amount"  readonly></ion-input>
+                        </ion-item>
+                        <ion-item style="display: none;">
+                          <ion-input type="number" formControlName="billingAmount" readonly></ion-input>
                         </ion-item>
                     </ion-col>
                     </ion-row>

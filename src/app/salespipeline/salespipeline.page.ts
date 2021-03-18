@@ -10,7 +10,7 @@ import { SalespipelineService } from './salespipeline.service';
   styleUrls: ['./salespipeline.page.scss'],
 })
 export class SalespipelinePage implements OnInit, OnDestroy {
-  loadedClientSales: ClientSalesPipeline[];
+  loadedClientSales: ClientSales[];
   isLoading = false;
   searchTerm: string = '';
   private salespipelineSub: Subscription;
@@ -21,14 +21,16 @@ export class SalespipelinePage implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.salespipelineSub =this.salespipelineService.clientSalepipeline.subscribe((clientSales) => {
+    this.salespipelineSub =this.salespipelineService.clientSales.subscribe((clientSales) => {
     this.loadedClientSales=clientSales;
+
     });
   }
   ionViewWillEnter() {
     this.isLoading = true;
-    this.salespipelineService.fetchClientSalesPipeline().subscribe(() => {
+    this.salespipelineService.fetchClientAndSaplesPipeline().subscribe(() => {
       this.isLoading = false;
+      console.log(this.loadedClientSales);
     });
   }
 

@@ -77,6 +77,12 @@ export class AddSalesPage implements OnInit {
     amount: new FormControl(null, {
       updateOn: 'blur',
     }),
+    billingAmount: new FormControl(null, {
+      updateOn: 'blur',
+    }),
+    machineCount: new FormControl(null, {
+      updateOn: 'blur',
+    }),
   });
 }
 buildMachineDetailForm(){
@@ -104,6 +110,13 @@ buildMachineDetailForm(){
     amount: new FormControl(null, {
       updateOn: 'blur',
     }),
+    conflevel: new FormControl(null, {
+      updateOn: 'blur',
+      validators: [Validators.required,Validators.min(0),Validators.max(100)],
+    }),
+    billingAmount: new FormControl(null, {
+      updateOn: 'blur',
+    }),
   });
 }
 
@@ -127,31 +140,53 @@ buildMachineDetailForm(){
       amount: new FormControl(null, {
         updateOn: 'blur',
       }),
+      billingAmount: new FormControl(null, {
+        updateOn: 'blur',
+      }),
+      machineCount: new FormControl(null, {
+        updateOn: 'blur',
+      }),
+
+
     });
     this.form.valueChanges.subscribe(val=>{
       let clientamount:number=0;
+      let clientbillamt:number=0;
+      let clientmachinecount=0;
       this.form.get('dataEntry')['controls'].forEach((location,i) => {
         let locamount:number=0;
+        let locmachinecount=0;
+        let locbillamt:number=0;
         this.form.get('dataEntry')['controls'][i].get('machineDetails')['controls'].forEach((machine,j) => {
           let rate:number=this.form.get('dataEntry')['controls'][i].get('machineDetails')['controls'][j].get('rate').value;
           let mccount:number=this.form.get('dataEntry')['controls'][i].get('machineDetails')['controls'][j].get('machineCount').value;
-          let amt=rate*mccount;
+          let conflevel:number=this.form.get('dataEntry')['controls'][i].get('machineDetails')['controls'][j].get('conflevel').value;
+          let amt=rate*Math.round(mccount*conflevel/100);
+
+          let closureDate=new Date(this.form.get('dataEntry')['controls'][i].get('closureDate').value);
+          let closureamt=this.financialYearCalculation(closureDate,amt);
+
           locamount=locamount+amt;
           clientamount=clientamount+amt;
+          locbillamt=locbillamt+closureamt;
+          clientbillamt=clientbillamt+closureamt;
+          locmachinecount=locmachinecount+mccount;
+          clientmachinecount=clientmachinecount+mccount;
+
           this.form.get('dataEntry')['controls'][i].get('machineDetails')['controls'][j].get('amount').patchValue(amt,{emitEvent: false});
+          this.form.get('dataEntry')['controls'][i].get('machineDetails')['controls'][j].get('billingAmount').patchValue(closureamt,{emitEvent: false});
+
         });
-        let closureDate=new Date(this.form.get('dataEntry')['controls'][i].get('closureDate').value);
-        let extraday=7;
-        let endDate:Date=new Date(closureDate.getFullYear(),2,31);
-        let startDate:Date=new Date(closureDate.getFullYear(),closureDate.getMonth(),closureDate.getDate());
-        startDate.setDate(startDate.getDate()+extraday);
-        let diff:Date=new Date(endDate.valueOf()-startDate.valueOf())
-        // console.log(diff.valueOf()/1000/60/60/24);
-        // console.log((locamount*12)/264 * diff.valueOf()/1000/60/60/24);
 
         this.form.get('dataEntry')['controls'][i].get('amount').patchValue(locamount,{emitEvent: false});
+        this.form.get('dataEntry')['controls'][i].get('billingAmount').patchValue(locbillamt,{emitEvent: false});
+        this.form.get('dataEntry')['controls'][i].get('machineCount').patchValue(locmachinecount,{emitEvent: false});
+
+
       });
       this.form.get('amount').patchValue(clientamount,{emitEvent: false});
+      this.form.get('billingAmount').patchValue(clientbillamt,{emitEvent: false});
+      this.form.get('machineCount').patchValue(clientmachinecount,{emitEvent: false});
     })
     this.clients=await this.clientService.getClientList();
     this.clientGroup = this.clients
@@ -223,7 +258,9 @@ private AddClientSalesPipeLine(){
             machine.volumeType,
             machine.machineCount,
             machine.rate,
-            machine.amount
+            machine.amount,
+            machine.conflevel,
+            machine.billingAmount,
           )
         );
       }
@@ -232,7 +269,9 @@ private AddClientSalesPipeLine(){
         location.currentStatus,
         new Date(location.closureDate),
         location.amount,
-        machines.map((obj)=> {return Object.assign({}, obj)})
+        machines.map((obj)=> {return Object.assign({}, obj)}),
+        location.billingAmount,
+        location.machineCount,
         ))
     }
     let clientSalesPipeline: ClientSalesPipeline = new ClientSalesPipeline(
@@ -246,7 +285,12 @@ private AddClientSalesPipeLine(){
       '',
       new Date(),
       this.form.value.amount,
-      locations.map((obj)=> {return Object.assign({}, obj)})
+      locations.map((obj)=> {return Object.assign({}, obj)}),
+      'add',
+      this.form.value.billingAmount,
+      this.form.value.machineCount,
+
+
     );
     this.salesPipelineService.addClientSalesPipeline(clientSalesPipeline).subscribe((response)=>{
 })
@@ -278,6 +322,7 @@ private AddSalesPipeline():SalesPipeline[]{
         this.form.value.amount,
         "",
         new Date(),
+        machine.conflevel
         ))
       }
     }

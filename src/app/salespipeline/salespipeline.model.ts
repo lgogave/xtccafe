@@ -1,3 +1,5 @@
+import { Client } from "../clients/client.model";
+
   export class SalesPipeline {
     constructor(
       public id?: string,
@@ -18,15 +20,14 @@
       public locamount?: number,
       public clientamount?: number,
       public userId?: string,
-      public updatedOn?: Date
+      public updatedOn?: Date,
+      public machineConflevel?: number,
     ) {}
-
   }
   export class ClientSales {
         constructor(
-          public clientId?: string,
-          public client?: string,
-          public comment?: string
+          public clientsale?:ClientSalesPipeline,
+          public client?:Client
         ) {}
 }
 
@@ -41,7 +42,9 @@ export class ClientSalesPipeline {
     public updatedOn?: Date,
     public amount?: number,
     public locations?:Location[],
-
+    public action?:string,
+    public billingAmount?: number,
+    public machineCount?: number,
   ) {}
 }
 export class Location {
@@ -52,7 +55,8 @@ export class Location {
     public closureDate?: Date,
     public amount?: number,
     public machines?:Machine[],
-
+    public billingAmount?: number,
+    public machineCount?: number,
   ) {}
 }
 export class Machine {
@@ -63,6 +67,8 @@ export class Machine {
       public machineCount?: number,
       public rate?: number,
       public amount?: number,
+      public conflevel?: number,
+      public billingAmount?: number,
   ) {}
 }
 
