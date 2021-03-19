@@ -31,6 +31,11 @@
               <ion-label style="font-size: 15px;">
                  <b> Comment : </b>{{salespipeline.comment}}</ion-label>
             </ion-item>
+            <ion-item >
+              <ion-icon name="cash-outline"  size="medium" style="color: #E91E63;padding-right: 5px;"></ion-icon>
+              <ion-label style="font-size: 15px;">
+                 <b> Amount : </b>{{salespipeline.amount}}</ion-label>
+            </ion-item>
 
 
             <ion-row class="card-tab" style="background:#3F51B5" *ngFor="let location of salespipeline.locations;let i = index;">
@@ -47,6 +52,11 @@
                  <ion-item>
                   <ion-label><b> Closure Date : </b>  {{convertTimestampToDate(location.closureDate)}} </ion-label>
                  </ion-item>
+                 <ion-item >
+                  <ion-icon name="cash-outline"  size="medium" style="color: #E91E63;padding-right: 5px;"></ion-icon>
+                  <ion-label style="font-size: 15px;">
+                     <b> Amount : </b>{{location.amount}}</ion-label>
+                </ion-item>
 
                 <ion-row class="card-tab" style="background:#3F51B5" *ngFor="let machine of location.machines; let j = index;">
                   <ion-col size-sm="6" offset-sm="3">
@@ -73,9 +83,17 @@
                       <ion-label><b> Rate : </b> {{machine.rate}} </ion-label>
                      </ion-item>
                      <ion-item>
-
                       <ion-label><b> Machine Type : </b> {{machine.machineType}} </ion-label>
                      </ion-item>
+                     <ion-item>
+                      <ion-label><b> Confidence Level : </b> {{machine.conflevel}}% </ion-label>
+                     </ion-item>
+
+                     <ion-item >
+                      <ion-icon name="cash-outline"  size="medium" style="color: #E91E63;padding-right: 5px;"></ion-icon>
+                      <ion-label style="font-size: 15px;">
+                         <b> Amount : </b>{{machine.amount}}</ion-label>
+                    </ion-item>
                   </ion-col>
                 </ion-row>
               </ion-col>

@@ -81,7 +81,7 @@ a{color:inherit;text-decoration:none}
 	-webkit-text-security:circle;
 }
 .login-form .group .label{
-	color:#ffcc5c;
+	color:#ccff33;
 	font-size:14px;
   font-weight: 700;
   padding: 10px;
@@ -94,11 +94,13 @@ a{color:inherit;text-decoration:none}
 }
 
 .login-form .group .button-active{
-	background:#ffc107;
+	background:#ccff33;
+  font-weight: 700;
 }
 .login-form .group .button-deactive{
   background-color: rgba(8, 80, 120,.9);
   color:#B0C4DE;
+  font-weight: 700;
 }
 
 .login-form .group label .icon{

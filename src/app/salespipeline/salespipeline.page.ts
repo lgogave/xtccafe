@@ -57,10 +57,9 @@ export class SalespipelinePage implements OnInit, OnDestroy {
       });
   }
   doRefresh(event) {
-    // this.salespipelineService.fetchSalespipeline().subscribe(() => {
-    //   this.filterClient();
-    //   event.target.complete();
-    // });
+    this.salespipelineService.fetchClientAndSaplesPipeline().subscribe(() => {
+      event.target.complete();
+    });
   }
 
   filterClient() {
@@ -69,4 +68,11 @@ export class SalespipelinePage implements OnInit, OnDestroy {
     //  return sales.client.toLowerCase().indexOf(this.searchTerm.toLowerCase()) > -1;
     // });
   }
+  convertTimestampToDate(date:any){
+    let isodate= this.salespipelineService.convertTimeStampToDate(date);
+    var dd = String(isodate.getDate()).padStart(2, '0');
+    var mm = String(isodate.getMonth() + 1).padStart(2, '0'); //January is 0!
+    var yyyy = isodate.getFullYear();
+    return  dd + '/' + mm  + '/' + yyyy;
+   }
 }

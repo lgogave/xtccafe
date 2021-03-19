@@ -26,29 +26,49 @@
         <div *ngIf="isLoading" class="ion-text-center">
           <ion-spinner color="primary" ></ion-spinner>
         </div>
-        <ion-searchbar showCancelButton="focus" cancelButtonText="Custom Cancel"
+        <!-- <ion-searchbar showCancelButton="focus" cancelButtonText="Custom Cancel"
         [(ngModel)]="searchTerm"
         (ionChange)="filterClient()"
-        ></ion-searchbar>
+        ></ion-searchbar> -->
 
         <div *ngIf="!isLoading && loadedClientSales.length<=0" class="ion-text-center">
           <p>Data not found! please create one first!</p>
           <ion-button color="primary" routerLink="/salespipeline/new">Add Entry</ion-button>
         </div>
         <ion-list *ngIf="!isLoading && loadedClientSales.length>0">
-          <ion-item-sliding *ngFor="let sales of loadedClientSales" #slidingClients>
-          <ion-item detail  [routerLink]="['/','salespipeline','detail',sales.clientsale.id]" >
+          <ion-item-sliding *ngFor="let sales of loadedClientSales ; let i = index" #slidingClients>
+          <ion-item [ngClass]="i%2==0?'even':'odd'" detail  [routerLink]="['/','salespipeline','detail',sales.clientsale.id]" >
            <div>
-             <h5> <ion-icon name="people" slot="start" color="primary"></ion-icon>   {{sales.clientsale.client}}</h5>
+            <div>
+              <div class="container">
+                <div class="image">
+                  <ion-icon name="file-tray-stacked" style="font-size: 35px;padding-top: 5px;color: #664500 !important;"></ion-icon>
+                </div>
+                <div class="text">
+                  {{sales.clientsale.client}}
+                </div>
+              </div>
+            </div>
              <h6>Region: {{sales.client.region}}</h6>
              <h6>Machine Count: {{sales.clientsale.machineCount}}</h6>
              <h6>Potential Billing : {{sales.clientsale.amount*12 | currency:"INR":"symbol"}}</h6>
              <h6>Billng for the Year : {{sales.clientsale.billingAmount*12 | currency:"INR":"symbol"}}</h6>
              <h6>Comment: {{sales.clientsale.comment}}</h6>
 
+              <div *ngFor="let location of sales.clientsale.locations">
+                  <h6 style="text-decoration: underline;">
+                    <ion-icon name="location" style="font-size:20px;padding-right: 5px;"></ion-icon><b>Location:</b> {{location.city}}</h6>
+                  <h6 style="text-decoration: underline;">
+                    <ion-icon name="calendar" style="font-size:20px;padding-right: 5px;"></ion-icon>
+                    <b>Closure Date: </b> {{convertTimestampToDate(location.closureDate)}}</h6>
+                  <h6 style="text-decoration: underline;">
+                    <ion-icon name="receipt" style="font-size:20px;padding-right: 5px;"></ion-icon>
+                    <b>Status:</b> {{location.currentStatus}}</h6>
 
+              </div>
 
            </div>
+           <hr/>
           </ion-item>
           <ion-item-options>
             <ion-item-option color="secondary">
