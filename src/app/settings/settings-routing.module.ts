@@ -7,6 +7,10 @@ const routes: Routes = [
   {
     path: '',
     component: SettingsPage
+  },
+  {
+    path: 'clientaccess',
+    loadChildren: () => import('./client-access/client-access.module').then( m => m.ClientAccessPageModule)
   }
 ];
 

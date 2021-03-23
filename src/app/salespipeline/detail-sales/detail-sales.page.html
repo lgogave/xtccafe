@@ -26,14 +26,15 @@
               <ion-label style="font-size: 15px;">
                  <b> Client Group : </b>{{salespipeline.group}}</ion-label>
             </ion-item>
-            <ion-item >
+            <ion-item class="item item-text-wrap">
               <ion-icon name="create-outline"  size="medium" style="color: #E91E63;padding-right: 5px;"></ion-icon>
-              <ion-label style="font-size: 15px;">
+              <ion-label style="font-size: 15px;"  text-wrap>
                  <b> Comment : </b>{{salespipeline.comment}}</ion-label>
+                 <button [routerLink]="['/','salespipeline','comments',salespipeline.id,salespipeline.client]" style="color: #000033;border:none!important; outline:none!important;background: #ffce00;padding:5px;">More...</button>
             </ion-item>
             <ion-item >
               <ion-icon name="cash-outline"  size="medium" style="color: #E91E63;padding-right: 5px;"></ion-icon>
-              <ion-label style="font-size: 15px;">
+              <ion-label style="font-size: 15px;" >
                  <b> Amount : </b>{{salespipeline.amount}}</ion-label>
             </ion-item>
 

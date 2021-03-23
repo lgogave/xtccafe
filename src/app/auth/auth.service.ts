@@ -85,7 +85,7 @@ export class AuthService implements OnDestroy {
     return this._user.asObservable().pipe(
       map((user) => {
         if (user) {
-          return {isAutheticated:!!user.token,name:user.name}
+          return {isAutheticated:!!user.token,name:user.name,roles:user.roles}
 
         } else {
           return {isAutheticated:false,name:''}

@@ -19,6 +19,10 @@ const routes: Routes = [
   {
     path: 'edit/:salesId',
     loadChildren: () => import('./edit-sales/edit-sales.module').then( m => m.EditSalesPageModule)
+  },
+  {
+    path: 'comments/:salesId/:client',
+    loadChildren: () => import('./comments-sales/comments-sales.module').then( m => m.CommentsSalesPageModule)
   }
 ];
 

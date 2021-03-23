@@ -69,9 +69,26 @@ export class ClientService {
   }
 
   async getClientList(): Promise<any> {
-    const clientList = await this.firebaseService.collection('clients',ref=>ref.where('group','!=','null'))
-      .valueChanges().pipe(first()).toPromise();
-    return clientList as Client[];
+    const userId = await this.authService.userId.pipe(take(1),map(userId=>{
+      if(!userId){
+        throw new Error('User not found!')
+      }
+      return userId;
+    })).toPromise();
+    const users = await this.firebaseService.collection('client-user-access',ref=>ref.where('userId','==',userId))
+    .valueChanges().pipe(first()).toPromise();
+
+    const clientList = await
+    this.firebaseService.collection('clients',ref=>ref.where('group','!=','null'))
+    .valueChanges().pipe(first()).toPromise();
+    let result=(clientList as Client[]);
+    let clients: Client[]=[];
+    result.forEach(client => {
+      if(users.filter(c=>c['clientId']==client.id).length>0){
+        clients.push(client);
+      }
+    });
+    return clients;
   }
 
   async getClientIdByGSTNumber(gstNumber:string): Promise<any> {
@@ -88,22 +105,31 @@ export class ClientService {
         throw new Error('User not found!')
       }
       fetchedUserId=userId;
-      return this.authService.token;
+      return userId;
     }),
     take(1),
-      switchMap((token) => {
-        return this.firebaseService.collection('clients',ref=>ref.where('userId','==',fetchedUserId)).snapshotChanges().pipe(
+    switchMap((userId)=>{
+     return this.firebaseService.collection('client-user-access',ref=>ref.where('userId','==',fetchedUserId)).valueChanges();
+    }),
+      switchMap((users) => {
+       let useraccess=users;
+        return this.firebaseService.collection('clients').snapshotChanges().pipe(
         map(clients=> {
         return clients.map(client=>{
           var cl= <Client>{...client.payload.doc.data() as {}};
-          cl.id=client.payload.doc.id;
-          return cl;
+          if(useraccess.filter(c=>c['clientId']==cl.id).length>0)
+          {
+            cl.id=client.payload.doc.id;
+            return cl;
+          }
+          return null;
           });
           })
         );
         }),
-       tap((clients) => {
-        this._clients.next(clients);
+
+        tap((clients) => {
+        this._clients.next(clients.filter(c=>c!=null));
       })
     );
   }

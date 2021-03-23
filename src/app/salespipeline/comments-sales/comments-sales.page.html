@@ -1,0 +1,42 @@
+<ion-header>
+  <ion-toolbar  color="primary">
+    <ion-buttons>
+      <ion-back-button defaultHref="/salespipeline">
+      </ion-back-button>
+      <ion-title>{{isLoading?'Loading...':client}}</ion-title>
+
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <div *ngIf="!isLoading && comments.length<=0" class="ion-text-center">
+    <p>Comments are not found!</p>
+  </div>
+
+<div *ngIf="isLoading" class="ion-text-center">
+<ion-spinner color="primary"></ion-spinner>
+  </div>
+  <ion-grid class="ion-no-padding" *ngIf="!isLoading">
+    <ion-row>
+      <ion-col size-sm="6" offset-sm="3">
+<ion-item  *ngFor="let client of comments">
+  <div class="list-group">
+    <!-- <span class="list-group-item">
+      <ion-icon name="person-circle-outline" size="large"></ion-icon> Admin</span> -->
+      <ul id="contact_ul">
+         <li id="li_email"><ion-icon name="person-circle" size="large" color="success"></ion-icon><a>{{client.user.name}}</a></li>
+        </ul>
+      <h6 style="padding-left: 35px;margin: 0px;">{{client.comment}}</h6>
+      <h6 style="text-align: right;font-size: 14px;">
+        <ul id="contact_ul">
+          <li id="li_email"><ion-icon name="time-outline" size="small" style="color: #787878;"></ion-icon><a style="color: #787878"> {{convertTimestampToDate(client.undatedOn) | date:'medium'}}</a></li>
+         </ul>
+       </h6>
+</div>
+</ion-item>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+
+</ion-content>

@@ -32,6 +32,7 @@ export class EditSalesPage implements OnInit {
   machines:string[]
   machineType:string[]
   machineCategory:string[]
+  lastComment:string;
   private salesPipeSub: Subscription;
 
   get locations() {
@@ -160,7 +161,7 @@ this.machines=this.machineDetail.filter(item=>item.group==0).sort((a,b)=>a.srno-
 this.machineType=this.machineDetail.filter(item=>item.group==1).sort((a,b)=>a.srno-b.srno).map(item=>item.name);
 this.machineCategory=this.machineDetail.filter(item=>item.group==2).sort((a,b)=>a.srno-b.srno).map(item=>item.name);
 
-
+this.lastComment=res[0].comment;
 
 
 this.clientId=this.salesPipeline.clientId;
@@ -364,7 +365,7 @@ this.isLoading=false;
       this.form.value.machineCount,
     );
     this.salesPipelineService
-      .editClientSalesPipeline(this.saleId,clientSalesPipeline)
+      .editClientSalesPipeline(this.saleId,clientSalesPipeline,this.lastComment)
       .subscribe((response) => {});
   }
 
@@ -413,15 +414,22 @@ this.isLoading=false;
   }
 
   onMachineChange(event,element){
-    let ref=this.machineDetail.filter(item=>item.name==event.target.value)[0].name;
-    element.controls['volumeType'].reset();
-    this.machineCategory=[];
-    this.machineCategory=this.machineDetail.filter(item=>item.ref==ref && item.group==2).sort(
-      (a,b)=>a.srno-b.srno).map(item=>item.name);
-      if(ref=="FM" || ref=="Mtl(kg/mth)"){
-        element.controls['volumeType'].patchValue("Not Applicable",{emitEvent: false})
+      let ref = this.machineDetail.filter(
+        (item) => item.name == event.target.value
+      )[0].name;
+      element.controls['volumeType'].reset();
+      this.machineCategory = [];
+      this.machineCategory = this.machineDetail
+        .filter((item) => item.ref == ref && item.group == 2)
+        .sort((a, b) => a.srno - b.srno)
+        .map((item) => item.name);
+      if (ref == 'FM' || ref == 'Mtl(kg/mth)') {
+        element.controls['volumeType'].patchValue('Not Applicable', {
+          emitEvent: false,
+        });
       }
-    }
+
+  }
 
     financialYearCalculation(closureDate:Date,amount:number){
       let extraday=7;

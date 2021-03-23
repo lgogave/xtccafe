@@ -15,7 +15,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+
   <ion-content>
     <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
       <ion-refresher-content></ion-refresher-content>
@@ -53,8 +53,7 @@
              <h6>Machine Count: {{sales.clientsale.machineCount}}</h6>
              <h6>Potential Billing : {{sales.clientsale.amount*12 | currency:"INR":"symbol"}}</h6>
              <h6>Billng for the Year : {{sales.clientsale.billingAmount*12 | currency:"INR":"symbol"}}</h6>
-             <h6>Comment: {{sales.clientsale.comment}}</h6>
-
+             <h6 text-wrap>Comment: {{sales.clientsale.comment}}</h6>
               <div *ngFor="let location of sales.clientsale.locations">
                   <h6 style="text-decoration: underline;">
                     <ion-icon name="location" style="font-size:20px;padding-right: 5px;"></ion-icon><b>Location:</b> {{location.city}}</h6>

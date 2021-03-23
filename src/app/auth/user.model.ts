@@ -1,5 +1,5 @@
 export class User {
-    constructor(public id:string,public email:string,private _token:string,private tokenExpirationDate:Date,private roles:string[],public name:string){
+    constructor(public id:string,public email:string,private _token:string,private tokenExpirationDate:Date,public roles:string[],public name:string){
     }
 
     get token(){

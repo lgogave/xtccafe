@@ -4,7 +4,7 @@ import { AngularFirestore } from '@angular/fire/firestore';
 import { BehaviorSubject, combineLatest, observable, of } from 'rxjs';
 import { first, map, switchMap, take, tap } from 'rxjs/operators';
 import { AuthService } from '../auth/auth.service';
-import { ClientSales, ClientSalesPipeline, SalesPipeline } from './salespipeline.model';
+import { ClientComment, ClientCommentModel, ClientSales, ClientSalesPipeline, SalesPipeline } from './salespipeline.model';
 import type firebase from 'firebase';
 
 
@@ -14,6 +14,8 @@ import type firebase from 'firebase';
 export class SalespipelineService {
   private _clientSales = new BehaviorSubject<ClientSales[]>([]);
   private _clientSalespipeline = new BehaviorSubject<ClientSalesPipeline[]>([]);
+  private _clientcomments = new BehaviorSubject<ClientCommentModel[]>([]);
+
 
   constructor(
     private authService: AuthService,
@@ -27,6 +29,10 @@ export class SalespipelineService {
 
   get clientSalepipeline() {
     return this._clientSalespipeline.asObservable();
+  }
+
+  get clientComments() {
+    return this._clientcomments.asObservable();
   }
 
   async getSalesPipelineList(clientId:string): Promise<any> {
@@ -72,10 +78,13 @@ export class SalespipelineService {
         this.firebaseService
         .collection('client-sales-pipeline-log')
         .add(Object.assign({}, salesPipeline));
-
         return this.firebaseService
           .collection('client-sales-pipeline')
-          .add(Object.assign({}, salesPipeline));
+          .add(Object.assign({}, salesPipeline)).then((doc)=>{
+            this.firebaseService.collection('track-client-comment').add(
+              Object.assign({}, new ClientComment(doc.id,salesPipeline.comment,new Date(),userId)));
+              return doc;
+          });
       }),
       map((sale) => {
         return of(sale.id);
@@ -84,7 +93,7 @@ export class SalespipelineService {
 
   }
 
-  editClientSalesPipeline(salesId:string,salesPipeline: ClientSalesPipeline) {
+  editClientSalesPipeline(salesId:string,salesPipeline: ClientSalesPipeline,lastComment:string) {
     return this.authService.userId.pipe(
       take(1),
       map((userId) => {
@@ -100,11 +109,16 @@ export class SalespipelineService {
         this.firebaseService
         .collection('client-sales-pipeline-log')
         .add(Object.assign({}, salesPipeline));
-
           return this.firebaseService
           .collection('client-sales-pipeline')
           .doc(salesId)
-          .update(Object.assign({}, salesPipeline));
+          .update(Object.assign({}, salesPipeline)).then((doc)=>{
+            if(lastComment!==salesPipeline.comment){
+              this.firebaseService.collection('track-client-comment').add(
+                Object.assign({}, new ClientComment(salesId,salesPipeline.comment,new Date(),userId)));
+            }
+              return doc;
+          });;
       }),
       map((sale) => {
         return of(salesId);
@@ -124,7 +138,8 @@ export class SalespipelineService {
       }),
       switchMap((userId) => {
         return this.firebaseService
-          .collection('client-sales-pipeline', (ref) => ref.where('userId', '==', userId))
+          .collection('client-sales-pipeline',
+          (ref) => ref.where('userId', '==', userId))
           .snapshotChanges();
       }),
       map((salespipelines) => {
@@ -142,47 +157,6 @@ export class SalespipelineService {
     );
   }
 
-  // fetchSalesPipeline() {
-  //   let clientSales: ClientSales[] = [];
-  //   return this.authService.userId.pipe(
-  //     take(1),
-  //     map((userId) => {
-  //       if (!userId) {
-  //         throw new Error('No User Id Found!');
-  //       }
-  //       return userId;
-  //     }),
-  //     switchMap((userId) => {
-  //       return this.firebaseService
-  //         .collection('salespipeline', (ref) =>
-  //           ref.where('userId', '==', userId).orderBy('updatedOn')
-  //         )
-  //         .valueChanges();
-  //     }),
-  //     map((clients) => {
-  //       return clients.map((client) => {
-  //         if (
-  //           clientSales.findIndex((x) => x.clientId === client['clientId']) ==
-  //             -1 &&
-  //           client['clientId'] != undefined
-  //         ) {
-  //           console.log(client['clientId']);
-  //           clientSales.push(
-  //             new ClientSales(
-  //               client['clientId'],
-  //               client['client'],
-  //               client['comment']
-  //             )
-  //           );
-  //         }
-  //       });
-  //     }),
-  //     map((clients) => {
-  //       this._clientSales.next(clientSales);
-  //     })
-  //   );
-  // }
-
   getClientSalesPipeline(id: string) {
     let clientSales: ClientSalesPipeline[] = [];
     return this.authService.userId.pipe(
@@ -198,7 +172,6 @@ export class SalespipelineService {
           .collection('client-sales-pipeline').doc(id).get()
       }),
       map((salespipeline) => {
-        console.log(salespipeline.data());
         var sl = <ClientSalesPipeline>{ ...(salespipeline.data() as {}) };
         sl.id = salespipeline.id;
         return sl;
@@ -284,13 +257,24 @@ export class SalespipelineService {
   }
 
   fetchClientAndSaplesPipeline(){
-  return this.firebaseService.collection('client-sales-pipeline').snapshotChanges().pipe(
+    let fetchedUserId:string;
+  return  this.authService.userId.pipe(take(1),switchMap(userId=>{
+    if(!userId){
+      throw new Error('User not found!')
+    }
+    fetchedUserId=userId;
+    return userId;
+  }),
+  take(1),
+  switchMap((userId)=>{
+    return  this.firebaseService.collection('client-sales-pipeline').snapshotChanges().pipe(
     switchMap(sales=>{
-     let salesdata=sales.map(sale=>{
-      return <ClientSalesPipeline> { ...sale.payload.doc.data() as {},
-                id:sale.payload.doc.id
-      }
-      });
+     let salesdata = sales.map((sale) => {
+       return <ClientSalesPipeline>{
+         ...(sale.payload.doc.data() as {}),
+         id: sale.payload.doc.id,
+       };
+     });
       const clientsIds=salesdata.map(l=>l['clientId']);
       return combineLatest([
         of(salesdata),
@@ -302,21 +286,90 @@ export class SalespipelineService {
               .pipe(map((clients) => clients[0]));
           })
         ),
+        combineLatest([
+          this.firebaseService
+              .collection('client-user-access',ref=>ref.where("userId","==",fetchedUserId))
+              .valueChanges().pipe(map(users=>users))
+        ]),
       ]);
     })
-    ,map(([sales,clients])=>{
-      return sales.map(sale=>{
-        return <ClientSales> {
-          clientsale:{...sale as {}},
-          client:clients.find(a=>a['id']===sale['clientId']),
-        }
-      })
+    ,map(([sales,clients,users])=>{
+      let userclients: ClientSalesPipeline[] = [];
+      if (users.length > 0) {
+        sales.forEach((sale) => {
+          if (users[0].filter((c) => c['clientId'] == sale.clientId).length > 0) {
+            userclients.push(sale);
+          }
+        });
+      } else {
+        userclients = sales;
+      }
+      return userclients.map((sale) => {
+        return <ClientSales>{
+          clientsale: { ...(sale as {}) },
+          client: clients.find((a) => a['id'] === sale['clientId']),
+        };
+      });
     }),
     take(1),
     map(client=>{
       this._clientSales.next(client);
     })
-    )}
+    )})
+
+  )}
+
+  fetchClientCommets(saleId:string) {
+      return this.authService.userId.pipe(
+        take(1),
+        map((userId) => {
+          if (!userId) {
+            throw new Error('No User Id Found!');
+          }
+          return userId;
+        }),
+        switchMap((userId) => {
+          return this.firebaseService
+            .collection('track-client-comment', (ref) =>
+              ref.where('saleId', '==', saleId).orderBy("undatedOn","desc")
+            )
+            .valueChanges()
+            .pipe(
+              switchMap((comments) => {
+                const userIds = comments.map((l) => l['userId']);
+                return combineLatest([
+                  of(comments),
+                  combineLatest(
+                    userIds.map((userId) =>
+                    {
+
+                     return this.firebaseService
+                       .collection('user', (ref) => ref.where('id', '==', userId))
+                       .valueChanges()
+                       .pipe(map((usercmt) => usercmt[0]));
+                    }
+                    )
+                  ),
+                ]);
+              })
+            );
+        }),
+        take(1),
+        map(([comments,users]) => {
+
+          let allcomments= comments.map(cmt=>{
+            return <ClientCommentModel>{
+              ...cmt as {},
+              user:users.find(a=>a['id']===cmt['userId']),
+            }
+          })
+
+          this._clientcomments.next(allcomments);
+
+        })
+      );
+    }
+
 
 
  convertTimeStampToDate(date:any):Date{

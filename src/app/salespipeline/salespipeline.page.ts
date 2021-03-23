@@ -30,7 +30,6 @@ export class SalespipelinePage implements OnInit, OnDestroy {
     this.isLoading = true;
     this.salespipelineService.fetchClientAndSaplesPipeline().subscribe(() => {
       this.isLoading = false;
-      console.log(this.loadedClientSales);
     });
   }
 

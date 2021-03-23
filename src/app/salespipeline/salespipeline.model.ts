@@ -31,6 +31,36 @@ import { Client } from "../clients/client.model";
         ) {}
 }
 
+
+export class ClientComment {
+  constructor(
+    public saleId?:string,
+    public comment?:string,
+    public undatedOn?:Date,
+    public userId?:string,
+  ) {}
+}
+
+export class ClientCommentModel {
+  constructor(
+    public saleId?:string,
+    public comment?:string,
+    public undatedOn?:Date,
+    public userId?:string,
+    public user?:User,
+  ) {}
+}
+
+export class User {
+  constructor(
+    public name?:string,
+    public userId?:string,
+    public role?:string[],
+    public isActive?:boolean,
+  ) {}
+}
+
+
 export class ClientSalesPipeline {
   constructor(
     public id?: string,

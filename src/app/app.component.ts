@@ -14,12 +14,14 @@ export class AppComponent  implements OnInit,OnDestroy{
   private authSub:Subscription;
   private _previousAuthState=false;
   userName:string;
+  isadmin:boolean=false;
   constructor(  private authService:AuthService,
     private firebaseAuth:AngularFireAuth,
     private platform: Platform,
     private router:Router) {
     }
     ngOnInit(){
+      this.isadmin=false;
       this.authSub=this.authService.userdetail.subscribe(isAuth=>{
         console.log(isAuth.isAutheticated);
         if(!isAuth.isAutheticated && this._previousAuthState!==isAuth.isAutheticated){
@@ -28,6 +30,9 @@ export class AppComponent  implements OnInit,OnDestroy{
         else{
           this._previousAuthState=isAuth.isAutheticated;
           this.userName=isAuth.name;
+          if(isAuth.roles && isAuth.roles.filter(u=>u=="admin").length>0){
+            this.isadmin=true;
+          }
         }
       });
       //this.initializeApp();

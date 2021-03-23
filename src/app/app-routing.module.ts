@@ -18,7 +18,7 @@ const routes: Routes = [
     loadChildren: () => import('./home/home.module').then( m => m.HomePageModule),
     canLoad:[AuthGuard]
   },
-  
+
   {
     path: 'clients',
     loadChildren: () => import('./clients/clients.module').then( m => m.ClientsPageModule),
@@ -29,9 +29,14 @@ const routes: Routes = [
     loadChildren: () => import('./salespipeline/salespipeline.module').then( m => m.SalespipelinePageModule),
     canLoad:[AuthGuard]
   },
+  // {
+  //   path: 'settings',
+  //   loadChildren: () => import('./settings/settings.module').then( m => m.SettingsPageModule),
+  //   canLoad:[AuthGuard]
+  // },
   {
     path: 'settings',
-    loadChildren: () => import('./settings/settings.module').then( m => m.SettingsPageModule),
+    loadChildren: () => import('./settings/client-access/client-access.module').then( m => m.ClientAccessPageModule),
     canLoad:[AuthGuard]
   },
   {
@@ -39,7 +44,7 @@ const routes: Routes = [
     loadChildren: () => import('./about/about.module').then( m => m.AboutPageModule),
     canLoad:[AuthGuard]
   },
-  
+
 ];
 
 @NgModule({
