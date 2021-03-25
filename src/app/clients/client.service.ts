@@ -62,7 +62,7 @@ export class ClientService {
           resData.divisions,
           resData.clientTypeIds,
           resData.clientTypes,
-
+          resData.id,
         );
       })
     );
@@ -79,12 +79,12 @@ export class ClientService {
     .valueChanges().pipe(first()).toPromise();
 
     const clientList = await
-    this.firebaseService.collection('clients',ref=>ref.where('group','!=','null'))
+    this.firebaseService.collection('clients',ref=>ref.where("isActive","==",true))
     .valueChanges().pipe(first()).toPromise();
     let result=(clientList as Client[]);
     let clients: Client[]=[];
     result.forEach(client => {
-      if(users.filter(c=>c['clientId']==client.id).length>0){
+      if(users.filter(c=>c['clientId']==client.id).length>0 || this.authService.isAdmin){
         clients.push(client);
       }
     });
@@ -113,12 +113,14 @@ export class ClientService {
     }),
       switchMap((users) => {
        let useraccess=users;
-        return this.firebaseService.collection('clients').snapshotChanges().pipe(
+        return this.firebaseService.collection('clients',ref=>ref.where('isActive','==',true)).snapshotChanges().pipe(
         map(clients=> {
         return clients.map(client=>{
           var cl= <Client>{...client.payload.doc.data() as {}};
-          if(useraccess.filter(c=>c['clientId']==cl.id).length>0)
+          if(useraccess.filter(c=>c['clientId']==cl.id).length>0 || this.authService.isAdmin)
           {
+
+            cl.clientId=cl.id;
             cl.id=client.payload.doc.id;
             return cl;
           }
@@ -193,7 +195,9 @@ export class ClientService {
           divisionIds,
           divisions,
           typeIds,
-          types
+          types,
+          '',
+          true
         );
         return this.firebaseService.collection('clients').add(Object.assign({}, newClient));
       }),
@@ -235,7 +239,8 @@ export class ClientService {
     divisionIds?: string[],
     divisions?: string[],
     typeIds?:string[],
-    types?:string[]
+    types?:string[],
+    actclientId?:string
     ) {
     let updatedClients: Client[];
     let fetchedToken:string;
@@ -256,7 +261,7 @@ export class ClientService {
         updatedClients = [...clients];
         const oldClient = updatedClients[updatedClientIndex];
         updatedClients[updatedClientIndex] = new Client(
-          clientId,
+          actclientId,
           name,
           contactPerson,
           contactNumber,
@@ -278,7 +283,9 @@ export class ClientService {
           divisionIds,
           divisions,
           typeIds,
-          types
+          types,
+          clientId,
+          true
         );
         return this.firebaseService.collection('clients').doc(clientId).update(Object.assign({}, updatedClients[updatedClientIndex]));
       }),
@@ -296,7 +303,7 @@ export class ClientService {
         return this.firebaseService
           .collection('clients')
           .doc(clientId)
-          .delete();
+          .update({isActive:false});
       }),
       take(1),
       switchMap(() => {

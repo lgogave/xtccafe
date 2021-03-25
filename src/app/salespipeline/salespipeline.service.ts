@@ -193,11 +193,11 @@ export class SalespipelineService {
       }),
       take(1),
       switchMap(() => {
-        return this.clientSalepipeline;
+        return this.clientSales;
       }),
       take(1),
       tap((sales) => {
-        this._clientSalespipeline.next(sales.filter((b) => b.id !== id));
+        this._clientSales.next(sales.filter((b) => b.clientsale.id !== id));
       })
     );
   }
@@ -256,6 +256,33 @@ export class SalespipelineService {
     return clientList;
   }
 
+  dd_fetchClientAndSaplesPipeline(){
+    let fetchedUserId:string;
+  return this.authService.userId.pipe(
+    take(1),
+    switchMap((userId) => {
+      if (!userId) {
+        throw new Error('User not found!');
+      }
+      fetchedUserId = userId;
+      return userId;
+    }),
+    switchMap(() => {
+      return this.firebaseService
+        .collection('client-sales-pipeline')
+        .valueChanges()
+        .pipe(map((cl) => cl.map((sp) => sp)));
+    }),
+    map(cs => of(cs)),
+    map(j=>{
+     j.pipe(map(s=>{
+       console.log(s);
+     }))
+    })
+
+  );
+  }
+
   fetchClientAndSaplesPipeline(){
     let fetchedUserId:string;
   return  this.authService.userId.pipe(take(1),switchMap(userId=>{
@@ -278,15 +305,20 @@ export class SalespipelineService {
       const clientsIds=salesdata.map(l=>l['clientId']);
       return combineLatest([
         of(salesdata),
+        salesdata.length==0?of([]):
         combineLatest(
           clientsIds.map((clientId) => {
             return this.firebaseService
               .collection('clients', (ref) => ref.where('id', '==', clientId))
               .valueChanges()
-              .pipe(map((clients) => clients[0]));
+              .pipe(
+                map((clients) => {
+                  return clients[0];
+                })
+              );
           })
         ),
-        combineLatest([
+        salesdata.length==0?of([]):combineLatest([
           this.firebaseService
               .collection('client-user-access',ref=>ref.where("userId","==",fetchedUserId))
               .valueChanges().pipe(map(users=>users))
@@ -297,7 +329,7 @@ export class SalespipelineService {
       let userclients: ClientSalesPipeline[] = [];
       if (users.length > 0) {
         sales.forEach((sale) => {
-          if (users[0].filter((c) => c['clientId'] == sale.clientId).length > 0) {
+          if (users[0].filter((c) => c['clientId'] == sale.clientId).length > 0 || this.authService.isAdmin) {
             userclients.push(sale);
           }
         });
@@ -307,7 +339,7 @@ export class SalespipelineService {
       return userclients.map((sale) => {
         return <ClientSales>{
           clientsale: { ...(sale as {}) },
-          client: clients.find((a) => a['id'] === sale['clientId']),
+          client: clients.find((a) => a!=undefined && a['id'] === sale['clientId']),
         };
       });
     }),
@@ -316,7 +348,6 @@ export class SalespipelineService {
       this._clientSales.next(client);
     })
     )})
-
   )}
 
   fetchClientCommets(saleId:string) {
@@ -368,13 +399,12 @@ export class SalespipelineService {
 
         })
       );
-    }
-
-
-
+  }
  convertTimeStampToDate(date:any):Date{
  return (date as firebase.firestore.Timestamp).toDate();
  }
 
 
 }
+
+

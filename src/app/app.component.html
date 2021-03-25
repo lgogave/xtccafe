@@ -66,9 +66,13 @@
     <ion-icon name="analytics" slot="start" color="primary"></ion-icon>
     <ion-label>Sales Pipeline</ion-label>
   </ion-item>
-  <ion-item *ngIf="this.isadmin" lines="none"  routerLink="/settings"  button>
+  <ion-item *ngIf="this.isadmin" lines="none"  button>
     <ion-icon name="build" slot="start" color="primary"></ion-icon>
     <ion-label>Settings</ion-label>
+  </ion-item>
+  <ion-item *ngIf="this.isadmin" lines="none"  routerLink="/settings"  button style="margin-left: 20px;">
+    <ion-icon name="remove-circle-outline" slot="start" color="primary"></ion-icon>
+    <ion-label>Client Access</ion-label>
   </ion-item>
   <ion-item lines="none"  routerLink="/about"  button>
     <ion-icon name="glasses" slot="start" color="primary"></ion-icon>

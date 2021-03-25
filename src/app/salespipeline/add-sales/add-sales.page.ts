@@ -343,15 +343,16 @@ onChangeGroup(event){
 
 financialYearCalculation(closureDate:Date,amount:number){
   let extraday=7;
-  let endDate:Date=new Date(closureDate.getFullYear(),2,31);
   let startDate:Date=new Date(closureDate.getFullYear(),closureDate.getMonth(),closureDate.getDate());
   startDate.setDate(startDate.getDate()+extraday);
+  let endDate:Date=new Date(startDate.getMonth()>2?startDate.getFullYear()+1:startDate.getFullYear(),2,31);
   let diff:Date=new Date(endDate.valueOf()-startDate.valueOf())
   let days=diff.valueOf()/1000/60/60/24;
   return (amount*12)/264 * days;
 }
 
 onMachineChange(event,element){
+if (!event.target.value) return;
 let ref=this.machineDetail.filter(item=>item.name==event.target.value)[0].name;
 element.controls['volumeType'].reset();
 this.machineCategory=[];

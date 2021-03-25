@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { IonItemSliding, LoadingController } from '@ionic/angular';
+import { AlertController, IonItemSliding, LoadingController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import { ClientSales, ClientSalesPipeline } from './salespipeline.model';
 import { SalespipelineService } from './salespipeline.service';
@@ -17,7 +17,8 @@ export class SalespipelinePage implements OnInit, OnDestroy {
 
   constructor(
     private salespipelineService: SalespipelineService,
-    private loadingCtrl: LoadingController
+    private loadingCtrl: LoadingController,
+    private alertCtrl: AlertController
   ) {}
 
   ngOnInit() {
@@ -40,20 +41,39 @@ export class SalespipelinePage implements OnInit, OnDestroy {
   }
 
   onDeleteSalespipeline(id: string,clientId:string, slidingEl: IonItemSliding) {
-    slidingEl.close();
-    this.loadingCtrl
-      .create({ keyboardClose: true, message: 'Deleteing...' })
-      .then((loadingEl) => {
-        loadingEl.present();
-        this.salespipelineService.deleteClientSalesPipeline(id).subscribe(() => {
-          //this.filterClient();
-        });
-        this.salespipelineService.deleteSalesPipeline(clientId).subscribe(() => {
-          this.filterClient();
-          loadingEl.dismiss();
-        });
-
-      });
+    this.alertCtrl.create({
+      header: 'Delete!',
+      message:
+        '<strong>Are you sure you want to delete ?</strong>',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          handler: () => {
+            slidingEl.close();
+          },
+        },
+        {
+          text: 'Okay',
+          handler: () => {
+            slidingEl.close();
+            this.loadingCtrl
+              .create({ keyboardClose: true, message: 'Deleteing...' })
+              .then((loadingEl) => {
+                loadingEl.present();
+                this.salespipelineService.deleteClientSalesPipeline(id).subscribe(() => {});
+                this.salespipelineService.deleteSalesPipeline(clientId).subscribe(() => {
+                  this.filterClient();
+                  loadingEl.dismiss();
+                });
+              });
+          },
+        },
+      ],
+    })
+    .then((alertEl) => {
+      alertEl.present();
+    });
   }
   doRefresh(event) {
     this.salespipelineService.fetchClientAndSaplesPipeline().subscribe(() => {

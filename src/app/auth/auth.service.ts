@@ -81,6 +81,19 @@ export class AuthService implements OnDestroy {
     );
   }
 
+  get isAdmin(){
+       return this._user.asObservable().pipe(
+      map((user) => {
+        if (user) {
+          if(user.roles && user.roles.filter(u=>u=="admin").length>0){
+          return true;
+          }
+        } else {
+          return false;
+        }
+      })
+    );
+  }
   get userdetail() {
     return this._user.asObservable().pipe(
       map((user) => {
@@ -105,6 +118,8 @@ export class AuthService implements OnDestroy {
       })
     );
   }
+
+
 
 
   get userName() {

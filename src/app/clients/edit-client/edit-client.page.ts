@@ -256,8 +256,9 @@ if (this.form.value.typeId.length > 0) {
     );
   });
 }
+console.log( this.client.id);
 
-      this.clientService
+this.clientService
         .editClient(
           this.client.id,
           this.form.value.name,
@@ -280,7 +281,8 @@ if (this.form.value.typeId.length > 0) {
           this.form.value.divisionId,
           ndivisions,
           this.form.value.typeId,
-          nclientTypes
+          nclientTypes,
+          this.client.clientId
         )
         .subscribe(() => {
           loadingEl.dismiss();

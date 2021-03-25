@@ -23,6 +23,7 @@ export class Client {
     public divisions?: string[],
     public clientTypeIds?: string[],
     public clientTypes?: string[],
-
+    public clientId?: string,
+    public isActive?: boolean,
     ) {}
 }

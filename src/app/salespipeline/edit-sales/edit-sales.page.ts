@@ -71,6 +71,10 @@ export class EditSalesPage implements OnInit {
         updateOn: 'blur',
         validators: [Validators.required],
       }),
+      hiddencurrentStatus: new FormControl(location!=null?location.currentStatus:null, {
+        updateOn: 'blur',
+        validators: [Validators.required],
+      }),
       closureDate: new FormControl(location!=null?this.salesPipelineService.convertTimeStampToDate(location.closureDate).toJSON():null, {
         updateOn: 'blur',
         validators: [Validators.required],
@@ -130,7 +134,7 @@ export class EditSalesPage implements OnInit {
     private alertCtrl: AlertController,
     public toastController: ToastController,
     private salesPipelineService: SalespipelineService,
-    private divisionService:DivisionService
+    private divisionService:DivisionService,
   ) {}
   async ngOnInit() {
     this.route.paramMap.subscribe((paramMap) => {
@@ -263,15 +267,9 @@ this.isLoading=false;
     this.salesPipelineService.getClientSalesPipeline(this.saleId);
   }
   async onUpdateSalespipeline() {
-
-    console.log(this.clientId);
-    console.log(this.form);
-
     if (!this.form.valid) {
       return;
     }
-
-
     var exiclientId=await this.salesPipelineService.getClientById(this.form.value.client);
     console.log(exiclientId);
     if(exiclientId.length>0  && exiclientId[0]['clientId']!=this.clientId){
@@ -414,31 +412,67 @@ this.isLoading=false;
   }
 
   onMachineChange(event,element){
-      let ref = this.machineDetail.filter(
-        (item) => item.name == event.target.value
-      )[0].name;
-      element.controls['volumeType'].reset();
-      this.machineCategory = [];
-      this.machineCategory = this.machineDetail
-        .filter((item) => item.ref == ref && item.group == 2)
-        .sort((a, b) => a.srno - b.srno)
-        .map((item) => item.name);
-      if (ref == 'FM' || ref == 'Mtl(kg/mth)') {
-        element.controls['volumeType'].patchValue('Not Applicable', {
-          emitEvent: false,
-        });
-      }
-
+    if (!event.target.value) return;
+    let ref = this.machineDetail.filter(
+      (item) => item.name == event.target.value
+    )[0].name;
+    element.controls['volumeType'].reset();
+    this.machineCategory = [];
+    this.machineCategory = this.machineDetail
+      .filter((item) => item.ref == ref && item.group == 2)
+      .sort((a, b) => a.srno - b.srno)
+      .map((item) => item.name);
+    if (ref == 'FM' || ref == 'Mtl(kg/mth)') {
+      element.controls['volumeType'].patchValue('Not Applicable', {
+        emitEvent: false,
+      });
+    }
   }
 
     financialYearCalculation(closureDate:Date,amount:number){
       let extraday=7;
-      let endDate:Date=new Date(closureDate.getFullYear(),2,31);
       let startDate:Date=new Date(closureDate.getFullYear(),closureDate.getMonth(),closureDate.getDate());
       startDate.setDate(startDate.getDate()+extraday);
+      let endDate:Date=new Date(startDate.getMonth()>2?startDate.getFullYear()+1:startDate.getFullYear(),2,31);
       let diff:Date=new Date(endDate.valueOf()-startDate.valueOf())
       let days=diff.valueOf()/1000/60/60/24;
       return (amount*12)/264 * days;
+    }
+
+    statusChange(event,element){
+      if(event.target.value=='S3 : Demo initiated / done'){
+        this.alertCtrl.create({
+          header: 'Demo request!',
+          message:
+            '<strong>Are you sure you want to save and raise material requirement for Demo ?</strong>',
+          buttons: [
+            {
+              text: 'Cancel',
+              role: 'cancel',
+              handler: () => {
+                let oldvalue = element.get('hiddencurrentStatus').value;
+                element
+                  .get('currentStatus')
+                  .patchValue(oldvalue, { emitEvent: false });
+              },
+            },
+            {
+              text: 'Okay',
+              handler:async () => {
+                 await this.onUpdateSalespipeline()
+                //Redirect to the next page
+                this.router.navigate(['/salespipeline']);
+              },
+            },
+          ],
+        }).then((alertEl) => {
+          alertEl.present();
+        });
+      }
+      else{
+        let curvalue=event.target.value;
+        element.get('hiddencurrentStatus').patchValue(curvalue,{emitEvent: false});
+      }
     }
 
   ngOnDestroy() {
