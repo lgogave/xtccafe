@@ -23,6 +23,10 @@ const routes: Routes = [
   {
     path: 'comments/:salesId/:client',
     loadChildren: () => import('./comments-sales/comments-sales.module').then( m => m.CommentsSalesPageModule)
+  },
+  {
+    path: 'demorequest/:salesId/:locationIndex',
+    loadChildren: () => import('./demo-request/demo-request.module').then( m => m.DemoRequestPageModule)
   }
 ];
 

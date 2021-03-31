@@ -3,10 +3,10 @@ import { FormControl, FormGroup, Validators,FormArray } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController, LoadingController, NavController, ToastController } from '@ionic/angular';
 import { combineLatest, Subscription } from 'rxjs';
-import { Client } from 'src/app/clients/client.model';
-import { ClientService } from 'src/app/clients/client.service';
-import { ClientStatus, MachineDetail } from 'src/app/models/division.model';
-import { DivisionService } from 'src/app/services/division.service';
+import { Client } from '../../clients/client.model';
+import { ClientService } from '../../clients/client.service';
+import { ClientStatus, MachineDetail } from '../../models/division.model';
+import { DivisionService } from '../../services/division.service';
 import { ClientSalesPipeline, Location, Machine, SalesPipeline } from '../salespipeline.model';
 import { SalespipelineService, } from '../salespipeline.service';
 
@@ -256,7 +256,7 @@ this.form.valueChanges.subscribe(val=>{
   this.form.get('billingAmount').patchValue(clientbillamt,{emitEvent: false});
   this.form.get('machineCount').patchValue(clientmachinecount,{emitEvent: false});
 })
-console.log(this.form);
+
 this.isLoading=false;
 })
 }
@@ -266,7 +266,7 @@ this.isLoading=false;
     this.clientService.fetchClients().subscribe(() => {});
     this.salesPipelineService.getClientSalesPipeline(this.saleId);
   }
-  async onUpdateSalespipeline() {
+  async onUpdateSalespipeline(redirection:boolean=true) {
     if (!this.form.valid) {
       return;
     }
@@ -297,16 +297,17 @@ this.isLoading=false;
             .subscribe((response) => {
               console.log(index);
               if (arrayLength == index) {
-                this.removeLoading(loadingEl);
+                this.removeLoading(loadingEl,redirection);
               }
             });
         });
     });
   }
-  removeLoading(loadingEl: HTMLIonLoadingElement) {
+  removeLoading(loadingEl: HTMLIonLoadingElement,redirection:boolean=true) {
     this.isLoading = false;
     loadingEl.dismiss();
     this.form.reset();
+    if(redirection)
     this.router.navigate(['/salespipeline']);
   }
   private AddClientSalesPipeLine() {
@@ -439,7 +440,7 @@ this.isLoading=false;
       return (amount*12)/264 * days;
     }
 
-    statusChange(event,element){
+    statusChange(event,element,index){
       if(event.target.value=='S3 : Demo initiated / done'){
         this.alertCtrl.create({
           header: 'Demo request!',
@@ -459,9 +460,15 @@ this.isLoading=false;
             {
               text: 'Okay',
               handler:async () => {
-                 await this.onUpdateSalespipeline()
+                //  await this.clientService.sendEmail().then((res)=>{
+                //    console.log(res);
+                //  }).catch(erro=>{
+                //    console.log(erro);
+                //  });
+                 await this.onUpdateSalespipeline(false)
+                 this.router.navigate(['/salespipeline/demorequest/'+this.saleId+"/"+index]);
                 //Redirect to the next page
-                this.router.navigate(['/salespipeline']);
+
               },
             },
           ],

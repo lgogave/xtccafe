@@ -97,7 +97,7 @@
               <ion-item>
                 <ion-label position="floating">Current Status <span style="color: #FF6347;">*</span></ion-label>
                 <ion-input type="text" formControlName="hiddencurrentStatus" style="display: none;"></ion-input>
-                <ion-select placeholder="Select One"  interface="popover" formControlName="currentStatus" (ionChange)="statusChange($event,form.get('dataEntry')['controls'][i])">
+                <ion-select placeholder="Select One"  interface="popover" formControlName="currentStatus" (ionChange)="statusChange($event,form.get('dataEntry')['controls'][i],i)">
                   <ion-select-option *ngFor="let client of clientsStatus" [value]="client.status">{{client.status}}
                   </ion-select-option>
                 </ion-select>
