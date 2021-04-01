@@ -27,6 +27,14 @@ const routes: Routes = [
   {
     path: 'demorequest/:salesId/:locationIndex',
     loadChildren: () => import('./demo-request/demo-request.module').then( m => m.DemoRequestPageModule)
+  },
+  {
+    path: 'demorequests',
+    loadChildren: () => import('./demo-request-list/demo-request-list.module').then( m => m.DemoRequestListPageModule)
+  },
+  {
+    path: 'demodetail/:demoId',
+    loadChildren: () => import('./demo-request-detail/demo-request-detail.module').then( m => m.DemoRequestDetailPageModule)
   }
 ];
 

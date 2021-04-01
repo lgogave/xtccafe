@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { LoadingController, NavController } from '@ionic/angular';
+import { LoadingController, NavController, ToastController } from '@ionic/angular';
+import { DemoRequest } from 'src/app/models/demo-request.model';
+import { DemoRequestService } from 'src/app/services/demo-request.service';
 import { ClientSales } from '../salespipeline.model';
 import { SalespipelineService } from '../salespipeline.service';
 
@@ -17,7 +19,10 @@ export class DemoRequestPage implements OnInit {
   isLoading:boolean=false;
   clientSales:ClientSales;
   constructor(private route: ActivatedRoute,private navCtrl: NavController,private salespiplineService:SalespipelineService,
-    private loadingCtrl: LoadingController) {}
+    private loadingCtrl: LoadingController,
+    private demoRequestService:DemoRequestService,
+    private toastController: ToastController,
+    private router: Router) {}
 
   ngOnInit() {
     this.route.paramMap.subscribe((paramMap) => {
@@ -143,5 +148,27 @@ export class DemoRequestPage implements OnInit {
       detPaperCupsRate: new FormControl(null, { updateOn: 'blur' }),
     });
     return true;
+  }
+
+  addDemoRequest(){
+    if (!this.form.valid) {
+      return;
+    }
+    let demoRequest = <DemoRequest>this.form.value;
+    demoRequest.reqStatus='Demo Request Created';
+    let id=Math.floor(Math.random() * 26) + Date.now();
+    demoRequest.id=id;
+    demoRequest.salespipelineId=this.saleId;
+    this.demoRequestService.addDemoRequest(demoRequest).subscribe((res) => {
+      console.log(res);
+       this.toastController.create({
+        message: 'Demo Request Created. Id:'+id,
+        duration: 2000,
+        color:'danger',
+      }).then((tost)=>{
+        tost.present();
+        this.router.navigate(['/salespipeline/demorequests']);
+      });
+    });
   }
 }

@@ -1,9 +1,10 @@
 export class DemoRequest{
   constructor(
-    public id:string,
-    public createdBy:string,
+    public id:number,
+    public userId:string,
     public createdOn:Date,
     public reqStatus:string,
+    public salespipelineId:string,
 
     public orgName?:string,
     public orgStatus?:string,
@@ -136,5 +137,18 @@ export class DemoRequest{
     public detPaperCupsQty?:string,
     public detPaperCupsUOM?:string,
     public detPaperCupsRate?:string,
+  ){}
+}
+
+export class DemoRequestViewModel{
+  constructor(
+    public id:number,
+    public userId:string,
+    public createdOn:Date,
+    public reqStatus:string,
+    public orgName?:string,
+    public orgStatus?:string,
+    public addLocation?:string,
+    public docId?:string,
   ){}
 }

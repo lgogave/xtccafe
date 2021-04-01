@@ -4,29 +4,29 @@
       <ion-back-button defaultHref="/salespipeline">
       </ion-back-button>
       <ion-title>Demo Requisition Form</ion-title>
-      <ion-button (click)="addDemoRequest()"  [disabled]="!form?.valid">
+      <!-- <ion-button (click)="addDemoRequest()"  [disabled]="!form?.valid">
         <ion-icon name="checkmark" slot="icon-only"></ion-icon>
-      </ion-button>
+      </ion-button> -->
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 <ion-content>
-  <form [formGroup]="form" *ngIf="!isLoading">
-    <ion-grid>
+    <ion-grid *ngIf="!isLoading">
     <div class="section">
       <ion-row>
         <ion-col size-sm="6" offset-sm="3">
           <span style="font-size:13px">Organization</span>
           <ion-item>
-            <ion-input type="text" autocomplete autocorrect placeholder="Client Name" formControlName="orgName"></ion-input>
+            <h6  style="color:#4CAF50;">Client : </h6>
+            <h6>{{demoRequest.orgName}}</h6>
           </ion-item>
       </ion-col>
       </ion-row>
       <ion-row>
         <ion-col size-sm="6" offset-sm="3">
           <ion-item>
-            <ion-label position="floating" class="label">Client Status</ion-label>
-            <ion-input type="text" autocomplete autocorrect formControlName="orgStatus"></ion-input>
+            <h6 style="color:#4CAF50;">Client Status : </h6>
+            <h6>{{demoRequest.orgStatus}}</h6>
           </ion-item>
       </ion-col>
       </ion-row>
@@ -36,7 +36,7 @@
         <ion-col size-sm="6" offset-sm="3">
           <span style="font-size:13px">Address of the Organization</span>
           <ion-item>
-            <ion-input type="text" autocomplete autocorrect placeholder="Address"  formControlName="address"></ion-input>
+            <ion-label>{{demoRequest.address}}</ion-label>
           </ion-item>
       </ion-col>
       </ion-row>
@@ -44,13 +44,13 @@
         <ion-col size-sm="3" offset-sm="3">
           <ion-item>
             <ion-label position="floating" class="label">Location</ion-label>
-            <ion-input type="text" autocomplete autocorrect  formControlName="addLocation"></ion-input>
+            <ion-label>{{demoRequest.addLocation}}</ion-label>
           </ion-item>
       </ion-col>
       <ion-col size-sm="3" offset-sm="3">
         <ion-item>
           <ion-label position="floating" class="label">Pin Code</ion-label>
-          <ion-input type="text" autocomplete autocorrect  formControlName="addPincode"></ion-input>
+          <ion-label>{{demoRequest.addPincode}}</ion-label>
         </ion-item>
     </ion-col>
       </ion-row>
@@ -58,7 +58,7 @@
         <ion-col size-sm="6" offset-sm="3">
           <ion-item>
             <ion-label position="floating" class="label">State</ion-label>
-            <ion-input type="text" autocomplete autocorrect  formControlName="addState"></ion-input>
+            <ion-label>{{demoRequest.addState}}</ion-label>
           </ion-item>
       </ion-col>
       </ion-row>
@@ -68,7 +68,7 @@
         <ion-col size-sm="6" offset-sm="3">
           <span style="font-size:13px">Billing Address of the Organization</span>
           <ion-item>
-            <ion-input type="text" autocomplete autocorrect placeholder  formControlName="billAddress"></ion-input>
+            <ion-label>{{demoRequest.billAddress}}</ion-label>
           </ion-item>
       </ion-col>
       </ion-row>
@@ -76,13 +76,13 @@
         <ion-col size-sm="3" offset-sm="3">
           <ion-item>
             <ion-label position="floating" class="label">Location</ion-label>
-            <ion-input type="text" autocomplete autocorrect  formControlName="billLocation"></ion-input>
+            <ion-label>{{demoRequest.billLocation}}</ion-label>
           </ion-item>
       </ion-col>
       <ion-col size-sm="3" offset-sm="3">
         <ion-item>
           <ion-label position="floating" class="label">Pin Code</ion-label>
-          <ion-input type="text" autocomplete autocorrect  formControlName="billPincode"></ion-input>
+          <ion-label>{{demoRequest.billPincode}}</ion-label>
         </ion-item>
     </ion-col>
       </ion-row>
@@ -90,7 +90,7 @@
         <ion-col size-sm="6" offset-sm="3">
           <ion-item>
             <ion-label position="floating" class="label">State</ion-label>
-            <ion-input type="text" autocomplete autocorrect  formControlName="billState"></ion-input>
+            <ion-label>{{demoRequest.billState}}</ion-label>
           </ion-item>
       </ion-col>
       </ion-row>
@@ -101,7 +101,7 @@
         <ion-col size-sm="6" offset-sm="3">
           <span style="font-size:13px">Delivery Address with land mark</span>
           <ion-item>
-            <ion-input type="text" autocomplete autocorrect placeholder formControlName="delAddress" ></ion-input>
+            <ion-label>{{demoRequest.delAddress}}</ion-label>
           </ion-item>
       </ion-col>
       </ion-row>
@@ -109,13 +109,13 @@
         <ion-col size-sm="3" offset-sm="3">
           <ion-item>
             <ion-label position="floating" class="label">Location</ion-label>
-            <ion-input type="text" autocomplete autocorrect  formControlName="delLocation"></ion-input>
+            <ion-label>{{demoRequest.delLocation}}</ion-label>
           </ion-item>
       </ion-col>
       <ion-col size-sm="3" offset-sm="3">
         <ion-item>
           <ion-label position="floating" class="label">Pin Code</ion-label>
-          <ion-input type="text" autocomplete autocorrect  formControlName="delPincode"></ion-input>
+          <ion-label>{{demoRequest.delPincode}}</ion-label>
         </ion-item>
     </ion-col>
       </ion-row>
@@ -123,7 +123,7 @@
         <ion-col size-sm="6" offset-sm="3">
           <ion-item>
             <ion-label position="floating" class="label">State</ion-label>
-            <ion-input type="text" autocomplete autocorrect  formControlName="delState"></ion-input>
+            <ion-label>{{demoRequest.delState}}</ion-label>
           </ion-item>
       </ion-col>
       </ion-row>
@@ -134,7 +134,7 @@
         <ion-col size-sm="6" offset-sm="3">
           <span style="font-size:13px">Contact Details</span>
           <ion-item>
-            <ion-input type="text" autocomplete autocorrect placeholder formControlName="conName" ></ion-input>
+            <ion-label>{{demoRequest.conName}}</ion-label>
           </ion-item>
       </ion-col>
       </ion-row>
@@ -142,13 +142,13 @@
         <ion-col size-sm="3" offset-sm="3">
           <ion-item>
             <ion-label position="floating" class="label">Mobile No</ion-label>
-            <ion-input type="text" autocomplete autocorrect  formControlName="conMobile"></ion-input>
+            <ion-label>{{demoRequest.conMobile}}</ion-label>
           </ion-item>
       </ion-col>
       <ion-col size-sm="3" offset-sm="3">
         <ion-item>
           <ion-label position="floating" class="label">Land Line</ion-label>
-          <ion-input type="text" autocomplete autocorrect  formControlName="conLandline"></ion-input>
+          <ion-label>{{demoRequest.conLandline}}</ion-label>
         </ion-item>
     </ion-col>
       </ion-row>
@@ -156,7 +156,7 @@
         <ion-col size-sm="6" offset-sm="3">
           <ion-item>
             <ion-label position="floating" class="label">Email</ion-label>
-            <ion-input type="text" autocomplete autocorrect  formControlName="conEmail"></ion-input>
+            <ion-label>{{demoRequest.conEmail}}</ion-label>
           </ion-item>
       </ion-col>
       </ion-row>
@@ -164,7 +164,7 @@
         <ion-col size-sm="6" offset-sm="3">
           <ion-item>
             <ion-label position="floating" class="label">Reference</ion-label>
-            <ion-input type="text" autocomplete autocorrect  formControlName="conRef"></ion-input>
+            <ion-label>{{demoRequest.conRef}}</ion-label>
           </ion-item>
       </ion-col>
       </ion-row>
@@ -175,7 +175,7 @@
         <ion-col size-sm="6" offset-sm="3">
           <span style="font-size:13px">Machine detail</span>
           <ion-item>
-            <ion-input type="text" autocomplete autocorrect placeholder="Model"  formControlName="mchModel"></ion-input>
+            <ion-label>{{demoRequest.mchModel}}</ion-label>
           </ion-item>
       </ion-col>
       </ion-row>
@@ -184,16 +184,13 @@
           <ion-item>
             <ion-label position="floating" class="label">No.of Machine
             </ion-label>
-            <ion-input type="text" autocomplete autocorrect  formControlName="mchNoMachine"></ion-input>
+            <ion-label>{{demoRequest.mchNoMachine}}</ion-label>
           </ion-item>
       </ion-col>
       <ion-col size-sm="3" offset-sm="3">
         <ion-item>
           <ion-label position="floating" class="label">Type</ion-label>
-          <ion-select placeholder="Select One"  interface="popover"  formControlName="mchType">
-            <ion-select-option value="New">New</ion-select-option>
-            <ion-select-option value="Second Hand">Second Hand</ion-select-option>
-          </ion-select>
+          <ion-label>{{demoRequest.mchType}}</ion-label>
         </ion-item>
     </ion-col>
       </ion-row>
@@ -209,16 +206,13 @@
         <ion-col size-sm="3" offset-sm="3">
           <ion-item>
             <ion-label position="floating" class="label">Installation/Demo Kit</ion-label>
-            <ion-select placeholder="Select One"  interface="popover"  formControlName="accInstallation">
-              <ion-select-option value="Yes">Yes</ion-select-option>
-              <ion-select-option value="No">No</ion-select-option>
-            </ion-select>
+            <ion-label>{{demoRequest.accInstallation}}</ion-label>
           </ion-item>
       </ion-col>
       <ion-col size-sm="3" offset-sm="3">
         <ion-item>
           <ion-label position="floating" class="label">Other Accessories</ion-label>
-          <ion-input type="text" autocomplete autocorrect  formControlName="accOther"></ion-input>
+          <ion-label>{{demoRequest.accOther}}</ion-label>
         </ion-item>
     </ion-col>
       </ion-row>
@@ -236,21 +230,13 @@
           <ion-item>
             <ion-label position="floating" class="label">Installation
             </ion-label>
-            <ion-select placeholder="Select One"  interface="popover"  formControlName="installation">
-              <ion-select-option value="Out-Right">Out-Right</ion-select-option>
-              <ion-select-option value="Rental">Rental</ion-select-option>
-              <ion-select-option value="Free">Free</ion-select-option>
-              <ion-select-option value="Replacement">Replacement</ion-select-option>
-            </ion-select>
+            <ion-label>{{demoRequest.installation}}</ion-label>
           </ion-item>
       </ion-col>
       <ion-col size-sm="3" offset-sm="3">
         <ion-item>
           <ion-label position="floating" class="label">Demo</ion-label>
-          <ion-select placeholder="Select One"  interface="popover"  formControlName="instDemo">
-            <ion-select-option value="Free">Free</ion-select-option>
-            <ion-select-option value="Chargeble">Chargeble</ion-select-option>
-          </ion-select>
+          <ion-label>{{demoRequest.instDemo}}</ion-label>
         </ion-item>
     </ion-col>
       </ion-row>
@@ -267,13 +253,13 @@
           <ion-item>
             <ion-label position="floating" class="label">Rate
             </ion-label>
-            <ion-input type="text" autocomplete autocorrect  formControlName="rate"></ion-input>
+            <ion-label>{{demoRequest.rate}}</ion-label>
           </ion-item>
       </ion-col>
       <ion-col size-sm="3" offset-sm="3">
         <ion-item>
           <ion-label position="floating" class="label">GST</ion-label>
-          <ion-input type="text" autocomplete autocorrect  formControlName="rategst"></ion-input>
+          <ion-label>{{demoRequest.rategst}}</ion-label>
         </ion-item>
     </ion-col>
       </ion-row>
@@ -282,7 +268,7 @@
           <ion-item>
             <ion-label position="floating" class="label">Total Amount
             </ion-label>
-            <ion-input type="text" autocomplete autocorrect  formControlName="rateamount"></ion-input>
+            <ion-label>{{demoRequest.rateamount}}</ion-label>
           </ion-item>
       </ion-col>
       </ion-row>
@@ -299,17 +285,13 @@
           <ion-item>
             <ion-label position="floating" class="label">Terms
             </ion-label>
-            <ion-select placeholder="Select One"  interface="popover"  formControlName="rentTerm">
-              <ion-select-option value="Monthly">Monthly</ion-select-option>
-              <ion-select-option value="Quarterly">Quarterly</ion-select-option>
-              <ion-select-option value="Yearly">Yearly</ion-select-option>
-            </ion-select>
+            <ion-label>{{demoRequest.rentTerm}}</ion-label>
           </ion-item>
       </ion-col>
       <ion-col size-sm="3" offset-sm="3">
         <ion-item>
           <ion-label position="floating" class="label">Rate per month</ion-label>
-          <ion-input type="text" autocomplete autocorrect  formControlName="rentRateMonth"></ion-input>
+          <ion-label>{{demoRequest.rentRateMonth}}</ion-label>
         </ion-item>
     </ion-col>
       </ion-row>
@@ -326,16 +308,13 @@
           <ion-item>
             <ion-label position="floating" class="label">Applicable
             </ion-label>
-            <ion-select placeholder="Select One"  interface="popover"  formControlName="depApplicable">
-              <ion-select-option value="Yes">Yes</ion-select-option>
-              <ion-select-option value="No">No</ion-select-option>
-            </ion-select>
+            <ion-label>{{demoRequest.depApplicable}}</ion-label>
           </ion-item>
       </ion-col>
       <ion-col size-sm="3" offset-sm="3">
         <ion-item>
           <ion-label position="floating" class="label">Amount</ion-label>
-          <ion-input type="text" autocomplete autocorrect  formControlName="depAmount"></ion-input>
+          <ion-label>{{demoRequest.depAmount}}</ion-label>
         </ion-item>
     </ion-col>
       </ion-row>
@@ -352,18 +331,13 @@
           <ion-item>
             <ion-label position="floating" class="label">Terms
             </ion-label>
-            <ion-select placeholder="Select One"  interface="popover"  formControlName="payTerms">
-              <ion-select-option value="Advance">Advance</ion-select-option>
-              <ion-select-option value="On Delivery">On Delivery</ion-select-option>
-              <ion-select-option value="On Installation">On Installation</ion-select-option>
-              <ion-select-option value="On Credit">On Credit</ion-select-option>
-            </ion-select>
+            <ion-label>{{demoRequest.payTerms}}</ion-label>
           </ion-item>
       </ion-col>
       <ion-col size-sm="3" offset-sm="3">
         <ion-item>
           <ion-label position="floating" class="label">Credit Period (days)</ion-label>
-          <ion-input type="text" autocomplete autocorrect  formControlName="payCreditPeriod"></ion-input>
+          <ion-label>{{demoRequest.payCreditPeriod}}</ion-label>
         </ion-item>
     </ion-col>
       </ion-row>
@@ -373,13 +347,13 @@
           <ion-item>
             <ion-label position="floating" class="label">Credit Limit
             </ion-label>
-            <ion-input type="text" autocomplete autocorrect  formControlName="payCreditLimit"></ion-input>
+            <ion-label>{{demoRequest.payCreditLimit}}</ion-label>
           </ion-item>
       </ion-col>
       <ion-col size-sm="3" offset-sm="3">
         <ion-item>
           <ion-label position="floating" class="label">Model</ion-label>
-          <ion-input type="text" autocomplete autocorrect  formControlName="payModel"></ion-input>
+          <ion-label>{{demoRequest.payModel}}</ion-label>
         </ion-item>
     </ion-col>
       </ion-row>
@@ -397,16 +371,13 @@
           <ion-item>
             <ion-label position="floating" class="label">Applicable
             </ion-label>
-            <ion-select placeholder="Select One"  interface="popover"  formControlName="comApplicable">
-              <ion-select-option value="Yes">Yes</ion-select-option>
-              <ion-select-option value="No">No</ion-select-option>
-            </ion-select>
+            <ion-label>{{demoRequest.comApplicable}}</ion-label>
           </ion-item>
       </ion-col>
       <ion-col size-sm="3" offset-sm="3">
         <ion-item>
           <ion-label position="floating" class="label">Quantity</ion-label>
-          <ion-input type="text" autocomplete autocorrect  formControlName="comQuantity"></ion-input>
+          <ion-label>{{demoRequest.comQuantity}}</ion-label>
         </ion-item>
     </ion-col>
       </ion-row>
@@ -416,7 +387,7 @@
           <ion-item>
             <ion-label position="floating" class="label">Terms
             </ion-label>
-            <ion-input type="text" autocomplete autocorrect  formControlName="comTerm"></ion-input>
+            <ion-label>{{demoRequest.comTerm}}</ion-label>
           </ion-item>
       </ion-col>
       </ion-row>
@@ -433,11 +404,7 @@
           <ion-item>
             <ion-label position="floating" class="label">Date of Delivery
             </ion-label>
-            <ion-datetime
-            formControlName="dateDelivery"
-            display-format="MMM DD YYYY"
-            picker-format="YY MMM DD"
-            ></ion-datetime>
+            <ion-label>{{demoRequest.dateDelivery}}</ion-label>
           </ion-item>
       </ion-col>
       </ion-row>
@@ -445,11 +412,7 @@
       <ion-col size-sm="3" offset-sm="3">
         <ion-item>
           <ion-label position="floating" class="label">Date of Installation</ion-label>
-          <ion-datetime
-          formControlName="dateInstallation"
-          display-format="MMM DD YYYY"
-          picker-format="YY MMM DD"
-          ></ion-datetime>
+          <ion-label>{{demoRequest.dateInstallation}}</ion-label>
         </ion-item>
     </ion-col>
       </ion-row>
@@ -458,11 +421,7 @@
           <ion-item>
             <ion-label position="floating" class="label">Date of Demo
             </ion-label>
-          <ion-datetime
-          formControlName="dateDemo"
-          display-format="MMM DD YYYY"
-          picker-format="YY MMM DD"
-          ></ion-datetime>
+            <ion-label>{{demoRequest.dateDemo}}</ion-label>
           </ion-item>
       </ion-col>
       </ion-row>
@@ -471,7 +430,7 @@
           <ion-item>
             <ion-label position="floating" class="label">No of Days for Demo
             </ion-label>
-            <ion-input type="text" autocomplete autocorrect  formControlName="dateNoDays"></ion-input>
+            <ion-label>{{demoRequest.dateNoDays}}</ion-label>
           </ion-item>
       </ion-col>
       </ion-row>
@@ -481,11 +440,7 @@
           <ion-item>
             <ion-label position="floating" class="label">Date of Pickup
             </ion-label>
-            <ion-datetime
-            formControlName="datePickup"
-            display-format="MMM DD YYYY"
-            picker-format="YY MMM DD"
-            ></ion-datetime>
+            <ion-label>{{demoRequest.datePickup}}</ion-label>
           </ion-item>
       </ion-col>
       </ion-row>
@@ -495,10 +450,7 @@
           <ion-item>
             <ion-label position="floating" class="label">Delivery as per
             </ion-label>
-            <ion-select placeholder="Select One"  interface="popover"  formControlName="dateDeliveryAsPer">
-              <ion-select-option value="Schedule">Schedule</ion-select-option>
-              <ion-select-option value="Special">Special</ion-select-option>
-            </ion-select>
+            <ion-label>{{demoRequest.dateDeliveryAsPer}}</ion-label>
           </ion-item>
       </ion-col>
       </ion-row>
@@ -508,10 +460,7 @@
           <ion-item>
             <ion-label position="floating" class="label">Delivery Chargeble
             </ion-label>
-            <ion-select placeholder="Select One"  interface="popover"  formControlName="dateDeliveryCharge">
-              <ion-select-option value="Yes">Yes</ion-select-option>
-              <ion-select-option value="No">No</ion-select-option>
-            </ion-select>
+            <ion-label>{{demoRequest.dateDeliveryCharge}}</ion-label>
           </ion-item>
       </ion-col>
       </ion-row>
@@ -529,13 +478,13 @@
           <ion-item>
             <ion-label position="floating" class="label">PAN No
             </ion-label>
-            <ion-input type="text" autocomplete autocorrect  formControlName="satPANNo"></ion-input>
+            <ion-label>{{demoRequest.satPANNo}}</ion-label>
           </ion-item>
       </ion-col>
       <ion-col size-sm="3" offset-sm="3">
         <ion-item>
           <ion-label position="floating" class="label">GST No</ion-label>
-          <ion-input type="text" autocomplete autocorrect  formControlName="satGSTNo"></ion-input>
+          <ion-label>{{demoRequest.satGSTNo}}</ion-label>
         </ion-item>
     </ion-col>
       </ion-row>
@@ -545,7 +494,7 @@
           <ion-item>
             <ion-label position="floating" class="label">SEZ
             </ion-label>
-            <ion-input type="text" autocomplete autocorrect  formControlName="satSEZ"></ion-input>
+            <ion-label>{{demoRequest.satSEZ}}</ion-label>
           </ion-item>
       </ion-col>
       </ion-row>
@@ -563,7 +512,7 @@
           <ion-item>
             <ion-label position="floating" class="label">A/c Name
             </ion-label>
-            <ion-input type="text" autocomplete autocorrect  formControlName="bankAccName"></ion-input>
+            <ion-label>{{demoRequest.bankAccName}}</ion-label>
           </ion-item>
       </ion-col>
       </ion-row>
@@ -571,7 +520,7 @@
       <ion-col size-sm="3" offset-sm="3">
         <ion-item>
           <ion-label position="floating" class="label">Address(Optioal)</ion-label>
-          <ion-input type="text" autocomplete autocorrect  formControlName="bankAddress"></ion-input>
+          <ion-label>{{demoRequest.bankAddress}}</ion-label>
         </ion-item>
     </ion-col>
       </ion-row>
@@ -580,7 +529,7 @@
           <ion-item>
             <ion-label position="floating" class="label">Account No.
             </ion-label>
-            <ion-input type="text" autocomplete autocorrect  formControlName="bankAccNo"></ion-input>
+            <ion-label>{{demoRequest.bankAccNo}}</ion-label>
           </ion-item>
       </ion-col>
       </ion-row>
@@ -589,7 +538,7 @@
           <ion-item>
             <ion-label position="floating" class="label">Branch
             </ion-label>
-            <ion-input type="text" autocomplete autocorrect  formControlName="bankBranch"></ion-input>
+            <ion-label>{{demoRequest.bankBranch}}</ion-label>
           </ion-item>
       </ion-col>
       </ion-row>
@@ -598,7 +547,7 @@
           <ion-item>
             <ion-label position="floating" class="label">IFSC Code
             </ion-label>
-            <ion-input type="text" autocomplete autocorrect  formControlName="bankIFSCCode"></ion-input>
+            <ion-label>{{demoRequest.bankIFSCCode}}</ion-label>
           </ion-item>
       </ion-col>
       </ion-row>
@@ -609,7 +558,7 @@
       <ion-row>
         <ion-col size-sm="6" offset-sm="3">
           <span style="font-size:13px">Requirement of Installation</span>
-          <ion-input type="text" autocomplete autocorrect placeholder  formControlName='instaRequirement'></ion-input>
+          <ion-label>{{demoRequest.instaRequirement}}</ion-label>
       </ion-col>
       </ion-row>
     </div>
@@ -626,13 +575,13 @@
           <ion-item>
             <ion-label position="floating" class="label">No.Employee
             </ion-label>
-            <ion-input type="text" autocomplete autocorrect  formControlName="cnsNoEmp"></ion-input>
+            <ion-label>{{demoRequest.cnsNoEmp}}</ion-label>
           </ion-item>
       </ion-col>
       <ion-col size-sm="3" offset-sm="3">
         <ion-item>
           <ion-label position="floating" class="label">No.of Cups /day</ion-label>
-          <ion-input type="text" autocomplete autocorrect  formControlName="cnsNoCups"></ion-input>
+          <ion-label>{{demoRequest.cnsNoCups}}</ion-label>
         </ion-item>
     </ion-col>
       </ion-row>
@@ -649,16 +598,13 @@
           <ion-item>
             <ion-label position="floating" class="label">Applicable
             </ion-label>
-            <ion-select placeholder="Select One"  interface="popover"  formControlName="manApplicable">
-              <ion-select-option value="Yes">Yes</ion-select-option>
-              <ion-select-option value="No">No</ion-select-option>
-            </ion-select>
+            <ion-label>{{demoRequest.manApplicable}}</ion-label>
           </ion-item>
       </ion-col>
       <ion-col size-sm="3" offset-sm="3">
         <ion-item>
           <ion-label position="floating" class="label">No.of Manpower</ion-label>
-          <ion-input type="text" autocomplete autocorrect  formControlName="manNoOfManpower"></ion-input>
+          <ion-label>{{demoRequest.manNoOfManpower}}</ion-label>
         </ion-item>
     </ion-col>
       </ion-row>
@@ -668,17 +614,13 @@
           <ion-item>
             <ion-label position="floating" class="label">Terms
             </ion-label>
-
-			 <ion-select placeholder="Select One"  interface="popover"  formControlName="manTerms">
-        <ion-select-option value="Free">Free</ion-select-option>
-        <ion-select-option value="Chargeble">Chargeble</ion-select-option>
-      </ion-select>
+            <ion-label>{{demoRequest.manTerms}}</ion-label>
           </ion-item>
       </ion-col>
       <ion-col size-sm="3" offset-sm="3">
         <ion-item>
           <ion-label position="floating" class="label">Rate+Tax App.</ion-label>
-          <ion-input type="text" autocomplete autocorrect  formControlName="manRateTax"></ion-input>
+          <ion-label>{{demoRequest.manRateTax}}</ion-label>
         </ion-item>
     </ion-col>
       </ion-row>
@@ -695,21 +637,13 @@
         <ion-col size-sm="3" offset-sm="3">
           <ion-item>
             <ion-label position="floating" class="label">Delivery</ion-label>
-
-			 <ion-select placeholder="Select One"  interface="popover"  formControlName="matDelivery">
-        <ion-select-option value="Weekly">Weekly</ion-select-option>
-        <ion-select-option value="Fortnightly">Fortnightly</ion-select-option>
-        <ion-select-option value="Monthly">Monthly</ion-select-option>
-      </ion-select>
+            <ion-label>{{demoRequest.matDelivery}}</ion-label>
           </ion-item>
       </ion-col>
       <ion-col size-sm="3" offset-sm="3">
         <ion-item>
           <ion-label position="floating" class="label">Billing</ion-label>
-          <ion-select placeholder="Select One"  interface="popover"  formControlName="matBilling">
-            <ion-select-option value="Regular">Regular</ion-select-option>
-            <ion-select-option value="Monthly">Monthly</ion-select-option>
-          </ion-select>
+          <ion-label>{{demoRequest.matBilling}}</ion-label>
         </ion-item>
     </ion-col>
       </ion-row>
@@ -718,19 +652,13 @@
         <ion-col size-sm="3" offset-sm="3">
           <ion-item>
             <ion-label position="floating" class="label">Types of Billing</ion-label>
-            <ion-select placeholder="Select One"  interface="popover"  formControlName="matBillType">
-              <ion-select-option value="Supply Basis">Supply Basis</ion-select-option>
-              <ion-select-option value="PerCup Basis">PerCup Basis</ion-select-option>
-            </ion-select>
+            <ion-label>{{demoRequest.matBillType}}</ion-label>
           </ion-item>
       </ion-col>
       <ion-col size-sm="3" offset-sm="3">
         <ion-item>
           <ion-label position="floating" class="label">Statutory</ion-label>
-          <ion-select placeholder="Select One"  interface="popover"  formControlName="matStatutory">
-            <ion-select-option value="IGST">IGST</ion-select-option>
-            <ion-select-option value="CGST+SGST">CGST+SGST</ion-select-option>
-          </ion-select>
+          <ion-label>{{demoRequest.matStatutory}}</ion-label>
         </ion-item>
     </ion-col>
       </ion-row>
@@ -747,19 +675,13 @@
         <ion-col size-sm="3" offset-sm="3">
           <ion-item>
             <ion-label position="floating" class="label">Type of Bill Preparation</ion-label>
-            <ion-select placeholder="Select One"  interface="popover"  formControlName="subBillType">
-              <ion-select-option value="PAN India 1 Bill">PAN India 1 Bill</ion-select-option>
-              <ion-select-option value="Location wise">Location wise</ion-select-option>
-            </ion-select>
+            <ion-label>{{demoRequest.subBillType}}</ion-label>
           </ion-item>
       </ion-col>
       <ion-col size-sm="3" offset-sm="3">
         <ion-item>
           <ion-label position="floating" class="label">Submission @</ion-label>
-          <ion-select placeholder="Select One"  interface="popover"  formControlName="submission">
-            <ion-select-option value="HO">HO</ion-select-option>
-            <ion-select-option value="Billing Location">Billing Location</ion-select-option>
-          </ion-select>
+          <ion-label>{{demoRequest.submission}}</ion-label>
         </ion-item>
     </ion-col>
       </ion-row>
@@ -768,20 +690,13 @@
         <ion-col size-sm="3" offset-sm="3">
           <ion-item>
             <ion-label position="floating" class="label">Method of Submission</ion-label>
-            <ion-select placeholder="Select One"  interface="popover"  formControlName="subMethod">
-              <ion-select-option value="Hardcopy">Hardcopy</ion-select-option>
-              <ion-select-option value="Softcopy">Softcopy</ion-select-option>
-              <ion-select-option value="Upload in portal">Upload in portal</ion-select-option>
-            </ion-select>
+            <ion-label>{{demoRequest.subMethod}}</ion-label>
           </ion-item>
       </ion-col>
       <ion-col size-sm="3" offset-sm="3">
         <ion-item>
           <ion-label position="floating" class="label">Documents to submit</ion-label>
-          <ion-select placeholder="Select One"  interface="popover"  formControlName="subDocs">
-            <ion-select-option value="Material Bill">Material Bill</ion-select-option>
-            <ion-select-option value="Manpower Bill">Manpower Bill</ion-select-option>
-            </ion-select>
+          <ion-label>{{demoRequest.subDocs}}</ion-label>
         </ion-item>
     </ion-col>
       </ion-row>
@@ -790,11 +705,7 @@
         <ion-col size-sm="3" offset-sm="3">
           <ion-item>
             <ion-label position="floating" class="label">Due date of bill submission</ion-label>
-            <ion-datetime
-            formControlName="subDueDate"
-            display-format="MMM DD YYYY"
-            picker-format="YY MMM DD"
-            ></ion-datetime>
+            <ion-label>{{demoRequest.subDueDate}}</ion-label>
           </ion-item>
       </ion-col>
       </ion-row>
@@ -810,13 +721,13 @@
         <ion-col size-sm="3" offset-sm="3">
           <ion-item>
             <ion-label position="floating" class="label">ML</ion-label>
-            <ion-input type="text" autocomplete autocorrect  formControlName="outML"></ion-input>
+            <ion-label>{{demoRequest.outML}}</ion-label>
           </ion-item>
       </ion-col>
       <ion-col size-sm="3" offset-sm="3">
         <ion-item>
           <ion-label position="floating" class="label">Grammage</ion-label>
-          <ion-input type="text" autocomplete autocorrect  formControlName="outGrammage"></ion-input>
+          <ion-label>{{demoRequest.outGrammage}}</ion-label>
         </ion-item>
     </ion-col>
       </ion-row>
@@ -827,15 +738,7 @@
       <ion-row>
         <ion-col size-sm="6" offset-sm="3">
           <span style="font-size:13px">Billing Branch</span>
-          <ion-select placeholder="Select One"  interface="popover"  formControlName="billBranch">
-            <ion-select-option value="Maharashtra">Maharashtra</ion-select-option>
-            <ion-select-option value="Karnataka">Karnataka</ion-select-option>
-            <ion-select-option value="TN">TN</ion-select-option>
-            <ion-select-option value="Telangana">Telangana</ion-select-option>
-            <ion-select-option value="Gujarat">Gujarat</ion-select-option>
-            <ion-select-option value="UP">UP</ion-select-option>
-            <ion-select-option value="WB">WB</ion-select-option>
-            </ion-select>
+          <ion-label>{{demoRequest.billBranch}}</ion-label>
       </ion-col>
       </ion-row>
     </div>
@@ -857,19 +760,19 @@
         <ion-col size-sm="2" offset-sm="3">
           <ion-item>
             <ion-label position="floating" class="label">Qty</ion-label>
-            <ion-input type="text" autocomplete autocorrect  formControlName="detXTCoffeeQty"></ion-input>
+            <ion-label>{{demoRequest.detXTCoffeeQty}}</ion-label>
           </ion-item>
       </ion-col>
       <ion-col size-sm="2" offset-sm="3">
         <ion-item>
           <ion-label position="floating" class="label">UOM</ion-label>
-          <ion-input type="text" autocomplete autocorrect  formControlName="detXTCoffeeUOM"></ion-input>
+          <ion-label>{{demoRequest.detXTCoffeeUOM}}</ion-label>
         </ion-item>
     </ion-col>
     <ion-col size-sm="2" offset-sm="3">
       <ion-item>
         <ion-label position="floating" class="label">Rate</ion-label>
-        <ion-input type="text" autocomplete autocorrect  formControlName="detXTCoffeeRate"></ion-input>
+        <ion-label>{{demoRequest.detXTCoffeeRate}}</ion-label>
       </ion-item>
   </ion-col>
       </ion-row>
@@ -882,19 +785,19 @@
         <ion-col size-sm="2" offset-sm="3">
           <ion-item>
             <ion-label position="floating" class="label">Qty</ion-label>
-            <ion-input type="text" autocomplete autocorrect  formControlName="detSugarQty"></ion-input>
+            <ion-label>{{demoRequest.detSugarQty}}</ion-label>
           </ion-item>
       </ion-col>
       <ion-col size-sm="2" offset-sm="3">
         <ion-item>
           <ion-label position="floating" class="label">UOM</ion-label>
-          <ion-input type="text" autocomplete autocorrect  formControlName="detSugarUOM"></ion-input>
+          <ion-label>{{demoRequest.detSugarUOM}}</ion-label>
         </ion-item>
     </ion-col>
     <ion-col size-sm="2" offset-sm="3">
       <ion-item>
         <ion-label position="floating" class="label">Rate</ion-label>
-        <ion-input type="text" autocomplete autocorrect  formControlName="detSugarRate"></ion-input>
+        <ion-label>{{demoRequest.detSugarRate}}</ion-label>
       </ion-item>
   </ion-col>
       </ion-row>
@@ -907,19 +810,19 @@
         <ion-col size-sm="2" offset-sm="3">
           <ion-item>
             <ion-label position="floating" class="label">Qty</ion-label>
-            <ion-input type="text" autocomplete autocorrect  formControlName="detTeaBagsQty"></ion-input>
+            <ion-label>{{demoRequest.detTeaBagsQty}}</ion-label>
           </ion-item>
       </ion-col>
       <ion-col size-sm="2" offset-sm="3">
         <ion-item>
           <ion-label position="floating" class="label">UOM</ion-label>
-          <ion-input type="text" autocomplete autocorrect  formControlName="detTeaBagsUOM"></ion-input>
+          <ion-label>{{demoRequest.detTeaBagsUOM}}</ion-label>
         </ion-item>
     </ion-col>
     <ion-col size-sm="2" offset-sm="3">
       <ion-item>
         <ion-label position="floating" class="label">Rate</ion-label>
-        <ion-input type="text" autocomplete autocorrect  formControlName="detTeaBagsRate"></ion-input>
+        <ion-label>{{demoRequest.detTeaBagsRate}}</ion-label>
       </ion-item>
   </ion-col>
       </ion-row>
@@ -932,19 +835,19 @@
         <ion-col size-sm="2" offset-sm="3">
           <ion-item>
             <ion-label position="floating" class="label">Qty</ion-label>
-            <ion-input type="text" autocomplete autocorrect  formControlName="detTeaBlendQty"></ion-input>
+            <ion-label>{{demoRequest.detTeaBlendQty}}</ion-label>
           </ion-item>
       </ion-col>
       <ion-col size-sm="2" offset-sm="3">
         <ion-item>
           <ion-label position="floating" class="label">UOM</ion-label>
-          <ion-input type="text" autocomplete autocorrect  formControlName="detTeaBlendUOM"></ion-input>
+          <ion-label>{{demoRequest.detTeaBlendUOM}}</ion-label>
         </ion-item>
     </ion-col>
     <ion-col size-sm="2" offset-sm="3">
       <ion-item>
         <ion-label position="floating" class="label">Rate</ion-label>
-        <ion-input type="text" autocomplete autocorrect  formControlName="detTeaBlendRate"></ion-input>
+        <ion-label>{{demoRequest.detTeaBlendRate}}</ion-label>
       </ion-item>
   </ion-col>
       </ion-row>
@@ -957,19 +860,19 @@
         <ion-col size-sm="2" offset-sm="3">
           <ion-item>
             <ion-label position="floating" class="label">Qty</ion-label>
-            <ion-input type="text" autocomplete autocorrect  formControlName="detFilCoffeeQty"></ion-input>
+            <ion-label>{{demoRequest.detFilCoffeeQty}}</ion-label>
           </ion-item>
       </ion-col>
       <ion-col size-sm="2" offset-sm="3">
         <ion-item>
           <ion-label position="floating" class="label">UOM</ion-label>
-          <ion-input type="text" autocomplete autocorrect  formControlName="detFilCoffeeUOM"></ion-input>
+          <ion-label>{{demoRequest.detFilCoffeeUOM}}</ion-label>
         </ion-item>
     </ion-col>
     <ion-col size-sm="2" offset-sm="3">
       <ion-item>
         <ion-label position="floating" class="label">Rate</ion-label>
-        <ion-input type="text" autocomplete autocorrect  formControlName="detFilCoffeeRate"></ion-input>
+        <ion-label>{{demoRequest.detFilCoffeeRate}}</ion-label>
       </ion-item>
   </ion-col>
       </ion-row>
@@ -982,19 +885,19 @@
         <ion-col size-sm="2" offset-sm="3">
           <ion-item>
             <ion-label position="floating" class="label">Qty</ion-label>
-            <ion-input type="text" autocomplete autocorrect  formControlName="detStirrerQty"></ion-input>
+            <ion-label>{{demoRequest.detStirrerQty}}</ion-label>
           </ion-item>
       </ion-col>
       <ion-col size-sm="2" offset-sm="3">
         <ion-item>
           <ion-label position="floating" class="label">UOM</ion-label>
-          <ion-input type="text" autocomplete autocorrect  formControlName="detStirrerUOM"></ion-input>
+          <ion-label>{{demoRequest.detStirrerUOM}}</ion-label>
         </ion-item>
     </ion-col>
     <ion-col size-sm="2" offset-sm="3">
       <ion-item>
         <ion-label position="floating" class="label">Rate</ion-label>
-        <ion-input type="text" autocomplete autocorrect  formControlName="detStirrerRate"></ion-input>
+        <ion-label>{{demoRequest.detStirrerRate}}</ion-label>
       </ion-item>
   </ion-col>
       </ion-row>
@@ -1007,19 +910,19 @@
         <ion-col size-sm="2" offset-sm="3">
           <ion-item>
             <ion-label position="floating" class="label">Qty</ion-label>
-            <ion-input type="text" autocomplete autocorrect  formControlName="detPaperCupsQty"></ion-input>
+            <ion-label>{{demoRequest.detPaperCupsQty}}</ion-label>
           </ion-item>
       </ion-col>
       <ion-col size-sm="2" offset-sm="3">
         <ion-item>
           <ion-label position="floating" class="label">UOM</ion-label>
-          <ion-input type="text" autocomplete autocorrect  formControlName="detPaperCupsUOM"></ion-input>
+          <ion-label>{{demoRequest.detPaperCupsUOM}}</ion-label>
         </ion-item>
     </ion-col>
     <ion-col size-sm="2" offset-sm="3">
       <ion-item>
         <ion-label position="floating" class="label">Rate</ion-label>
-        <ion-input type="text" autocomplete autocorrect  formControlName="detPaperCupsRate"></ion-input>
+        <ion-label>{{demoRequest.detPaperCupsRate}}</ion-label>
       </ion-item>
   </ion-col>
       </ion-row>
@@ -1029,5 +932,5 @@
 
 
     </ion-grid>
-  </form>
+
 </ion-content>
