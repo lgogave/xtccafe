@@ -413,7 +413,6 @@ export class SalespipelineService {
                 };
               });
             }),
-            take(1),
             map((client) => {
               this._clientSales.next(client);
             })
@@ -494,16 +493,15 @@ export class SalespipelineService {
         of(sp),
         combineLatest([
           this.firebaseService
-            .collection('clients')
-            .doc(clientId)
-            .valueChanges(),
+            .collection('clients',ref=>ref.where('id','==',clientId))
+            .valueChanges().pipe(first()),
         ]),
       ]);
       }),
       map(([sales,clients])=>{
           return <ClientSales>{
             clientsale:{...(sales as {})},
-            client: {...(clients[0]as {})}
+            client: {...(clients[0][0]as {})}
           }
       }));
   }

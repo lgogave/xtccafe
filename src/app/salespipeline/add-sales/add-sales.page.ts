@@ -150,6 +150,8 @@ buildMachineDetailForm(){
 
     });
     this.form.valueChanges.subscribe(val=>{
+      if(val.client == null)
+      return;
       let clientamount:number=0;
       let clientbillamt:number=0;
       let clientmachinecount=0;
@@ -348,7 +350,7 @@ financialYearCalculation(closureDate:Date,amount:number){
   let endDate:Date=new Date(startDate.getMonth()>2?startDate.getFullYear()+1:startDate.getFullYear(),2,31);
   let diff:Date=new Date(endDate.valueOf()-startDate.valueOf())
   let days=diff.valueOf()/1000/60/60/24;
-  return (amount*12)/264 * days;
+  return ((amount*12)/264) * days;
 }
 
 onMachineChange(event,element){

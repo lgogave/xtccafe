@@ -137,6 +137,10 @@ export class DemoRequest{
     public detPaperCupsQty?:string,
     public detPaperCupsUOM?:string,
     public detPaperCupsRate?:string,
+    public approverComment?:string,
+    public approverUserId?:string,
+    public approverUserName?:string,
+    public approverDate?:Date,
   ){}
 }
 
@@ -148,7 +152,13 @@ export class DemoRequestViewModel{
     public reqStatus:string,
     public orgName?:string,
     public orgStatus?:string,
+    public address?:string,
     public addLocation?:string,
+    public dateDemo?:Date,
     public docId?:string,
+    public approverComment?:string,
+    public approverUserId?:string,
+    public approverUserName?:string,
+    public approverDate?:Date,
   ){}
 }

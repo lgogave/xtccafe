@@ -52,7 +52,7 @@
              <h6>Region: {{sales.client.region}}</h6>
              <h6>Machine Count: {{sales.clientsale.machineCount}}</h6>
              <h6>Potential Billing : {{sales.clientsale.amount*12 | currency:"INR":"symbol"}}</h6>
-             <h6>Billng for the Year : {{sales.clientsale.billingAmount*12 | currency:"INR":"symbol"}}</h6>
+             <h6>Billng for the Year : {{sales.clientsale.billingAmount | currency:"INR":"symbol"}}</h6>
              <h6 text-wrap>Comment: {{sales.clientsale.comment}}</h6>
               <div *ngFor="let location of sales.clientsale.locations">
                   <h6 style="text-decoration: underline;">

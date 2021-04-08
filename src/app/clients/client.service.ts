@@ -145,7 +145,7 @@ export class ClientService {
       switchMap((users) => {
         let useraccess = users;
         return this.firebaseService
-          .collection('clients', (ref) => ref.where('isActive', '==', true))
+          .collection('clients', (ref) => ref.where('isActive', '==', true).orderBy("name","asc"))
           .snapshotChanges()
           .pipe(
             map((clients) => {

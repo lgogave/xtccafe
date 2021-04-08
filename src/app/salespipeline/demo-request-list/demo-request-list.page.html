@@ -4,7 +4,7 @@
       <ion-button>
         <ion-menu-button slot="start"></ion-menu-button>
       </ion-button>
-      <ion-icon name="analytics" slot="end"></ion-icon>
+      <ion-icon name="walk-outline" slot="end"></ion-icon>
       <ion-title>Demo Request</ion-title>
       <ion-buttons slot="primary">
         <ion-button [routerLink]="['/','salespipeline','new']">
@@ -31,7 +31,7 @@
           <ion-button color="primary" routerLink="/salespipeline/new">Add Entry</ion-button>
         </div>
         <ion-list *ngIf="!isLoading && demoRequests.length>0">
-          <ion-item-sliding *ngFor="let req of demoRequests ; let i = index" #slidingClients>
+          <ion-item-sliding *ngFor="let req of demoRequests ; let i = index" #slider>
           <ion-item [ngClass]="i%2==0?'even':'odd'" detail  [routerLink]="['/','salespipeline','demodetail',req.docId]" >
            <div>
             <div>
@@ -45,17 +45,40 @@
               </div>
               <h6>Request Id: {{req.id}}</h6>
               <h6>Request Status: {{req.reqStatus}}</h6>
+              <div *ngIf="req.reqStatus=='Approved' || req.reqStatus=='Rejected'">
+                <h6>Comment: {{req.approverComment}}</h6>
+                <h6>User: {{req.reqStatus}} by {{req.approverUserName}}</h6>
+                <h6>Date: {{getDateTime(req.approverDate)| date:'medium'}}</h6>
+              </div>
               <h6>Location: {{req.addLocation}}</h6>
-
+              <h6>Demo Date: {{getDate(req.dateDemo)}}</h6>
             </div>
            </div>
            <hr/>
           </ion-item>
+          <div style="text-align: right;border-bottom: 1px solid;width: 100%;padding-right: 10px">
+            <ion-button color="success" [hidden]="!(req.reqStatus=='Demo Request Created' || req.reqStatus=='Rejected'?true:false)" (click)="sendForApproval(req)">
+              <ion-icon name="arrow-forward-circle-outline" slot="icon-only"></ion-icon> Send for Approval
+            </ion-button>
+            <div [hidden]="!(req.reqStatus=='Sent for Approval' && userRoles.indexOf('Demo Requisition Approver')>=0)?true:false">
+             <ion-item>
+              <ion-label position="floating" class="label">Comment</ion-label>
+              <ion-textarea #commentText></ion-textarea>
+             </ion-item>
+              <ion-button color="success"  (click)="onApprove(req,commentText)">
+                <ion-icon name="checkmark-circle-outline" slot="icon-only"></ion-icon> Approve
+              </ion-button>
+              <ion-button color="danger" (click)="onReject(req,commentText)">
+                <ion-icon name="close-circle-outline" slot="icon-only"  ></ion-icon> Reject
+              </ion-button>
+            </div>
+
+          </div>
           <ion-item-options>
             <ion-item-option color="secondary">
-              <ion-icon name="create" slot="icon-only"  [routerLink]="['/','salespipeline','edit',req.docId]"></ion-icon>
+              <ion-icon name="create" slot="icon-only"  (click)="onEdit(req.docId,req.reqStatus,slider)"></ion-icon>
             </ion-item-option>
-            <ion-item-option color="danger">
+            <ion-item-option color="danger" (click)="onDelete(req.docId,req.reqStatus,slider)">
               <ion-icon name="trash" slot="icon-only"></ion-icon>
             </ion-item-option>
           </ion-item-options>

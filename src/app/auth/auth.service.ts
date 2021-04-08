@@ -44,9 +44,9 @@ export class AuthService implements OnDestroy {
           name:string;
         };
         const expirationTime = new Date(parsedData.tokenExpirationDate);
-        if (expirationTime <= new Date()) {
-          return null;
-        }
+        // if (expirationTime <= new Date()) {
+        //   return null;
+        // }
         const user = new User(
           parsedData.userId,
           parsedData.email,
@@ -80,7 +80,18 @@ export class AuthService implements OnDestroy {
       })
     );
   }
-
+get userRoles(){
+  return this._user.asObservable().pipe(
+    map((user) => {
+      if (user) {
+        return user.roles;
+        }
+        else{
+          return null;
+        }
+    })
+  );
+}
   get isAdmin(){
        return this._user.asObservable().pipe(
       map((user) => {
@@ -106,7 +117,6 @@ export class AuthService implements OnDestroy {
       })
     );
   }
-
   get userId() {
     return this._user.asObservable().pipe(
       map((user) => {
@@ -118,10 +128,6 @@ export class AuthService implements OnDestroy {
       })
     );
   }
-
-
-
-
   get userName() {
     return this._user.asObservable().pipe(
       map((user) => {
@@ -177,9 +183,6 @@ export class AuthService implements OnDestroy {
           //return this.setUserData.bind(userAuthData);
         }));
   }
-
-
-
   logout() {
     if(this._activeLogoutTime){
       clearTimeout(this._activeLogoutTime);

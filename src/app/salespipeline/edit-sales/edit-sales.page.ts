@@ -218,6 +218,8 @@ this.form = new FormGroup({
 });
 
 this.form.valueChanges.subscribe(val=>{
+  if(val.client == null)
+  return;
   let clientamount:number=0;
   let clientbillamt:number=0;
   let clientmachinecount=0;
@@ -437,7 +439,7 @@ this.isLoading=false;
       let endDate:Date=new Date(startDate.getMonth()>2?startDate.getFullYear()+1:startDate.getFullYear(),2,31);
       let diff:Date=new Date(endDate.valueOf()-startDate.valueOf())
       let days=diff.valueOf()/1000/60/60/24;
-      return (amount*12)/264 * days;
+      return ((amount*12)/264)* days;
     }
 
     statusChange(event,element,index){
@@ -460,11 +462,6 @@ this.isLoading=false;
             {
               text: 'Okay',
               handler:async () => {
-                //  await this.clientService.sendEmail().then((res)=>{
-                //    console.log(res);
-                //  }).catch(erro=>{
-                //    console.log(erro);
-                //  });
                  await this.onUpdateSalespipeline(false)
                  this.router.navigate(['/salespipeline/demorequest/'+this.saleId+"/"+index]);
                 //Redirect to the next page

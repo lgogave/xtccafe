@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { NavController } from '@ionic/angular';
 import { DemoRequest } from 'src/app/models/demo-request.model';
 import { DemoRequestService } from 'src/app/services/demo-request.service';
+import { convertTimestampToDate } from '../../utilities/dataconverters';
 
 @Component({
   selector: 'app-demo-request-detail',
@@ -33,8 +34,10 @@ export class DemoRequestDetailPage implements OnInit {
     this.isLoading=true;
     this.demoRequestService.getDemoRequestById(this.demoId).subscribe((res) => {
      this.demoRequest=res;
-     console.log(res);
      this.isLoading=false;
     });
+  }
+  getDate(date:any){
+    return convertTimestampToDate(date)
   }
 }

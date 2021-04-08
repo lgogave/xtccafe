@@ -39,7 +39,7 @@ export class DemoRequestPage implements OnInit {
       this.loadingCtrl.create({ keyboardClose: true }).then((loadingEl) => {
         loadingEl.present();
       this.salespiplineService.getSalesPipelineById(this.saleId ).subscribe(res=>{
-      this.clientSales=res;
+        this.clientSales=res;
       var result=this.initializeForm();
       loadingEl.dismiss();
       this.isLoading=false;
@@ -50,7 +50,7 @@ export class DemoRequestPage implements OnInit {
 
   initializeForm() {
     this.form = new FormGroup({
-      orgName: new FormControl(this.clientSales.client.name, { updateOn: 'blur' }),
+      orgName: new FormControl(this.clientSales.clientsale.client, { updateOn: 'blur' }),
       orgStatus: new FormControl(this.clientSales.client.potentialNature, { updateOn: 'blur' }),
       address: new FormControl(this.clientSales.clientsale.locations[this.locationIndex].address, { updateOn: 'blur' }),
       addLocation: new FormControl(this.clientSales.clientsale.locations[this.locationIndex].city, { updateOn: 'blur' }),
@@ -160,7 +160,7 @@ export class DemoRequestPage implements OnInit {
     demoRequest.id=id;
     demoRequest.salespipelineId=this.saleId;
     this.demoRequestService.addDemoRequest(demoRequest).subscribe((res) => {
-      console.log(res);
+
        this.toastController.create({
         message: 'Demo Request Created. Id:'+id,
         duration: 2000,

@@ -15,7 +15,8 @@ export class DemoRequestService {
 
   constructor(
     private authService: AuthService,
-    private firebaseService: AngularFirestore) {
+    private firebaseService: AngularFirestore,
+    private http: HttpClient) {
   }
 
   get demoRequests() {
@@ -69,9 +70,60 @@ export class DemoRequestService {
     )
   }
 
+  editDemoRequest(demoRequest:DemoRequest,demoId :string){
+    let fetchedUserId: string;
+    return this.authService.userId.pipe(
+      map((userId) => {
+        if (!userId) {
+          throw new Error('No User Id Found!');
+        }
+        fetchedUserId=userId;
+      }),
+      switchMap(()=>{
+        demoRequest.userId=fetchedUserId;
+        demoRequest.createdOn=new Date();
+        return this.firebaseService
+          .collection('demo-request').doc(demoId)
+          .update(Object.assign({}, demoRequest))
+      }),
+      switchMap(doc=>{
+        return this.demoRequests;
+      }),
+      take(1),
+      tap((request) => {
+        let viewModel=<DemoRequestViewModel>demoRequest;
+        this._demoRequest.next(request.concat(viewModel));
+      })
+    )
+  }
+
+  deleteDemoRequest(demoId:string){
+    let fetchedUserId: string;
+    return this.authService.userId.pipe(
+      map((userId) => {
+        if (!userId) {
+          throw new Error('No User Id Found!');
+        }
+        fetchedUserId=userId;
+      }),
+      switchMap(()=>{
+        return this.firebaseService
+          .collection('demo-request').doc(demoId)
+          .delete()
+      }),
+      switchMap(doc=>{
+        return this.demoRequests;
+      }),
+      take(1),
+      tap((request) => {
+        this._demoRequest.next(request.filter((b) => b.docId !== demoId));
+      })
+    )
+  }
+
   fetchDemoRequest(){
     let fetchedUserId: string;
-    let isAdmin: boolean;
+    let fetchUserRoles: string[];
     return this.authService.userId.pipe(
       map((userId) => {
         if (!userId) {
@@ -80,13 +132,13 @@ export class DemoRequestService {
         fetchedUserId=userId;
       }),
       switchMap(() => {
-        return this.authService.isAdmin;
+        return this.authService.userRoles;
       }),
-      map(isAdmin=>{
-        isAdmin=isAdmin;
+      map(userRoles=>{
+        fetchUserRoles=userRoles;
       }),
       switchMap(()=>{
-        if(isAdmin)
+        if(fetchUserRoles.indexOf('admin')>=0 || fetchUserRoles.indexOf('Demo Requisition Approver')>=0)
         return this.firebaseService.collection('demo-request').snapshotChanges();
         else
         return this.firebaseService.collection('demo-request',ref=>ref.where('userId','==',fetchedUserId)).snapshotChanges();
@@ -103,4 +155,58 @@ export class DemoRequestService {
       })
     )
   }
+
+  updateDemoStatus(demoId:string,status:string,approverComment:string,isAprroveReject:boolean=false){
+    let fetchedUserId: string;
+    let fetchedUserName:string;
+    return this.authService.userId.pipe(
+      map((userId) => {
+        if (!userId) {
+          throw new Error('No User Id Found!');
+        }
+        fetchedUserId=userId;
+      }),
+      switchMap(() => {
+        return this.authService.userName;
+      }),
+      map(username=>{
+        fetchedUserName=username;
+        return username;
+      }),
+      switchMap(()=>{
+        if(!isAprroveReject)
+        return this.firebaseService
+          .collection('demo-request').doc(demoId)
+          .update({reqStatus:status,approverComment:approverComment,userId:fetchedUserId})
+          else
+          return this.firebaseService
+          .collection('demo-request').doc(demoId)
+          .update({reqStatus:status,approverComment:approverComment,approverUserId:fetchedUserId,approverUserName:fetchedUserName,approverDate:new Date()})
+      }),
+      switchMap(doc=>{
+
+        return this.demoRequests;
+      }),
+      take(1),
+      tap((request) => {
+        let req= request.filter(r=>r.docId==demoId);
+        req[0].reqStatus=status;
+        let viewModel=<DemoRequestViewModel>req[0];
+        this._demoRequest.next(request.concat(viewModel));
+      })
+    )
+  }
+
+
+
+  async sendEmail(emailobj){
+
+      return await this.http
+        .post(
+          'https://us-central1-db-xtc-cafe-dev.cloudfunctions.net/emailMessage',
+          emailobj
+        )
+        .pipe(map((res) => res))
+        .toPromise();
+    }
 }
