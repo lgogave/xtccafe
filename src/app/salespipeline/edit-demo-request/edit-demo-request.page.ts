@@ -1,7 +1,10 @@
+import { PercentPipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormArray, FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NavController, ToastController } from '@ionic/angular';
+import { MachineDetail, MastInstallKit, MastStock } from 'src/app/models/division.model';
+import { DivisionService } from 'src/app/services/division.service';
 import { DemoRequest } from '../../models/demo-request.model';
 import { DemoRequestService } from '../../services/demo-request.service';
 @Component({
@@ -14,33 +17,65 @@ export class EditDemoRequestPage implements OnInit {
   demoRequest: DemoRequest;
   demoId: string;
   isLoading: boolean = false;
+  machineDetail:MachineDetail[];
+  machines:string[];
+  machineType:string[];
+  machineCategory:string[]
+  stockDetail:MastStock[];
+  installkit:MastInstallKit[];
+  installkititems:string[];
+  stockCategory:string[];
+  stockType:string[];
+  perPipe:PercentPipe;
+
   constructor(
     private demoRequestService: DemoRequestService,
     private route: ActivatedRoute,
     private navCtrl: NavController,
     private toastController: ToastController,
-    private router: Router
+    private router: Router,
+    private divisionService:DivisionService
   ) {}
-  ngOnInit() {
-    this.route.paramMap.subscribe((paramMap) => {
+  async ngOnInit() {
+    this.route.paramMap.subscribe(async(paramMap) => {
       if (!paramMap.has('demoId')) {
         this.navCtrl.navigateBack('/salespipeline/demorequests');
         return;
       }
+      this.perPipe=new PercentPipe('en-US');
       this.demoId = paramMap.get('demoId');
       this.isLoading = true;
+
+
     });
   }
-  ionViewWillEnter() {
+  async ionViewWillEnter() {
     this.isLoading = true;
-    this.demoRequestService.getDemoRequestById(this.demoId).subscribe((res) => {
+    this.demoRequestService.getDemoRequestById(this.demoId).subscribe(async(res) => {
       this.demoRequest = res;
+      await this.loadMachineDetails();
+      await this.loadStockDetails();
+      await this.loadInstallKitDetails();
       var result = this.initializeForm();
       this.isLoading = false;
     });
   }
   initializeForm() {
+    let machineArray=new FormArray([]);
+    let materialArray=new FormArray([]);
+    this.demoRequest.machineDetails.forEach(element => {
+      machineArray.push(this.createMachineDetail(element))
+    });
+    this.demoRequest.materialDetails.forEach(element => {
+      materialArray.push(this.createMaterialDetail(element))
+    });
+    let res=this.initDependantDropDown();
+
+
+
     this.form = new FormGroup({
+      machineDetails: machineArray,
+      materialDetails:materialArray,
       orgName: new FormControl(this.demoRequest.orgName, { updateOn: 'blur' }),
       orgStatus: new FormControl(this.demoRequest.orgStatus, {
         updateOn: 'blur',
@@ -55,256 +90,42 @@ export class EditDemoRequestPage implements OnInit {
       addState: new FormControl(this.demoRequest.addState, {
         updateOn: 'blur',
       }),
-      billAddress: new FormControl(this.demoRequest.billAddress, {
-        updateOn: 'blur',
-      }),
-      billLocation: new FormControl(this.demoRequest.billLocation, {
-        updateOn: 'blur',
-      }),
-      billPincode: new FormControl(this.demoRequest.billPincode, {
-        updateOn: 'blur',
-      }),
-      billState: new FormControl(this.demoRequest.billState, {
-        updateOn: 'blur',
-      }),
-      delAddress: new FormControl(this.demoRequest.delAddress, {
-        updateOn: 'blur',
-      }),
-      delLocation: new FormControl(this.demoRequest.delLocation, {
-        updateOn: 'blur',
-      }),
-      delPincode: new FormControl(this.demoRequest.delPincode, {
-        updateOn: 'blur',
-      }),
-      delState: new FormControl(this.demoRequest.delState, {
-        updateOn: 'blur',
-      }),
       conName: new FormControl(this.demoRequest.conName, { updateOn: 'blur' }),
       conMobile: new FormControl(this.demoRequest.conMobile, {
-        updateOn: 'blur',
-      }),
-      conLandline: new FormControl(this.demoRequest.conLandline, {
         updateOn: 'blur',
       }),
       conEmail: new FormControl(this.demoRequest.conEmail, {
         updateOn: 'blur',
       }),
-      conRef: new FormControl(this.demoRequest.conRef, { updateOn: 'blur' }),
-      mchModel: new FormControl(this.demoRequest.mchModel, {
-        updateOn: 'blur',
-      }),
-      mchNoMachine: new FormControl(this.demoRequest.mchNoMachine, {
-        updateOn: 'blur',
-      }),
-      mchType: new FormControl(this.demoRequest.mchType, { updateOn: 'blur' }),
       accInstallation: new FormControl(this.demoRequest.accInstallation, {
         updateOn: 'blur',
       }),
       accOther: new FormControl(this.demoRequest.accOther, {
         updateOn: 'blur',
       }),
-      installation: new FormControl(this.demoRequest.installation, {
-        updateOn: 'blur',
-      }),
       instDemo: new FormControl(this.demoRequest.instDemo, {
         updateOn: 'blur',
       }),
-      rate: new FormControl(this.demoRequest.rate, { updateOn: 'blur' }),
-      rategst: new FormControl(this.demoRequest.rategst, { updateOn: 'blur' }),
-      rateamount: new FormControl(this.demoRequest.rateamount, {
-        updateOn: 'blur',
-      }),
-      rentTerm: new FormControl(this.demoRequest.rentTerm, {
-        updateOn: 'blur',
-      }),
-      rentRateMonth: new FormControl(this.demoRequest.rentRateMonth, {
-        updateOn: 'blur',
-      }),
-      rentamount: new FormControl(this.demoRequest.rentamount, {
-        updateOn: 'blur',
-      }),
-      depApplicable: new FormControl(this.demoRequest.depApplicable, {
-        updateOn: 'blur',
-      }),
-      depAmount: new FormControl(this.demoRequest.depAmount, {
-        updateOn: 'blur',
-      }),
-      payTerms: new FormControl(this.demoRequest.payTerms, {
-        updateOn: 'blur',
-      }),
-      payCreditPeriod: new FormControl(this.demoRequest.payCreditPeriod, {
-        updateOn: 'blur',
-      }),
-      payCreditLimit: new FormControl(this.demoRequest.payCreditLimit, {
-        updateOn: 'blur',
-      }),
-      payModel: new FormControl(this.demoRequest.payModel, {
-        updateOn: 'blur',
-      }),
-      comApplicable: new FormControl(this.demoRequest.comApplicable, {
-        updateOn: 'blur',
-      }),
-      comQuantity: new FormControl(this.demoRequest.comQuantity, {
-        updateOn: 'blur',
-      }),
-      comTerm: new FormControl(this.demoRequest.comTerm, { updateOn: 'blur' }),
       dateDelivery: new FormControl(this.demoRequest.dateDelivery, {
-        updateOn: 'blur',
-      }),
-      dateInstallation: new FormControl(this.demoRequest.dateInstallation, {
         updateOn: 'blur',
       }),
       dateDemo: new FormControl(this.demoRequest.dateDemo, {
         updateOn: 'blur',
       }),
-      dateNoDays: new FormControl(this.demoRequest.dateNoDays, {
+      dateEndDemo: new FormControl(this.demoRequest.dateEndDemo, {
         updateOn: 'blur',
       }),
       datePickup: new FormControl(this.demoRequest.datePickup, {
-        updateOn: 'blur',
-      }),
-      dateDeliveryAsPer: new FormControl(this.demoRequest.dateDeliveryAsPer, {
-        updateOn: 'blur',
-      }),
-      dateDeliveryCharge: new FormControl(this.demoRequest.dateDeliveryCharge, {
-        updateOn: 'blur',
-      }),
-      satPANNo: new FormControl(this.demoRequest.satPANNo, {
         updateOn: 'blur',
       }),
       satGSTNo: new FormControl(this.demoRequest.satGSTNo, {
         updateOn: 'blur',
       }),
       satSEZ: new FormControl(this.demoRequest.satSEZ, { updateOn: 'blur' }),
-      bankAccName: new FormControl(this.demoRequest.bankAccName, {
-        updateOn: 'blur',
-      }),
-      bankAddress: new FormControl(this.demoRequest.bankAddress, {
-        updateOn: 'blur',
-      }),
-      bankAccNo: new FormControl(this.demoRequest.bankAccNo, {
-        updateOn: 'blur',
-      }),
-      bankBranch: new FormControl(this.demoRequest.bankBranch, {
-        updateOn: 'blur',
-      }),
-      bankIFSCCode: new FormControl(this.demoRequest.bankIFSCCode, {
-        updateOn: 'blur',
-      }),
-      instaRequirement: new FormControl(this.demoRequest.instaRequirement, {
-        updateOn: 'blur',
-      }),
       cnsNoEmp: new FormControl(this.demoRequest.cnsNoEmp, {
         updateOn: 'blur',
       }),
       cnsNoCups: new FormControl(this.demoRequest.cnsNoCups, {
-        updateOn: 'blur',
-      }),
-      manApplicable: new FormControl(this.demoRequest.manApplicable, {
-        updateOn: 'blur',
-      }),
-      manNoOfManpower: new FormControl(this.demoRequest.manNoOfManpower, {
-        updateOn: 'blur',
-      }),
-      manTerms: new FormControl(this.demoRequest.manTerms, {
-        updateOn: 'blur',
-      }),
-      manRateTax: new FormControl(this.demoRequest.manRateTax, {
-        updateOn: 'blur',
-      }),
-      matDelivery: new FormControl(this.demoRequest.matDelivery, {
-        updateOn: 'blur',
-      }),
-      matBilling: new FormControl(this.demoRequest.matBilling, {
-        updateOn: 'blur',
-      }),
-      matBillType: new FormControl(this.demoRequest.matBillType, {
-        updateOn: 'blur',
-      }),
-      matStatutory: new FormControl(this.demoRequest.matStatutory, {
-        updateOn: 'blur',
-      }),
-      subBillType: new FormControl(this.demoRequest.subBillType, {
-        updateOn: 'blur',
-      }),
-      submission: new FormControl(this.demoRequest.submission, {
-        updateOn: 'blur',
-      }),
-      subMethod: new FormControl(this.demoRequest.subMethod, {
-        updateOn: 'blur',
-      }),
-      subDocs: new FormControl(this.demoRequest.subDocs, { updateOn: 'blur' }),
-      subDueDate: new FormControl(this.demoRequest.subDueDate, {
-        updateOn: 'blur',
-      }),
-      outML: new FormControl(this.demoRequest.outML, { updateOn: 'blur' }),
-      outGrammage: new FormControl(this.demoRequest.outGrammage, {
-        updateOn: 'blur',
-      }),
-      detXTCoffeeQty: new FormControl(this.demoRequest.detXTCoffeeQty, {
-        updateOn: 'blur',
-      }),
-      detXTCoffeeUOM: new FormControl(this.demoRequest.detXTCoffeeUOM, {
-        updateOn: 'blur',
-      }),
-      detXTCoffeeRate: new FormControl(this.demoRequest.detXTCoffeeRate, {
-        updateOn: 'blur',
-      }),
-      detSugarQty: new FormControl(this.demoRequest.detSugarQty, {
-        updateOn: 'blur',
-      }),
-      detSugarUOM: new FormControl(this.demoRequest.detSugarUOM, {
-        updateOn: 'blur',
-      }),
-      detSugarRate: new FormControl(this.demoRequest.detSugarRate, {
-        updateOn: 'blur',
-      }),
-      detTeaBagsQty: new FormControl(this.demoRequest.detTeaBagsQty, {
-        updateOn: 'blur',
-      }),
-      detTeaBagsUOM: new FormControl(this.demoRequest.detTeaBagsUOM, {
-        updateOn: 'blur',
-      }),
-      detTeaBagsRate: new FormControl(this.demoRequest.detTeaBagsRate, {
-        updateOn: 'blur',
-      }),
-      detTeaBlendQty: new FormControl(this.demoRequest.detTeaBlendQty, {
-        updateOn: 'blur',
-      }),
-      detTeaBlendUOM: new FormControl(this.demoRequest.detTeaBlendUOM, {
-        updateOn: 'blur',
-      }),
-      detTeaBlendRate: new FormControl(this.demoRequest.detTeaBlendRate, {
-        updateOn: 'blur',
-      }),
-      detFilCoffeeQty: new FormControl(this.demoRequest.detFilCoffeeQty, {
-        updateOn: 'blur',
-      }),
-      detFilCoffeeUOM: new FormControl(this.demoRequest.detFilCoffeeUOM, {
-        updateOn: 'blur',
-      }),
-      detFilCoffeeRate: new FormControl(this.demoRequest.detFilCoffeeRate, {
-        updateOn: 'blur',
-      }),
-      detStirrerQty: new FormControl(this.demoRequest.detStirrerQty, {
-        updateOn: 'blur',
-      }),
-      detStirrerUOM: new FormControl(this.demoRequest.detStirrerUOM, {
-        updateOn: 'blur',
-      }),
-      detStirrerRate: new FormControl(this.demoRequest.detStirrerRate, {
-        updateOn: 'blur',
-      }),
-      detPaperCupsQty: new FormControl(this.demoRequest.detPaperCupsQty, {
-        updateOn: 'blur',
-      }),
-      detPaperCupsUOM: new FormControl(this.demoRequest.detPaperCupsUOM, {
-        updateOn: 'blur',
-      }),
-      detPaperCupsRate: new FormControl(this.demoRequest.detPaperCupsRate, {
-        updateOn: 'blur',
-      }),
-      billBranch: new FormControl(this.demoRequest.billBranch, {
         updateOn: 'blur',
       }),
     });
@@ -334,6 +155,130 @@ export class EditDemoRequestPage implements OnInit {
           });
       });
   }
+  createMachineDetail(machine?:any){
+    return new FormGroup({
+      machineName: new FormControl(machine!=null?machine['machineName']: null, {
+        updateOn: "blur",
+        //validators: [Validators.required],
+      }),
+      machineType: new FormControl(machine!=null?machine['machineType']: null, {
+        updateOn: "blur",
+        //validators: [Validators.required],
+      }),
+      volumeType: new FormControl(machine!=null?machine['volumeType']: null, {
+        updateOn: "blur",
+        //validators: [Validators.required],
+      }),
+      machineCount: new FormControl(machine!=null?machine['machineCount']: null, {
+        updateOn: "blur",
+        //validators: [Validators.required],
+      })
+    })
+  }
+  createMaterialDetail(material?:any){
+
+
+    return new FormGroup({
+      category: new FormControl(material!=null?material['category']:null, {
+        updateOn: "blur",
+        //validators: [Validators.required],
+      }),
+      item: new FormControl(material!=null?material['item']:null, {
+        updateOn: "blur",
+        //validators: [Validators.required],
+      }),
+      uom: new FormControl(material!=null?material['uom']:null, {
+        updateOn: "blur",
+        //validators: [Validators.required],
+      }),
+      hsnNo: new FormControl(material!=null?material['hsnNo']:null, {
+        updateOn: "blur",
+        //validators: [Validators.required],
+      }),
+      gst: new FormControl(material!=null?material['gst']:null, {
+        updateOn: "blur",
+        //validators: [Validators.required],
+      }),
+      qty: new FormControl(material!=null?material['qty']:null, {
+        updateOn: "blur",
+        //validators: [Validators.required],
+      }),
+
+    })
+  }
+  addMachine(){
+    let mchdetails=this.form.get('machineDetails') as FormArray;
+    mchdetails.push(this.createMachineDetail());
+  }
+  deleteMachine(index){
+    let mchdetails=this.form.get('machineDetails') as FormArray;
+    mchdetails.removeAt(index);
+  }
+  addMaterial(){
+    let matdetails=this.form.get('materialDetails') as FormArray;
+    matdetails.push(this.createMaterialDetail());
+  }
+  deleteMaterial(index){
+    let matdetails=this.form.get('materialDetails') as FormArray;
+    matdetails.removeAt(index);
+  }
+  async loadMachineDetails(){
+    this.machineDetail=await this.divisionService.getMachineDetailList();
+    this.machines=this.machineDetail.filter(item=>item.group==0).sort((a,b)=>a.srno-b.srno).map(item=>item.name);
+    this.machineType=this.machineDetail.filter(item=>item.group==1).sort((a,b)=>a.srno-b.srno).map(item=>item.name);
+    return true;
+  }
+  async loadStockDetails(){
+    this.stockDetail=await this.divisionService.getStock();
+    this.stockCategory=this.stockDetail.map(item=>item.category).filter((value, index, self) => self.indexOf(value) === index).sort();
+    return true;
+  }
+  async loadInstallKitDetails(){
+    this.installkit=await this.divisionService.getInstallKits();
+    this.installkititems=this.installkit.map(item=>item.item).sort();
+    return true;
+  }
+  onMachineChange(event,element){
+    if (!event.target.value) return;
+    let ref=this.machineDetail.filter(item=>item.name==event.target.value)[0].name;
+    element.controls['volumeType'].reset();
+    this.machineCategory=[];
+    this.machineCategory=this.machineDetail.filter(item=>item.ref==ref && item.group==2).sort(
+      (a,b)=>a.srno-b.srno).map(item=>item.name);
+      if(ref=="FM" || ref=="Mtl(kg/mth)"){
+        element.controls['volumeType'].patchValue("Not Applicable",{emitEvent: false})
+      }
+  }
+
+
+  onMaterialChange(event,element){
+    if (!event.target.value) return;
+    let ref=this.stockDetail.filter(item=>item.category==event.target.value)[0].category;
+    element.controls['item'].reset();
+    this.stockType=[];
+    element.controls['uom'].patchValue(null,{emitEvent: false});
+    element.controls['hsnNo'].patchValue(null,{emitEvent: false});
+    element.controls['gst'].patchValue(null,{emitEvent: false});
+    this.stockType=this.stockDetail.filter(item=>item.category==ref).map(item=>item.item).sort();
+  }
+  initDependantDropDown(){
+    this.machineCategory=[];
+    this.machineCategory=this.machineDetail.sort((a,b)=>a.srno-b.srno).map(item=>item.name);
+    this.stockType=[];
+    this.stockType=this.stockDetail.map(item=>item.item).sort();
+    return true;
+  }
+
+  onMaterialTypeChange(event,element){
+    console.log(element);
+    if (!event.target.value) return;
+    let ref=this.stockDetail.filter(item=>item.item==event.target.value)[0];
+    console.log(ref);
+    element.controls['uom'].patchValue(ref.uom,{emitEvent: false});
+    element.controls['hsnNo'].patchValue(ref.hsnNo,{emitEvent: false});
+    element.controls['gst'].patchValue(this.perPipe.transform(ref.gst),{emitEvent: false});
+  }
+
 }
 
 

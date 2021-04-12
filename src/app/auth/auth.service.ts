@@ -267,6 +267,7 @@ get userRoles(){
       name:name
     });
     Plugins.Storage.set({ key: "authData", value: data });
+    console.log('login called at'+new Date());
   }
 
 ngOnDestroy(){

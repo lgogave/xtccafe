@@ -129,41 +129,62 @@ export class DemoRequestListPage implements OnInit, OnDestroy {
   }
 
   sendForApproval(request:DemoRequestViewModel){
-    // let req=this.demoRequests.filter(r=>r.docId==request.docId);
-    // req[0].reqStatus='Sent for Approval';
-    this.demoRequestService
-      .updateDemoStatus(request.docId, 'Sent for Approval','')
-      .subscribe();
+      this.alertCtrl
+      .create({
+        header: 'Send for Approval!',
+        message: '<strong>Are you sure you want to send ReqId:'+request.id+' for approval ?</strong>',
+        buttons: [
+          {
+            text: 'Cancel',
+            role: 'cancel',
+            handler: () => {},
+          },
+          {
+            text: 'Okay',
+            handler: () => {
+              this.loadingCtrl
+                .create({ keyboardClose: true, message: 'Wait...' })
+                .then((loadingEl) => {
+                  loadingEl.present();
+                  //db Call
+                  this.demoRequestService
+                  .updateDemoStatus(request.docId, 'Sent for Approval','')
+                  .subscribe(()=>{
+                    console.log("Email Called");
+                    this.sendDemoEmail(request.docId);
+                    loadingEl.dismiss();
+                  });
+                });
+            },
+          },
+        ],
+      })
+      .then((alertEl) => {
+        alertEl.present();
+      });
     return;
-    /*
-    var emailobj = {
-      to: 'jyoti.gogave@dwijafoods.com',
-      from: 'jyoti.gogave@dwijafoods.com',
-      subject: 'Demo request raised by Jyoti',
-      location: [
-        {
-          city: req[0].addLocation,
-          address: req[0].address,
-          stDate:this.getDate(req[0].dateDemo),
-          contact: 'Facility Team',
-          machines:[{
-            name:'FM',
-            type:'Manual',
-            category:'5 ltr',
-            mchCount:'2'
-          }]
-        },
-      ],
-    };
-    this.demoRequestService.sendEmail(emailobj).then((res)=>{
-                 }).catch(erro=>{
-                   console.log(erro);
-                 });
-*/
+
   }
 
+  sendDemoEmail(reqId){
+    this.demoRequestService.getDemoRequestById(reqId).subscribe((res) => {
+      var emailobj = {
+        to: 'jyoti.gogave@dwijafoods.com',
+        from: 'jyoti.gogave@dwijafoods.com',
+        subject: 'Demo request raised by Jyoti',
+        request:res
+      };
+      this.demoRequestService
+        .sendEmail(emailobj)
+        .then((res) => {})
+        .catch((erro) => {
+          console.log(erro);
+        });
+    });
+  }
+
+
   onApprove(request:DemoRequestViewModel,element){
-  console.log(element.value);
   this.alertCtrl
     .create({
       header: 'Approve!',

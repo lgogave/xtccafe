@@ -21,3 +21,23 @@ export class MachineDetail{
     public ref?:string,
   ){}
 }
+
+export class MastStock{
+  constructor(
+    public id:string,
+    public item:string,
+    public uom?:string,
+    public hsnNo?:string,
+    public gst?:string,
+    public category?:string,
+  ){}
+}
+export class MastInstallKit{
+  constructor(
+    public id:string,
+    public item:string,
+  ){}
+}
+
+
+

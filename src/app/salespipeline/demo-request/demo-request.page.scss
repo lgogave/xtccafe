@@ -5,3 +5,40 @@
 .label{
   color: #aeaeae;
 }
+
+.panel_header {
+  width: 100%;
+  display: inline-block;
+  background-color: #ffffff;
+  border: 1px solid rgba(0,0,0,0.09);
+  border-bottom: 0px solid transparent;
+  vertical-align: top;
+  position: relative;
+  min-height: 75px;
+}
+
+.panel_header .title {
+  margin-top: 10px;
+  font-family: 'Roboto', Arial, Helvetica, sans-serif;
+  font-size: 19px;
+  padding-left: 30px;
+  padding-top: 15px;
+  line-height: 30px;
+  color: #676767;
+  font-weight: 400;
+  text-transform: uppercase;
+  display: inline-block;
+}
+.pull-left {
+  float: left!important;
+}
+.pull-right {
+  float: right!important;
+}
+.panel_header .actions {
+  margin: 10px 15px 0 15px;
+  line-height: 50px;
+  position: absolute;
+  right: 0px;
+  top: 0px;
+}

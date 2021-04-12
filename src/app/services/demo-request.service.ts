@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, combineLatest, Observable, observable, of, pipe } from 'rxjs';
-import { map, switchMap, take, tap } from 'rxjs/operators';
+import { first, map, switchMap, take, tap } from 'rxjs/operators';
 import { AuthService } from '../auth/auth.service';
 import { AngularFirestore } from '@angular/fire/firestore';
 import 'firebase/firestore';
@@ -38,7 +38,8 @@ export class DemoRequestService {
       }),
       map(request=>{
         return <DemoRequest> {...request as {}};
-      })
+      }),
+      first()
     )
 
   }

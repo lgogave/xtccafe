@@ -63,71 +63,6 @@
       </ion-col>
       </ion-row>
     </div>
-    <div class="section">
-      <ion-row>
-        <ion-col size-sm="6" offset-sm="3">
-          <span style="font-size:13px">Billing Address of the Organization</span>
-          <ion-item>
-            <h6>{{demoRequest.billAddress}}</h6>
-          </ion-item>
-      </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col size-sm="3" offset-sm="3">
-          <ion-item>
-            <h6  class="label">Location : </h6>
-            <h6>{{demoRequest.billLocation}}</h6>
-          </ion-item>
-      </ion-col>
-      <ion-col size-sm="3" offset-sm="3">
-        <ion-item>
-          <h6  class="label">Pin Code : </h6>
-          <h6>{{demoRequest.billPincode}}</h6>
-        </ion-item>
-    </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col size-sm="6" offset-sm="3">
-          <ion-item>
-            <h6  class="label">State : </h6>
-            <h6>{{demoRequest.billState}}</h6>
-          </ion-item>
-      </ion-col>
-      </ion-row>
-    </div>
-
-    <div class="section">
-      <ion-row>
-        <ion-col size-sm="6" offset-sm="3">
-          <span style="font-size:13px">Delivery Address with land mark</span>
-          <ion-item>
-            <h6>{{demoRequest.delAddress}}</h6>
-          </ion-item>
-      </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col size-sm="3" offset-sm="3">
-          <ion-item>
-            <h6  class="label">Location : </h6>
-            <h6>{{demoRequest.delLocation}}</h6>
-          </ion-item>
-      </ion-col>
-      <ion-col size-sm="3" offset-sm="3">
-        <ion-item>
-          <h6  class="label">Pin Code : </h6>
-          <h6>{{demoRequest.delPincode}}</h6>
-        </ion-item>
-    </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col size-sm="6" offset-sm="3">
-          <ion-item>
-            <h6  class="label">State : </h6>
-            <h6>{{demoRequest.delState}}</h6>
-          </ion-item>
-      </ion-col>
-      </ion-row>
-    </div>
 
     <div class="section">
       <ion-row>
@@ -145,12 +80,6 @@
             <h6>{{demoRequest.conMobile}}</h6>
           </ion-item>
       </ion-col>
-      <ion-col size-sm="3" offset-sm="3">
-        <ion-item>
-          <h6  class="label">Land Line : </h6>
-          <h6>{{demoRequest.conLandline}}</h6>
-        </ion-item>
-    </ion-col>
       </ion-row>
       <ion-row>
         <ion-col size-sm="6" offset-sm="3">
@@ -160,40 +89,36 @@
           </ion-item>
       </ion-col>
       </ion-row>
-      <ion-row>
-        <ion-col size-sm="6" offset-sm="3">
-          <ion-item>
-            <h6  class="label">Reference : </h6>
-            <h6>{{demoRequest.conRef}}</h6>
-          </ion-item>
-      </ion-col>
-      </ion-row>
     </div>
 
     <div class="section">
       <ion-row>
         <ion-col size-sm="6" offset-sm="3">
-          <span style="font-size:13px">Machine detail</span>
+          <span style="font-size:13px">Machine Details</span>
+          <div *ngFor="let item of demoRequest.machineDetails">
+            <div style="border: 1px solid #A04000;">
           <ion-item>
-            <h6>{{demoRequest.mchModel}}</h6>
+            <h6 class="label">Machine: </h6>
+            <h6>{{item['machineName']}}</h6>
           </ion-item>
-      </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col size-sm="3" offset-sm="3">
           <ion-item>
-            <h6  class="label">No.of Machine : </h6>
-            <h6>{{demoRequest.mchNoMachine}}</h6>
+            <h6 class="label">Type:</h6>
+            <h6> {{item['machineType']}}</h6>
           </ion-item>
+          <ion-item>
+            <h6 class="label">Category:</h6>
+            <h6>{{item['volumeType']}}</h6>
+          </ion-item>
+          <ion-item>
+            <h6 class="label">Count:</h6>
+            <h6>{{item['machineCount']}}</h6>
+          </ion-item>
+        </div>
+        </div>
       </ion-col>
-      <ion-col size-sm="3" offset-sm="3">
-        <ion-item>
-          <h6  class="label">Type : </h6>
-          <h6>{{demoRequest.mchType}}</h6>
-        </ion-item>
-    </ion-col>
       </ion-row>
     </div>
+
 
     <div class="section">
       <ion-row>
@@ -225,166 +150,13 @@
       </ion-col>
       </ion-row>
       <ion-row>
-        <ion-col size-sm="3" offset-sm="3">
-          <ion-item>
-            <h6  class="label">Installation :
-            </h6>
-            <h6>{{demoRequest.installation}}</h6>
-          </ion-item>
-      </ion-col>
+
       <ion-col size-sm="3" offset-sm="3">
         <ion-item>
           <h6  class="label">Demo : </h6>
           <h6>{{demoRequest.instDemo}}</h6>
         </ion-item>
     </ion-col>
-      </ion-row>
-    </div>
-
-    <div class="section">
-      <ion-row>
-        <ion-col size-sm="6" offset-sm="3">
-          <span style="font-size:13px">Rate Per Machine</span>
-      </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col size-sm="3" offset-sm="3">
-          <ion-item>
-            <h6  class="label">Rate : </h6>
-            <h6>{{demoRequest.rate}}</h6>
-          </ion-item>
-      </ion-col>
-      <ion-col size-sm="3" offset-sm="3">
-        <ion-item>
-          <h6  class="label">GST : </h6>
-          <h6>{{demoRequest.rategst}}</h6>
-        </ion-item>
-    </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col size-sm="3" offset-sm="3">
-          <ion-item>
-            <h6  class="label">Total Amount : </h6>
-            <h6>{{demoRequest.rateamount}}</h6>
-          </ion-item>
-      </ion-col>
-      </ion-row>
-    </div>
-
-    <div class="section">
-      <ion-row>
-        <ion-col size-sm="6" offset-sm="3">
-          <span style="font-size:13px">Details of Rent</span>
-      </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col size-sm="3" offset-sm="3">
-          <ion-item>
-            <h6  class="label">Terms :
-            </h6>
-            <h6>{{demoRequest.rentTerm}}</h6>
-          </ion-item>
-      </ion-col>
-      <ion-col size-sm="3" offset-sm="3">
-        <ion-item>
-          <h6  class="label">Rate per month : </h6>
-          <h6>{{demoRequest.rentRateMonth}}</h6>
-        </ion-item>
-    </ion-col>
-      </ion-row>
-    </div>
-
-    <div class="section">
-      <ion-row>
-        <ion-col size-sm="6" offset-sm="3">
-          <span style="font-size:13px">Deposit</span>
-      </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col size-sm="3" offset-sm="3">
-          <ion-item>
-            <h6  class="label">Applicable :
-            </h6>
-            <h6>{{demoRequest.depApplicable}}</h6>
-          </ion-item>
-      </ion-col>
-      <ion-col size-sm="3" offset-sm="3">
-        <ion-item>
-          <h6  class="label">Amount : </h6>
-          <h6>{{demoRequest.depAmount}}</h6>
-        </ion-item>
-    </ion-col>
-      </ion-row>
-    </div>
-
-    <div class="section">
-      <ion-row>
-        <ion-col size-sm="6" offset-sm="3">
-          <span style="font-size:13px">Payment</span>
-      </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col size-sm="3" offset-sm="3">
-          <ion-item>
-            <h6  class="label">Terms
-            </h6>
-            <h6>{{demoRequest.payTerms}}</h6>
-          </ion-item>
-      </ion-col>
-      <ion-col size-sm="3" offset-sm="3">
-        <ion-item>
-          <h6  class="label">Credit Period (days) : </h6>
-          <h6>{{demoRequest.payCreditPeriod}}</h6>
-        </ion-item>
-    </ion-col>
-      </ion-row>
-
-      <ion-row>
-        <ion-col size-sm="3" offset-sm="3">
-          <ion-item>
-            <h6  class="label">Credit Limit :
-            </h6>
-            <h6>{{demoRequest.payCreditLimit}}</h6>
-          </ion-item>
-      </ion-col>
-      <ion-col size-sm="3" offset-sm="3">
-        <ion-item>
-          <h6  class="label">Model : </h6>
-          <h6>{{demoRequest.payModel}}</h6>
-        </ion-item>
-    </ion-col>
-      </ion-row>
-    </div>
-
-
-    <div class="section">
-      <ion-row>
-        <ion-col size-sm="6" offset-sm="3">
-          <span style="font-size:13px">Minimum Commitment</span>
-      </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col size-sm="3" offset-sm="3">
-          <ion-item>
-            <h6  class="label">Applicable : </h6>
-            <h6>{{demoRequest.comApplicable}}</h6>
-          </ion-item>
-      </ion-col>
-      <ion-col size-sm="3" offset-sm="3">
-        <ion-item>
-          <h6  class="label">Quantity : </h6>
-          <h6>{{demoRequest.comQuantity}}</h6>
-        </ion-item>
-    </ion-col>
-      </ion-row>
-
-      <ion-row>
-        <ion-col size-sm="6" offset-sm="3">
-          <ion-item>
-            <h6  class="label">Terms : </h6>
-            <h6>{{demoRequest.comTerm}}</h6>
-          </ion-item>
-      </ion-col>
       </ion-row>
     </div>
 
@@ -403,17 +175,9 @@
       </ion-col>
       </ion-row>
       <ion-row>
-      <ion-col size-sm="3" offset-sm="3">
-        <ion-item>
-          <h6  class="label">Date of Installation : </h6>
-          <h6>{{getDate(demoRequest.dateInstallation)}}</h6>
-        </ion-item>
-    </ion-col>
-      </ion-row>
-      <ion-row>
         <ion-col size-sm="6" offset-sm="3">
           <ion-item>
-            <h6  class="label">Date of Demo : </h6>
+            <h6  class="label">Start Date of Demo : </h6>
             <h6>{{getDate(demoRequest.dateDemo)}}</h6>
           </ion-item>
       </ion-col>
@@ -421,8 +185,8 @@
       <ion-row>
         <ion-col size-sm="6" offset-sm="3">
           <ion-item>
-            <h6  class="label">No of Days for Demo : </h6>
-            <h6>{{demoRequest.dateNoDays}}</h6>
+            <h6  class="label">End Date of Demo : </h6>
+            <h6>{{getDate(demoRequest.dateEndDemo)}}</h6>
           </ion-item>
       </ion-col>
       </ion-row>
@@ -435,25 +199,6 @@
           </ion-item>
       </ion-col>
       </ion-row>
-
-      <ion-row>
-        <ion-col size-sm="6" offset-sm="3">
-          <ion-item>
-            <h6  class="label">Delivery as per : </h6>
-            <h6>{{demoRequest.dateDeliveryAsPer}}</h6>
-          </ion-item>
-      </ion-col>
-      </ion-row>
-
-      <ion-row>
-        <ion-col size-sm="6" offset-sm="3">
-          <ion-item>
-            <h6  class="label">Delivery Chargeble : </h6>
-            <h6>{{demoRequest.dateDeliveryCharge}}</h6>
-          </ion-item>
-      </ion-col>
-      </ion-row>
-
     </div>
 
     <div class="section">
@@ -463,20 +208,13 @@
       </ion-col>
       </ion-row>
       <ion-row>
-        <ion-col size-sm="3" offset-sm="3">
+        <ion-col size-sm="6" offset-sm="3">
           <ion-item>
-            <h6  class="label">PAN No : </h6>
-            <h6>{{demoRequest.satPANNo}}</h6>
+            <h6  class="label">GST No : </h6>
+            <h6>{{demoRequest.satGSTNo}}</h6>
           </ion-item>
       </ion-col>
-      <ion-col size-sm="3" offset-sm="3">
-        <ion-item>
-          <h6  class="label">GST No : </h6>
-          <h6>{{demoRequest.satGSTNo}}</h6>
-        </ion-item>
-    </ion-col>
       </ion-row>
-
       <ion-row>
         <ion-col size-sm="6" offset-sm="3">
           <ion-item>
@@ -486,69 +224,6 @@
       </ion-col>
       </ion-row>
     </div>
-
-
-    <div class="section">
-      <ion-row>
-        <ion-col size-sm="6" offset-sm="3">
-          <span style="font-size:13px">Bank Details</span>
-      </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col size-sm="6" offset-sm="3">
-          <ion-item>
-            <h6  class="label">A/c Name : </h6>
-            <h6>{{demoRequest.bankAccName}}</h6>
-          </ion-item>
-      </ion-col>
-      </ion-row>
-      <ion-row>
-      <ion-col size-sm="3" offset-sm="3">
-        <ion-item>
-          <h6  class="label">Address(Optioal) : </h6>
-          <h6>{{demoRequest.bankAddress}}</h6>
-        </ion-item>
-    </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col size-sm="6" offset-sm="3">
-          <ion-item>
-            <h6  class="label">Account No. :
-            </h6>
-            <h6>{{demoRequest.bankAccNo}}</h6>
-          </ion-item>
-      </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col size-sm="6" offset-sm="3">
-          <ion-item>
-            <h6  class="label">Branch :
-            </h6>
-            <h6>{{demoRequest.bankBranch}}</h6>
-          </ion-item>
-      </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col size-sm="6" offset-sm="3">
-          <ion-item>
-            <h6  class="label">IFSC Code :
-            </h6>
-            <h6>{{demoRequest.bankIFSCCode}}</h6>
-          </ion-item>
-      </ion-col>
-      </ion-row>
-    </div>
-
-
-    <div class="section">
-      <ion-row>
-        <ion-col size-sm="6" offset-sm="3">
-          <span style="font-size:13px">Requirement of Installation</span>
-          <h6>{{demoRequest.instaRequirement}}</h6>
-      </ion-col>
-      </ion-row>
-    </div>
-
 
     <div class="section">
       <ion-row>
@@ -573,349 +248,42 @@
       </ion-row>
     </div>
 
-    <div class="section">
-      <ion-row>
-        <ion-col size-sm="6" offset-sm="3">
-          <span style="font-size:13px">Manpower Requirement</span>
-      </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col size-sm="3" offset-sm="3">
-          <ion-item>
-            <h6  class="label">Applicable :
-            </h6>
-            <h6>{{demoRequest.manApplicable}}</h6>
-          </ion-item>
-      </ion-col>
-      <ion-col size-sm="3" offset-sm="3">
-        <ion-item>
-          <h6  class="label">No.of Manpower : </h6>
-          <h6>{{demoRequest.manNoOfManpower}}</h6>
-        </ion-item>
-    </ion-col>
-      </ion-row>
-
-      <ion-row>
-        <ion-col size-sm="3" offset-sm="3">
-          <ion-item>
-            <h6  class="label">Terms :
-            </h6>
-            <h6>{{demoRequest.manTerms}}</h6>
-          </ion-item>
-      </ion-col>
-      <ion-col size-sm="3" offset-sm="3">
-        <ion-item>
-          <h6  class="label">Rate+Tax App. : </h6>
-          <h6>{{demoRequest.manRateTax}}</h6>
-        </ion-item>
-    </ion-col>
-      </ion-row>
-
-    </div>
 
     <div class="section">
       <ion-row>
         <ion-col size-sm="6" offset-sm="3">
-          <span style="font-size:13px">Material Supply detail</span>
-      </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col size-sm="3" offset-sm="3">
+          <span style="font-size:13px">Material Details</span>
+          <div *ngFor="let item of demoRequest.materialDetails">
+            <div style="border: 1px solid #A04000;">
           <ion-item>
-            <h6  class="label">Delivery : </h6>
-            <h6>{{demoRequest.matDelivery}}</h6>
+            <h6 class="label">Category:</h6>
+            <h6> {{item['category']}}</h6>
           </ion-item>
-      </ion-col>
-      <ion-col size-sm="3" offset-sm="3">
-        <ion-item>
-          <h6  class="label">Billing : </h6>
-          <h6>{{demoRequest.matBilling}}</h6>
-        </ion-item>
-    </ion-col>
-      </ion-row>
-
-      <ion-row>
-        <ion-col size-sm="3" offset-sm="3">
           <ion-item>
-            <h6  class="label">Types of Billing : </h6>
-            <h6>{{demoRequest.matBillType}}</h6>
+            <h6 class="label">Type:</h6>
+            <h6>{{item['item']}}</h6>
           </ion-item>
-      </ion-col>
-      <ion-col size-sm="3" offset-sm="3">
-        <ion-item>
-          <h6  class="label">Statutory : </h6>
-          <h6>{{demoRequest.matStatutory}}</h6>
-        </ion-item>
-    </ion-col>
-      </ion-row>
-
-    </div>
-
-    <div class="section">
-      <ion-row>
-        <ion-col size-sm="6" offset-sm="3">
-          <span style="font-size:13px">Bill Submission & Compliance</span>
-      </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col size-sm="3" offset-sm="3">
           <ion-item>
-            <h6  class="label">Type of Bill Preparation : </h6>
-            <h6>{{demoRequest.subBillType}}</h6>
+            <h6 class="label">UOM:</h6>
+            <h6> {{item['uom']}}</h6>
           </ion-item>
-      </ion-col>
-      <ion-col size-sm="3" offset-sm="3">
-        <ion-item>
-          <h6  class="label">Submission @ : </h6>
-          <h6>{{demoRequest.submission}}</h6>
-        </ion-item>
-    </ion-col>
-      </ion-row>
-
-      <ion-row>
-        <ion-col size-sm="3" offset-sm="3">
           <ion-item>
-            <h6  class="label">Method of Submission : </h6>
-            <h6>{{demoRequest.subMethod}}</h6>
+            <h6 class="label">HSNNo:</h6>
+            <h6>{{item['hsnNo']}}</h6>
           </ion-item>
-      </ion-col>
-      <ion-col size-sm="3" offset-sm="3">
-        <ion-item>
-          <h6  class="label">Documents to submit : </h6>
-          <h6>{{demoRequest.subDocs}}</h6>
-        </ion-item>
-    </ion-col>
-      </ion-row>
-
-      <ion-row>
-        <ion-col size-sm="3" offset-sm="3">
           <ion-item>
-            <h6  class="label">Due date of bill submission : </h6>
-            <h6>{{getDate(demoRequest.subDueDate)}}</h6>
+            <h6 class="label">GST:</h6>
+            <h6>{{item['gst']}}</h6>
           </ion-item>
+          <ion-item>
+            <h6 class="label">Qty:</h6>
+            <h6>{{item['qty']}}</h6>
+          </ion-item>
+        </div>
+        </div>
       </ion-col>
       </ion-row>
     </div>
-
-    <div class="section">
-      <ion-row>
-        <ion-col size-sm="6" offset-sm="3">
-          <span style="font-size:13px">Out Put Settings</span>
-      </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col size-sm="3" offset-sm="3">
-          <ion-item>
-            <h6  class="label">ML : </h6>
-            <h6>{{demoRequest.outML}}</h6>
-          </ion-item>
-      </ion-col>
-      <ion-col size-sm="3" offset-sm="3">
-        <ion-item>
-          <h6  class="label">Grammage : </h6>
-          <h6>{{demoRequest.outGrammage}}</h6>
-        </ion-item>
-    </ion-col>
-      </ion-row>
-    </div>
-
-
-    <div class="section">
-      <ion-row>
-        <ion-col size-sm="6" offset-sm="3">
-          <span style="font-size:13px">Billing Branch</span>
-          <h6>{{demoRequest.billBranch}}</h6>
-      </ion-col>
-      </ion-row>
-    </div>
-
-
-
-    <div class="section">
-      <ion-row>
-        <ion-col size-sm="6" offset-sm="3">
-          <span style="font-size:13px">Details of Material</span>
-      </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col size-sm="6" offset-sm="3">
-          <span style="font-size:13px">XTC Coffee Beans</span>
-      </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col size-sm="2" offset-sm="3">
-          <ion-item>
-            <h6  class="label">Qty</h6>
-            <h6>{{demoRequest.detXTCoffeeQty}} : </h6>
-          </ion-item>
-      </ion-col>
-      <ion-col size-sm="2" offset-sm="3">
-        <ion-item>
-          <h6  class="label">UOM : </h6>
-          <h6>{{demoRequest.detXTCoffeeUOM}}</h6>
-        </ion-item>
-    </ion-col>
-    <ion-col size-sm="2" offset-sm="3">
-      <ion-item>
-        <h6  class="label">Rate : </h6>
-        <h6>{{demoRequest.detXTCoffeeRate}}</h6>
-      </ion-item>
-  </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col size-sm="6" offset-sm="3">
-          <span style="font-size:13px">Sugar medium</span>
-      </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col size-sm="2" offset-sm="3">
-          <ion-item>
-            <h6  class="label">Qty : </h6>
-            <h6>{{demoRequest.detSugarQty}}</h6>
-          </ion-item>
-      </ion-col>
-      <ion-col size-sm="2" offset-sm="3">
-        <ion-item>
-          <h6  class="label">UOM : </h6>
-          <h6>{{demoRequest.detSugarUOM}}</h6>
-        </ion-item>
-    </ion-col>
-    <ion-col size-sm="2" offset-sm="3">
-      <ion-item>
-        <h6  class="label">Rate : </h6>
-        <h6>{{demoRequest.detSugarRate}}</h6>
-      </ion-item>
-  </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col size-sm="6" offset-sm="3">
-          <span style="font-size:13px">Plain Tea Bags</span>
-      </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col size-sm="2" offset-sm="3">
-          <ion-item>
-            <h6  class="label">Qty : </h6>
-            <h6>{{demoRequest.detTeaBagsQty}}</h6>
-          </ion-item>
-      </ion-col>
-      <ion-col size-sm="2" offset-sm="3">
-        <ion-item>
-          <h6  class="label">UOM : </h6>
-          <h6>{{demoRequest.detTeaBagsUOM}}</h6>
-        </ion-item>
-    </ion-col>
-    <ion-col size-sm="2" offset-sm="3">
-      <ion-item>
-        <h6  class="label">Rate : </h6>
-        <h6>{{demoRequest.detTeaBagsRate}}</h6>
-      </ion-item>
-  </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col size-sm="6" offset-sm="3">
-          <span style="font-size:13px">Tea Blend</span>
-      </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col size-sm="2" offset-sm="3">
-          <ion-item>
-            <h6  class="label">Qty : </h6>
-            <h6>{{demoRequest.detTeaBlendQty}}</h6>
-          </ion-item>
-      </ion-col>
-      <ion-col size-sm="2" offset-sm="3">
-        <ion-item>
-          <h6  class="label">UOM : </h6>
-          <h6>{{demoRequest.detTeaBlendUOM}}</h6>
-        </ion-item>
-    </ion-col>
-    <ion-col size-sm="2" offset-sm="3">
-      <ion-item>
-        <h6  class="label">Rate : </h6>
-        <h6>{{demoRequest.detTeaBlendRate}}</h6>
-      </ion-item>
-  </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col size-sm="6" offset-sm="3">
-          <span style="font-size:13px">Filter Coffee</span>
-      </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col size-sm="2" offset-sm="3">
-          <ion-item>
-            <h6  class="label">Qty : </h6>
-            <h6>{{demoRequest.detFilCoffeeQty}}</h6>
-          </ion-item>
-      </ion-col>
-      <ion-col size-sm="2" offset-sm="3">
-        <ion-item>
-          <h6  class="label">UOM : </h6>
-          <h6>{{demoRequest.detFilCoffeeUOM}}</h6>
-        </ion-item>
-    </ion-col>
-    <ion-col size-sm="2" offset-sm="3">
-      <ion-item>
-        <h6  class="label">Rate : </h6>
-        <h6>{{demoRequest.detFilCoffeeRate}}</h6>
-      </ion-item>
-  </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col size-sm="6" offset-sm="3">
-          <span style="font-size:13px">Stirrer</span>
-      </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col size-sm="2" offset-sm="3">
-          <ion-item>
-            <h6  class="label">Qty : </h6>
-            <h6>{{demoRequest.detStirrerQty}}</h6>
-          </ion-item>
-      </ion-col>
-      <ion-col size-sm="2" offset-sm="3">
-        <ion-item>
-          <h6  class="label">UOM : </h6>
-          <h6>{{demoRequest.detStirrerUOM}}</h6>
-        </ion-item>
-    </ion-col>
-    <ion-col size-sm="2" offset-sm="3">
-      <ion-item>
-        <h6  class="label">Rate : </h6>
-        <h6>{{demoRequest.detStirrerRate}}</h6>
-      </ion-item>
-  </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col size-sm="6" offset-sm="3">
-          <span style="font-size:13px">Paper Cups (110 ML Printed)</span>
-      </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col size-sm="2" offset-sm="3">
-          <ion-item>
-            <h6  class="label">Qty : </h6>
-            <h6>{{demoRequest.detPaperCupsQty}}</h6>
-          </ion-item>
-      </ion-col>
-      <ion-col size-sm="2" offset-sm="3">
-        <ion-item>
-          <h6  class="label">UOM : </h6>
-          <h6>{{demoRequest.detPaperCupsUOM}}</h6>
-        </ion-item>
-    </ion-col>
-    <ion-col size-sm="2" offset-sm="3">
-      <ion-item>
-        <h6  class="label">Rate : </h6>
-        <h6>{{demoRequest.detPaperCupsRate}}</h6>
-      </ion-item>
-  </ion-col>
-      </ion-row>
-
-    </div>
-
-
 
     </ion-grid>
 

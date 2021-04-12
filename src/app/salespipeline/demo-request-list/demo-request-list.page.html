@@ -6,11 +6,6 @@
       </ion-button>
       <ion-icon name="walk-outline" slot="end"></ion-icon>
       <ion-title>Demo Request</ion-title>
-      <ion-buttons slot="primary">
-        <ion-button [routerLink]="['/','salespipeline','new']">
-          <ion-icon name="add" slot="icon-only"></ion-icon>
-        </ion-button>
-      </ion-buttons>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -28,7 +23,6 @@
         </div>
         <div *ngIf="!isLoading && demoRequests.length<=0" class="ion-text-center">
           <p>Data not found! please create one first!</p>
-          <ion-button color="primary" routerLink="/salespipeline/new">Add Entry</ion-button>
         </div>
         <ion-list *ngIf="!isLoading && demoRequests.length>0">
           <ion-item-sliding *ngFor="let req of demoRequests ; let i = index" #slider>
