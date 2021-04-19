@@ -211,7 +211,8 @@ export class SalespipelineService {
       }),
       map((salespipelines) => {
         return salespipelines;
-      })
+      }),
+      first()
     );
   }
 
@@ -503,7 +504,7 @@ export class SalespipelineService {
             clientsale:{...(sales as {})},
             client: {...(clients[0][0]as {})}
           }
-      }));
+      }),first());
   }
 }
 

@@ -44,6 +44,16 @@ export class DemoRequestService {
 
   }
 
+  async getDemoApprovers(){
+    const approvers = await this.firebaseService
+      .collection('demo-approvers')
+      .valueChanges()
+      .pipe(first())
+      .toPromise();
+      console.log(approvers);
+      return approvers;
+  }
+
   addDemoRequest(demoRequest:DemoRequest){
     let fetchedUserId: string;
     return this.authService.userId.pipe(
