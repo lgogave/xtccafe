@@ -13,13 +13,26 @@
       </ion-buttons>
     </ion-buttons>
   </ion-toolbar>
+  <ion-segment value="0" color="secondary" (ionChange)="onFilterUpdate($event)">
+    <ion-segment-button value="0" layout="icon-end">
+      <ion-label>Salespipeline</ion-label>
+      <ion-icon name="analytics"></ion-icon>
+    </ion-segment-button>
+    <ion-segment-button value="1" layout="icon-end">
+      <ion-label>Win</ion-label>
+      <ion-icon name="thumbs-up-outline"></ion-icon>
+    </ion-segment-button>
+    <ion-segment-button value="2" layout="icon-end">
+      <ion-label>Loss</ion-label>
+      <ion-icon name="thumbs-down-outline"></ion-icon>
+    </ion-segment-button>
+  </ion-segment>
 </ion-header>
-
-
   <ion-content>
     <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
       <ion-refresher-content></ion-refresher-content>
     </ion-refresher>
+
   <ion-grid>
     <ion-row>
       <ion-col>
@@ -31,12 +44,12 @@
         (ionChange)="filterClient()"
         ></ion-searchbar> -->
 
-        <div *ngIf="!isLoading && loadedClientSales.length<=0" class="ion-text-center">
+        <div *ngIf="!isLoading && relevantClientSales.length<=0" class="ion-text-center">
           <p>Data not found! please create one first!</p>
           <ion-button color="primary" routerLink="/salespipeline/new">Add Entry</ion-button>
         </div>
-        <ion-list *ngIf="!isLoading && loadedClientSales.length>0">
-          <ion-item-sliding *ngFor="let sales of loadedClientSales ; let i = index" #slidingClients>
+        <ion-list *ngIf="!isLoading && relevantClientSales.length>0">
+          <ion-item-sliding *ngFor="let sales of relevantClientSales ; let i = index" #slidingClients>
           <ion-item [ngClass]="i%2==0?'even':'odd'" detail  [routerLink]="['/','salespipeline','detail',sales.clientsale.id]" >
            <div>
             <div>
@@ -63,9 +76,7 @@
                   <h6 style="text-decoration: underline;">
                     <ion-icon name="receipt" style="font-size:20px;padding-right: 5px;"></ion-icon>
                     <b>Status:</b> {{location.currentStatus}}</h6>
-
               </div>
-
            </div>
            <hr/>
           </ion-item>

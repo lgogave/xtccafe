@@ -339,7 +339,7 @@ export class DemoRequestListPage implements OnInit, OnDestroy {
                 { text: 'Sr. No', bold: true },
                 { text: 'Description of Goods', bold: true },
                 { text: 'Quantity', bold: true },
-                { text: 'UoM', bold: true },
+                { text: 'UOM', bold: true },
                 { text: 'HSN Code', bold: true },
               ]
             ],

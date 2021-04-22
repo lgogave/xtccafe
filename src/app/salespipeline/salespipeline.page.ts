@@ -11,8 +11,10 @@ import { SalespipelineService } from './salespipeline.service';
 })
 export class SalespipelinePage implements OnInit, OnDestroy {
   loadedClientSales: ClientSales[];
+  relevantClientSales: ClientSales[];
   isLoading = false;
   searchTerm: string = '';
+  segmentValue:string='0';
   private salespipelineSub: Subscription;
 
   constructor(
@@ -24,7 +26,7 @@ export class SalespipelinePage implements OnInit, OnDestroy {
   ngOnInit() {
     this.salespipelineSub =this.salespipelineService.clientSales.subscribe((clientSales) => {
     this.loadedClientSales=clientSales;
-
+    this.relevantClientSales=this.applyFilter("0");
     });
   }
   ionViewWillEnter() {
@@ -94,4 +96,55 @@ export class SalespipelinePage implements OnInit, OnDestroy {
     var yyyy = isodate.getFullYear();
     return  dd + '/' + mm  + '/' + yyyy;
    }
+   onFilterUpdate(ev: any) {
+    console.log('Segment changed', ev.detail.value);
+    this.relevantClientSales=this.applyFilter(ev.detail.value);
+  }
+  applyFilter(value:string){
+    let filterClient: ClientSales[] = [];
+    if (value == '1') {
+      this.loadedClientSales.forEach((sp) => {
+        let flag: boolean = false;
+        sp.clientsale.locations.forEach((sploc) => {
+          if (sploc.currentStatus == 'S6 : Win') {
+            flag = true;
+          }
+        });
+        if (flag) {
+          filterClient.push(sp);
+        }
+      });
+      return filterClient;
+    } else if (value == '2') {
+      this.loadedClientSales.forEach((sp) => {
+        let flag: boolean = false;
+        sp.clientsale.locations.forEach((sploc) => {
+          if (sploc.currentStatus == 'S7 : Loss') {
+            flag = true;
+          }
+        });
+        if (flag) {
+          filterClient.push(sp);
+        }
+      });
+      return filterClient;
+    } else if (value == '0') {
+      this.loadedClientSales.forEach((sp) => {
+        let flag: boolean = false;
+        sp.clientsale.locations.forEach((sploc) => {
+          if (sploc.currentStatus != 'S6 : Win' && sploc.currentStatus != 'S7 : Loss') {
+            flag = true;
+          }
+        });
+        if (flag) {
+          filterClient.push(sp);
+        }
+      });
+      return filterClient;
+    }
+    else {
+      return this.loadedClientSales;
+    }
+  }
+
 }
