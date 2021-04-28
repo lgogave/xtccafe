@@ -136,7 +136,7 @@
                   <div [formGroupName]="j">
                       <div id="container">
                         <div class="center"><ion-label style="color: #fff;padding-right: 70px;"> <ion-icon name="chevron-forward"></ion-icon> Machine Detail</ion-label></div>
-                        <div class="right"><button class="close-icon-accent" (click)="deleteMachineDetails(form.get('dataEntry')['controls'][i])"></button></div>
+                        <div class="right"><button class="close-icon-accent" (click)="deleteMachineDetails(form.get('dataEntry')['controls'][i],j)"></button></div>
                       </div>
                       <ion-row>
                       <ion-col size-sm="6" offset-sm="3">

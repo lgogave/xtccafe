@@ -52,5 +52,6 @@ export class DemoRequestViewModel{
     public approverUserId?:string,
     public approverUserName?:string,
     public approverDate?:Date,
+    public satSEZ?:string,
   ){}
 }

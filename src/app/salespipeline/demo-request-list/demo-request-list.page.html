@@ -51,7 +51,7 @@
            <hr/>
           </ion-item>
           <div style="text-align: right;border-bottom: 1px solid;width: 100%;padding-right: 10px">
-            <ion-button (click)="createChallan(req)">Challan</ion-button>
+            <ion-button (click)="req.satSEZ=='Yes'?sezChallan(req):nonsezChallan(req)">Challan</ion-button>
             <ion-button color="success" [hidden]="!(req.reqStatus=='Demo Request Created' || req.reqStatus=='Rejected'?true:false)" (click)="sendForApproval(req)">
               <ion-icon name="arrow-forward-circle-outline" slot="icon-only"></ion-icon> Send for Approval
             </ion-button>

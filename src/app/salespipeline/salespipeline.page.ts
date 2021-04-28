@@ -1,5 +1,5 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { AlertController, IonItemSliding, LoadingController } from '@ionic/angular';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { AlertController, IonItemSliding, IonSegment, LoadingController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import { ClientSales, ClientSalesPipeline } from './salespipeline.model';
 import { SalespipelineService } from './salespipeline.service';
@@ -9,6 +9,7 @@ import { SalespipelineService } from './salespipeline.service';
   templateUrl: './salespipeline.page.html',
   styleUrls: ['./salespipeline.page.scss'],
 })
+
 export class SalespipelinePage implements OnInit, OnDestroy {
   loadedClientSales: ClientSales[];
   relevantClientSales: ClientSales[];
@@ -16,6 +17,7 @@ export class SalespipelinePage implements OnInit, OnDestroy {
   searchTerm: string = '';
   segmentValue:string='0';
   private salespipelineSub: Subscription;
+  @ViewChild('segmentButton', { static: false }) segmentButton: IonSegment;
 
   constructor(
     private salespipelineService: SalespipelineService,
@@ -30,10 +32,12 @@ export class SalespipelinePage implements OnInit, OnDestroy {
     });
   }
   ionViewWillEnter() {
+    this.segmentButton.value="0";
     this.isLoading = true;
     this.salespipelineService.fetchClientAndSaplesPipeline().subscribe(() => {
       this.isLoading = false;
     });
+
   }
 
   ngOnDestroy() {
@@ -41,7 +45,6 @@ export class SalespipelinePage implements OnInit, OnDestroy {
       this.salespipelineSub.unsubscribe();
     }
   }
-
   onDeleteSalespipeline(id: string,clientId:string, slidingEl: IonItemSliding) {
     this.alertCtrl.create({
       header: 'Delete!',
@@ -97,7 +100,6 @@ export class SalespipelinePage implements OnInit, OnDestroy {
     return  dd + '/' + mm  + '/' + yyyy;
    }
    onFilterUpdate(ev: any) {
-    console.log('Segment changed', ev.detail.value);
     this.relevantClientSales=this.applyFilter(ev.detail.value);
   }
   applyFilter(value:string){
@@ -106,7 +108,7 @@ export class SalespipelinePage implements OnInit, OnDestroy {
       this.loadedClientSales.forEach((sp) => {
         let flag: boolean = false;
         sp.clientsale.locations.forEach((sploc) => {
-          if (sploc.currentStatus == 'S6 : Win') {
+          if (sploc.currentStatus == 'S7 : Win') {
             flag = true;
           }
         });
@@ -119,7 +121,7 @@ export class SalespipelinePage implements OnInit, OnDestroy {
       this.loadedClientSales.forEach((sp) => {
         let flag: boolean = false;
         sp.clientsale.locations.forEach((sploc) => {
-          if (sploc.currentStatus == 'S7 : Loss') {
+          if (sploc.currentStatus == 'S8 : Loss') {
             flag = true;
           }
         });
@@ -132,7 +134,7 @@ export class SalespipelinePage implements OnInit, OnDestroy {
       this.loadedClientSales.forEach((sp) => {
         let flag: boolean = false;
         sp.clientsale.locations.forEach((sploc) => {
-          if (sploc.currentStatus != 'S6 : Win' && sploc.currentStatus != 'S7 : Loss') {
+          if (sploc.currentStatus != 'S7 : Win' && sploc.currentStatus != 'S8 : Loss') {
             flag = true;
           }
         });

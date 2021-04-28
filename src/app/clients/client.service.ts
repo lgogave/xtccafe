@@ -76,7 +76,7 @@ export class ClientService {
     );
   }
 
-  async getClientList(): Promise<any> {
+  async getClientList_O(): Promise<any> {
     const userId = await this.authService.userId
       .pipe(
         take(1),
@@ -114,6 +114,16 @@ export class ClientService {
     return clients;
   }
 
+  async getClientList(): Promise<any> {
+    console.log("2222");
+    const clientList = await this.firebaseService
+      .collection('clients',   (ref) =>  ref.where('isActive', '==', true))
+      .valueChanges()
+      .pipe(take(1))
+      .toPromise();
+    let result = clientList as Client[];
+    return result;
+  }
   async getClientIdByGSTNumber(gstNumber: string): Promise<any> {
     const clientList = await this.firebaseService
       .collection('clients', (ref) => ref.where('gstNumber', '==', gstNumber))

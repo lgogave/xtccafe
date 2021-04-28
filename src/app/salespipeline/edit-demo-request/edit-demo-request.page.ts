@@ -1,6 +1,6 @@
 import { PercentPipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormArray, FormControl, FormGroup } from '@angular/forms';
+import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NavController, ToastController } from '@ionic/angular';
 import { MachineDetail, MastInstallKit, MastStock } from 'src/app/models/division.model';
@@ -76,23 +76,23 @@ export class EditDemoRequestPage implements OnInit {
     this.form = new FormGroup({
       machineDetails: machineArray,
       materialDetails:materialArray,
-      orgName: new FormControl(this.demoRequest.orgName, { updateOn: 'blur' }),
+      orgName: new FormControl(this.demoRequest.orgName, { updateOn: 'blur',validators: [Validators.required] }),
       orgStatus: new FormControl(this.demoRequest.orgStatus, {
         updateOn: 'blur',
       }),
-      address: new FormControl(this.demoRequest.address, { updateOn: 'blur' }),
+      address: new FormControl(this.demoRequest.address, { updateOn: 'blur',validators: [Validators.required] }),
       addLocation: new FormControl(this.demoRequest.addLocation, {
-        updateOn: 'blur',
+        updateOn: 'blur',validators: [Validators.required]
       }),
       addPincode: new FormControl(this.demoRequest.addPincode, {
-        updateOn: 'blur',
+        updateOn: 'blur',validators: [Validators.required]
       }),
       addState: new FormControl(this.demoRequest.addState, {
-        updateOn: 'blur',
+        updateOn: 'blur',validators: [Validators.required]
       }),
       conName: new FormControl(this.demoRequest.conName, { updateOn: 'blur' }),
       conMobile: new FormControl(this.demoRequest.conMobile, {
-        updateOn: 'blur',
+        updateOn: 'blur',validators: [Validators.required]
       }),
       conEmail: new FormControl(this.demoRequest.conEmail, {
         updateOn: 'blur',
@@ -107,21 +107,21 @@ export class EditDemoRequestPage implements OnInit {
         updateOn: 'blur',
       }),
       dateDelivery: new FormControl(this.demoRequest.dateDelivery, {
-        updateOn: 'blur',
+        updateOn: 'blur',validators: [Validators.required]
       }),
       dateDemo: new FormControl(this.demoRequest.dateDemo, {
-        updateOn: 'blur',
+        updateOn: 'blur',validators: [Validators.required]
       }),
       dateEndDemo: new FormControl(this.demoRequest.dateEndDemo, {
-        updateOn: 'blur',
+        updateOn: 'blur',validators: [Validators.required]
       }),
       datePickup: new FormControl(this.demoRequest.datePickup, {
-        updateOn: 'blur',
+        updateOn: 'blur',validators: [Validators.required]
       }),
       satGSTNo: new FormControl(this.demoRequest.satGSTNo, {
         updateOn: 'blur',
       }),
-      satSEZ: new FormControl(this.demoRequest.satSEZ, { updateOn: 'blur' }),
+      satSEZ: new FormControl(this.demoRequest.satSEZ, { updateOn: 'blur',validators: [Validators.required] }),
       cnsNoEmp: new FormControl(this.demoRequest.cnsNoEmp, {
         updateOn: 'blur',
       }),
@@ -136,13 +136,18 @@ export class EditDemoRequestPage implements OnInit {
       return;
     }
     let demoRequest = <DemoRequest>this.form.value;
+    if(demoRequest.machineDetails.length==0
+      || demoRequest.materialDetails.length==0){
+        return;
+      }
+
+
     demoRequest.reqStatus = 'Demo Request Created';
     demoRequest.id = this.demoRequest.id;
     demoRequest.salespipelineId = this.demoRequest.salespipelineId;
     this.demoRequestService
       .editDemoRequest(demoRequest, this.demoId)
       .subscribe((res) => {
-        console.log(res);
         this.toastController
           .create({
             message: 'Demo Request Updated. Id:' + this.demoRequest.id,
@@ -270,10 +275,8 @@ export class EditDemoRequestPage implements OnInit {
   }
 
   onMaterialTypeChange(event,element){
-    console.log(element);
     if (!event.target.value) return;
     let ref=this.stockDetail.filter(item=>item.item==event.target.value)[0];
-    console.log(ref);
     element.controls['uom'].patchValue(ref.uom,{emitEvent: false});
     element.controls['hsnNo'].patchValue(ref.hsnNo,{emitEvent: false});
     element.controls['gst'].patchValue(this.perPipe.transform(ref.gst),{emitEvent: false});

@@ -73,24 +73,24 @@ export class DemoRequestPage implements OnInit {
     this.form = new FormGroup({
       machineDetails: new FormArray([this.createMachineDetail()]),
       materialDetails:new FormArray([this.createMaterialDetail()]),
-      orgName: new FormControl(this.clientSales.clientsale.client, { updateOn: 'blur' }),
+      orgName: new FormControl(this.clientSales.clientsale.client, { updateOn: 'blur',validators: [Validators.required] }),
       orgStatus: new FormControl(this.clientSales.client.potentialNature, { updateOn: 'blur' }),
-      address: new FormControl(this.clientSales.clientsale.locations[this.locationIndex].address, { updateOn: 'blur' }),
-      addLocation: new FormControl(this.clientSales.clientsale.locations[this.locationIndex].city, { updateOn: 'blur' }),
-      addPincode: new FormControl(null, { updateOn: 'blur' }),
-      addState: new FormControl(null, { updateOn: 'blur' }),
-      conName: new FormControl(null, { updateOn: 'blur' }),
-      conMobile: new FormControl(null, { updateOn: 'blur' }),
+      address: new FormControl(this.clientSales.clientsale.locations[this.locationIndex].address, { updateOn: 'blur',validators: [Validators.required] }),
+      addLocation: new FormControl(this.clientSales.clientsale.locations[this.locationIndex].city, { updateOn: 'blur',validators: [Validators.required] }),
+      addPincode: new FormControl(null, { updateOn: 'blur',validators: [Validators.required] }),
+      addState: new FormControl(null, { updateOn: 'blur',validators: [Validators.required] }),
+      conName: new FormControl(null, { updateOn: 'blur',validators: [Validators.required] }),
+      conMobile: new FormControl(null, { updateOn: 'blur',validators: [Validators.required] }),
       conEmail: new FormControl(null, { updateOn: 'blur' }),
       accInstallation: new FormControl(null, { updateOn: 'blur' }),
       accOther: new FormControl(null, { updateOn: 'blur' }),
       instDemo: new FormControl(null, { updateOn: 'blur' }),
-      dateDelivery: new FormControl(null, { updateOn: 'blur' }),
-      dateDemo: new FormControl(null, { updateOn: 'blur' }),
-      dateEndDemo: new FormControl(null, { updateOn: 'blur' }),
-      datePickup: new FormControl(null, { updateOn: 'blur' }),
+      dateDelivery: new FormControl(null, { updateOn: 'blur',validators: [Validators.required] }),
+      dateDemo: new FormControl(null, { updateOn: 'blur',validators: [Validators.required] }),
+      dateEndDemo: new FormControl(null, { updateOn: 'blur',validators: [Validators.required] }),
+      datePickup: new FormControl(null, { updateOn: 'blur',validators: [Validators.required] }),
       satGSTNo: new FormControl(null, { updateOn: 'blur' }),
-      satSEZ: new FormControl(null, { updateOn: 'blur' }),
+      satSEZ: new FormControl(null, { updateOn: 'blur',validators: [Validators.required] }),
       cnsNoEmp: new FormControl(null, { updateOn: 'blur' }),
       cnsNoCups: new FormControl(null, { updateOn: 'blur' }),
     });
@@ -150,6 +150,11 @@ export class DemoRequestPage implements OnInit {
       return;
     }
     let demoRequest = <DemoRequest>this.form.value;
+    if(demoRequest.machineDetails.length==0
+      || demoRequest.materialDetails.length==0){
+        return;
+      }
+
     demoRequest.reqStatus='Demo Request Created';
     let id=Math.floor(Math.random() * 26) + Date.now();
     demoRequest.id=id;
@@ -220,10 +225,8 @@ export class DemoRequestPage implements OnInit {
     this.stockType=this.stockDetail.filter(item=>item.category==ref).map(item=>item.item).sort();
   }
   onMaterialTypeChange(event,element){
-    console.log(element);
     if (!event.target.value) return;
     let ref=this.stockDetail.filter(item=>item.item==event.target.value)[0];
-    console.log(ref);
     element.controls['uom'].patchValue(ref.uom,{emitEvent: false});
     element.controls['hsnNo'].patchValue(ref.hsnNo,{emitEvent: false});
     element.controls['gst'].patchValue(this.perPipe.transform(ref.gst),{emitEvent: false});

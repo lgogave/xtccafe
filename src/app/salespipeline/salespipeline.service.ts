@@ -414,11 +414,12 @@ export class SalespipelineService {
                 };
               });
             }),
-            map((client) => {
+            tap((client) => {
               this._clientSales.next(client);
             })
           );
-      })
+      }),
+      take(1)
     );
   }
 

@@ -16,13 +16,20 @@
       <div class="section">
         <ion-row>
           <ion-col size-sm="6" offset-sm="3">
-            <span style="font-size:13px">Organization</span>
+            <span style="font-size:13px">Organization</span><span style="color: #FF6347;">*</span>
             <ion-item>
               <ion-input type="text" autocomplete autocorrect placeholder="Client Name" formControlName="orgName">
               </ion-input>
             </ion-item>
           </ion-col>
         </ion-row>
+        <ion-row *ngIf="!form.get('orgName').valid && form.get('orgName').touched">
+          <ion-col size-sm="6" offset-sm="3">
+            <p style="font-size: small;color:#FF6347">Client name should not be empty.</p>
+          </ion-col>
+        </ion-row>
+
+
         <ion-row>
           <ion-col size-sm="6" offset-sm="3">
             <ion-item>
@@ -60,39 +67,68 @@
             </ion-item>
           </ion-col>
         </ion-row>
+        <ion-row *ngIf="!form.get('satSEZ').valid && form.get('satSEZ').touched">
+          <ion-col size-sm="6" offset-sm="3">
+            <p style="font-size: small;color:#FF6347">Please select SEZ/Non SEZ.</p>
+          </ion-col>
+        </ion-row>
       </div>
 
 
       <div class="section">
         <ion-row>
           <ion-col size-sm="6" offset-sm="3">
-            <span style="font-size:13px">Address of the Demonstration</span>
+            <span style="font-size:13px">Address of the Demonstration</span><span style="color: #FF6347;">*</span>
             <ion-item>
               <ion-input type="text" autocomplete autocorrect placeholder="Address" formControlName="address">
               </ion-input>
             </ion-item>
           </ion-col>
         </ion-row>
+        <ion-row *ngIf="!form.get('address').valid && form.get('address').touched">
+          <ion-col size-sm="6" offset-sm="3">
+            <p style="font-size: small;color:#FF6347">Address should not be empty.</p>
+          </ion-col>
+        </ion-row>
+
+
         <ion-row>
           <ion-col size-sm="3" offset-sm="3">
             <ion-item>
-              <ion-label position="floating" class="label">Location</ion-label>
+              <ion-label position="floating" class="label">Location<span style="color: #FF6347;">*</span></ion-label>
               <ion-input type="text" autocomplete autocorrect formControlName="addLocation"></ion-input>
             </ion-item>
           </ion-col>
           <ion-col size-sm="3" offset-sm="3">
             <ion-item>
-              <ion-label position="floating" class="label">Pin Code</ion-label>
+              <ion-label position="floating" class="label">Pin Code<span style="color: #FF6347;">*</span></ion-label>
               <ion-input type="text" autocomplete autocorrect formControlName="addPincode"></ion-input>
             </ion-item>
+          </ion-col>
+        </ion-row>
+
+        <ion-row *ngIf="!form.get('addLocation').valid && form.get('addLocation').touched">
+          <ion-col size-sm="6" offset-sm="3">
+            <p style="font-size: small;color:#FF6347">Location should not be empty.</p>
+          </ion-col>
+        </ion-row>
+        <ion-row *ngIf="!form.get('addPincode').valid && form.get('addPincode').touched">
+          <ion-col size-sm="6" offset-sm="3">
+            <p style="font-size: small;color:#FF6347">Pincode should not be empty.</p>
           </ion-col>
         </ion-row>
         <ion-row>
           <ion-col size-sm="6" offset-sm="3">
             <ion-item>
-              <ion-label position="floating" class="label">State</ion-label>
+              <ion-label position="floating" class="label">State<span style="color: #FF6347;">*</span></ion-label>
               <ion-input type="text" autocomplete autocorrect formControlName="addState"></ion-input>
             </ion-item>
+          </ion-col>
+        </ion-row>
+
+        <ion-row *ngIf="!form.get('addState').valid && form.get('addState').touched">
+          <ion-col size-sm="6" offset-sm="3">
+            <p style="font-size: small;color:#FF6347">State should not be empty.</p>
           </ion-col>
         </ion-row>
       </div>
@@ -101,19 +137,30 @@
       <div class="section">
         <ion-row>
           <ion-col size-sm="6" offset-sm="3">
-            <span style="font-size:13px">Contact Person</span>
+            <span style="font-size:13px">Contact Person</span><span style="color: #FF6347;">*</span>
             <ion-item>
               <ion-input type="text" autocomplete autocorrect placeholder formControlName="conName" placeholder='Name'>
               </ion-input>
             </ion-item>
           </ion-col>
         </ion-row>
+        <ion-row *ngIf="!form.get('conName').valid && form.get('conName').touched">
+          <ion-col size-sm="6" offset-sm="3">
+            <p style="font-size: small;color:#FF6347">Contact Person should not be empty.</p>
+          </ion-col>
+        </ion-row>
+
         <ion-row>
           <ion-col size-sm="3" offset-sm="3">
             <ion-item>
-              <ion-label position="floating" class="label">Mobile No</ion-label>
+              <ion-label position="floating" class="label">Mobile No<span style="color: #FF6347;">*</span></ion-label>
               <ion-input type="text" autocomplete autocorrect formControlName="conMobile"></ion-input>
             </ion-item>
+          </ion-col>
+        </ion-row>
+        <ion-row *ngIf="!form.get('conMobile').valid && form.get('conMobile').touched">
+          <ion-col size-sm="6" offset-sm="3">
+            <p style="font-size: small;color:#FF6347">Mobile number should not be empty.</p>
           </ion-col>
         </ion-row>
         <ion-row>
@@ -129,7 +176,7 @@
       <div class="section">
         <ion-row>
           <ion-col size-sm="6" offset-sm="3">
-            <span style="font-size:13px">Machine detail</span>
+            <span style="font-size:13px">Machine detail</span><span style="color: #FF6347;">*</span>
           </ion-col>
         </ion-row>
         <div *ngFor="let item of form.get('machineDetails')['controls']; let i = index;" formArrayName="machineDetails">
@@ -194,6 +241,9 @@
             </ion-button>
           </ion-col>
         </ion-row>
+
+
+
       </div>
 
       <div class="section">
@@ -251,41 +301,61 @@
         <ion-row>
           <ion-col size-sm="6" offset-sm="3">
             <ion-item>
-              <ion-label position="floating" class="label">Date of Delivery
+              <ion-label position="floating" class="label">Date of Delivery<span style="color: #FF6347;">*</span>
               </ion-label>
               <ion-datetime formControlName="dateDelivery" display-format="MMM DD YYYY" picker-format="YY MMM DD">
               </ion-datetime>
             </ion-item>
           </ion-col>
         </ion-row>
+        <ion-row *ngIf="!form.get('dateDelivery').valid && form.get('dateDelivery').touched">
+          <ion-col size-sm="6" offset-sm="3">
+            <p style="font-size: small;color:#FF6347">Date of Delivery should not be empty.</p>
+          </ion-col>
+        </ion-row>
         <ion-row>
           <ion-col size-sm="6" offset-sm="3">
             <ion-item>
-              <ion-label position="floating" class="label">Start Date of Demo
+              <ion-label position="floating" class="label">Start Date of Demo<span style="color: #FF6347;">*</span>
               </ion-label>
               <ion-datetime formControlName="dateDemo" display-format="MMM DD YYYY" picker-format="YY MMM DD">
               </ion-datetime>
             </ion-item>
           </ion-col>
         </ion-row>
+        <ion-row *ngIf="!form.get('dateDemo').valid && form.get('dateDemo').touched">
+          <ion-col size-sm="6" offset-sm="3">
+            <p style="font-size: small;color:#FF6347">Start Date of Demo should not be empty.</p>
+          </ion-col>
+        </ion-row>
         <ion-row>
           <ion-col size-sm="6" offset-sm="3">
             <ion-item>
-              <ion-label position="floating" class="label">End Date of Demo
+              <ion-label position="floating" class="label">End Date of Demo<span style="color: #FF6347;">*</span>
               </ion-label>
               <ion-datetime formControlName="dateEndDemo" display-format="MMM DD YYYY" picker-format="YY MMM DD">
               </ion-datetime>
             </ion-item>
           </ion-col>
         </ion-row>
+        <ion-row *ngIf="!form.get('dateEndDemo').valid && form.get('dateEndDemo').touched">
+          <ion-col size-sm="6" offset-sm="3">
+            <p style="font-size: small;color:#FF6347">End Date of Demo should not be empty.</p>
+          </ion-col>
+        </ion-row>
         <ion-row>
           <ion-col size-sm="6" offset-sm="3">
             <ion-item>
-              <ion-label position="floating" class="label">Date of Pickup
+              <ion-label position="floating" class="label">Date of Pickup<span style="color: #FF6347;">*</span>
               </ion-label>
               <ion-datetime formControlName="datePickup" display-format="MMM DD YYYY" picker-format="YY MMM DD">
               </ion-datetime>
             </ion-item>
+          </ion-col>
+        </ion-row>
+        <ion-row *ngIf="!form.get('datePickup').valid && form.get('datePickup').touched">
+          <ion-col size-sm="6" offset-sm="3">
+            <p style="font-size: small;color:#FF6347">Date of Pickup should not be empty.</p>
           </ion-col>
         </ion-row>
       </div>

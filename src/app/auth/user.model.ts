@@ -17,3 +17,13 @@ export class User {
 
     }
 }
+
+
+export class UserRole {
+  constructor(
+    public userId: string,
+    public name: string,
+    public email: string,
+    public roles: string[]
+  ) {}
+}

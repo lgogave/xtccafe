@@ -191,6 +191,7 @@ buildMachineDetailForm(){
       this.form.get('machineCount').patchValue(clientmachinecount,{emitEvent: false});
     })
     this.clients=await this.clientService.getClientList();
+    console.log(this.clients);
     this.clientGroup = this.clients
       .map((item) => item.group)
       .filter((value, index, self) => {
@@ -204,8 +205,8 @@ buildMachineDetailForm(){
 
     }
   ionViewWillEnter(){
-    this.clientService.fetchClients().subscribe(() => {
-    });
+    // this.clientService.fetchClients().subscribe(() => {
+    // });
   }
   async onAddSalespipeline(){
     if (!this.form.valid) {

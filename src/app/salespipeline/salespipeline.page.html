@@ -13,7 +13,7 @@
       </ion-buttons>
     </ion-buttons>
   </ion-toolbar>
-  <ion-segment value="0" color="secondary" (ionChange)="onFilterUpdate($event)">
+  <ion-segment color="secondary" (ionChange)="onFilterUpdate($event)" value="0" #segmentButton>
     <ion-segment-button value="0" layout="icon-end">
       <ion-label>Salespipeline</ion-label>
       <ion-icon name="analytics"></ion-icon>
