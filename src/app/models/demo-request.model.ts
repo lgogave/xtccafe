@@ -25,6 +25,7 @@ export class DemoRequest{
     public datePickup?:Date,
     public satGSTNo?:string,
     public satSEZ?:string,
+    public satBranch?:string,
     public cnsNoEmp?:string,
     public cnsNoCups?:string,
     public approverComment?:string,
@@ -53,5 +54,6 @@ export class DemoRequestViewModel{
     public approverUserName?:string,
     public approverDate?:Date,
     public satSEZ?:string,
+    public satBranch?:string,
   ){}
 }

@@ -12,6 +12,8 @@ import { File } from '@ionic-native/file/ngx';
 import { FileOpener } from '@ionic-native/file-opener/ngx';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
+import { DivisionService } from 'src/app/services/division.service';
+import { MastBranch } from 'src/app/models/division.model';
 pdfMake.vfs=pdfFonts.pdfMake.vfs;
 
 
@@ -35,7 +37,8 @@ export class DemoRequestListPage implements OnInit, OnDestroy {
     private authService: AuthService,
     private plt: Platform,
     private file: File,
-    private fileOpener: FileOpener
+    private fileOpener: FileOpener,
+    private divisionService:DivisionService
   ) {}
   ngOnInit() {
     this.demoRequestsSub = this.demoRequestService.demoRequests.subscribe(
@@ -301,7 +304,8 @@ export class DemoRequestListPage implements OnInit, OnDestroy {
         alertEl.present();
       });
   }
-  sezChallan(req){
+  async sezChallan(req){
+    let branch:MastBranch=await (await this.divisionService.getBrancheByName(req['satBranch']))[0];
     let demodata = {
       logo: this.getBase64Image(),
       clientaddress: `Consignee\n${req['orgName']}\n${req['address']}\n${req['addLocation']}-${req['addPincode']}\n${req['addState']}`,
@@ -337,7 +341,7 @@ export class DemoRequestListPage implements OnInit, OnDestroy {
                   colSpan: 2,
                   bold: true,
                   text:
-                    'Dwija Foods Private Limited\n221 Atlanta Estate\nGoregaon East, Mumbai\nGSTIN/UIN: 27AAHCD6098H1Z8\nState : Maharashtra, Code : 27\nCIN: U01114MH2020PTC335769',
+                    `Dwija Foods Private Limited\n${branch.address}\n${branch.gstno!=''?'GST NO:'+branch.gstno:''}`,
                 },
                 '',
                 {
@@ -449,7 +453,8 @@ export class DemoRequestListPage implements OnInit, OnDestroy {
       this.pdfObj.download();
     }
   }
-  nonsezChallan(req){
+  async nonsezChallan(req){
+    let branch:MastBranch=await (await this.divisionService.getBrancheByName(req['satBranch']))[0];
     let demodata = {
       logo: this.getBase64Image(),
       clientaddress: `Consignee\n${req['orgName']}\n${req['address']}\n${req['addLocation']}-${req['addPincode']}\n${req['addState']}`,
@@ -486,7 +491,7 @@ export class DemoRequestListPage implements OnInit, OnDestroy {
                   colSpan: 3,
                   bold: true,
                   text:
-                    'Dwija Foods Private Limited\n221 Atlanta Estate\nGoregaon East, Mumbai\nGSTIN/UIN: 27AAHCD6098H1Z8\nState : Maharashtra, Code : 27\nCIN: U01114MH2020PTC335769',
+                    `Dwija Foods Private Limited\n${branch.address}\n${branch.gstno!=''?'GST NO:'+branch.gstno:''}`,
                 },
                 '',
                 '',

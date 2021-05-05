@@ -5,7 +5,7 @@ import { first, map, switchMap, take, tap } from 'rxjs/operators';
 import { AuthService } from '../auth/auth.service';
 import { AngularFirestore } from '@angular/fire/firestore';
 import 'firebase/firestore';
-import { Division,ClientStatus, MachineDetail, MastStock, MastInstallKit } from '../models/division.model';
+import { Division,ClientStatus, MachineDetail, MastStock, MastInstallKit, MastBranch } from '../models/division.model';
 
 @Injectable({
   providedIn: 'root',
@@ -80,6 +80,18 @@ export class DivisionService {
     return result as MastInstallKit[];
   }
 
+  async getBranches(): Promise<any> {
+    const result = await this.firebaseService
+    .collection('branches',ref=>ref.orderBy("name"))
+      .valueChanges().pipe(first()).toPromise();
+    return result as MastBranch[];
+  }
+  async getBrancheByName(name:string): Promise<any> {
+    const result = await this.firebaseService
+    .collection('branches',ref=>ref.where("name","==",name))
+      .valueChanges().pipe(first()).toPromise();
+    return result as MastBranch[];
+  }
 
 }
 

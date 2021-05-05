@@ -3,7 +3,7 @@ import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LoadingController, NavController, ToastController } from '@ionic/angular';
 import { DemoRequest } from '../../models/demo-request.model';
-import { MachineDetail, MastInstallKit, MastStock } from 'src/app/models/division.model';
+import { MachineDetail, MastBranch, MastInstallKit, MastStock } from 'src/app/models/division.model';
 import { DemoRequestService } from 'src/app/services/demo-request.service';
 import { ClientSales } from '../salespipeline.model';
 import { SalespipelineService } from '../salespipeline.service';
@@ -31,6 +31,7 @@ export class DemoRequestPage implements OnInit {
   stockCategory:string[];
   stockType:string[];
   perPipe:PercentPipe;
+  branches:MastBranch[];
 
 
   constructor(private route: ActivatedRoute,private navCtrl: NavController,private salespiplineService:SalespipelineService,
@@ -57,6 +58,7 @@ export class DemoRequestPage implements OnInit {
       await this.loadMachineDetails();
       await this.loadStockDetails();
       await this.loadInstallKitDetails();
+      await this.loadBranches();
       this.loadingCtrl.create({ keyboardClose: true }).then((loadingEl) => {
         loadingEl.present();
       this.salespiplineService.getSalesPipelineById(this.saleId ).subscribe(res=>{
@@ -91,6 +93,7 @@ export class DemoRequestPage implements OnInit {
       datePickup: new FormControl(null, { updateOn: 'blur',validators: [Validators.required] }),
       satGSTNo: new FormControl(null, { updateOn: 'blur' }),
       satSEZ: new FormControl(null, { updateOn: 'blur',validators: [Validators.required] }),
+      satBranch:new FormControl(null, { updateOn: 'blur',validators: [Validators.required] }),
       cnsNoEmp: new FormControl(null, { updateOn: 'blur' }),
       cnsNoCups: new FormControl(null, { updateOn: 'blur' }),
     });
@@ -160,7 +163,6 @@ export class DemoRequestPage implements OnInit {
     demoRequest.id=id;
     demoRequest.salespipelineId=this.saleId;
     this.demoRequestService.addDemoRequest(demoRequest).subscribe((res) => {
-
        this.toastController.create({
         message: 'Demo Request Created. Id:'+id,
         duration: 2000,
@@ -203,6 +205,12 @@ export class DemoRequestPage implements OnInit {
     this.installkititems=this.installkit.map(item=>item.item).sort();
     return true;
   }
+  async loadBranches(){
+    this.branches=await this.divisionService.getBranches();
+    return true;
+  }
+
+
   onMachineChange(event,element){
     if (!event.target.value) return;
     let ref=this.machineDetail.filter(item=>item.name==event.target.value)[0].name;

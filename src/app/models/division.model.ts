@@ -38,6 +38,16 @@ export class MastInstallKit{
     public item:string,
   ){}
 }
+export class MastBranch{
+  constructor(
+    public id:string,
+    public name:string,
+    public address:string,
+    public gstno:string,
+    public isActive:string,
+  ){}
+}
+
 
 
 

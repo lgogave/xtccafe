@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NavController, ToastController } from '@ionic/angular';
-import { MachineDetail, MastInstallKit, MastStock } from 'src/app/models/division.model';
+import { MachineDetail, MastBranch, MastInstallKit, MastStock } from 'src/app/models/division.model';
 import { DivisionService } from 'src/app/services/division.service';
 import { DemoRequest } from '../../models/demo-request.model';
 import { DemoRequestService } from '../../services/demo-request.service';
@@ -27,6 +27,7 @@ export class EditDemoRequestPage implements OnInit {
   stockCategory:string[];
   stockType:string[];
   perPipe:PercentPipe;
+  branches:MastBranch[];
 
   constructor(
     private demoRequestService: DemoRequestService,
@@ -56,6 +57,7 @@ export class EditDemoRequestPage implements OnInit {
       await this.loadMachineDetails();
       await this.loadStockDetails();
       await this.loadInstallKitDetails();
+      await this.loadBranches();
       var result = this.initializeForm();
       this.isLoading = false;
     });
@@ -122,6 +124,7 @@ export class EditDemoRequestPage implements OnInit {
         updateOn: 'blur',
       }),
       satSEZ: new FormControl(this.demoRequest.satSEZ, { updateOn: 'blur',validators: [Validators.required] }),
+      satBranch:new FormControl(this.demoRequest.satBranch, { updateOn: 'blur',validators: [Validators.required] }),
       cnsNoEmp: new FormControl(this.demoRequest.cnsNoEmp, {
         updateOn: 'blur',
       }),
@@ -241,6 +244,10 @@ export class EditDemoRequestPage implements OnInit {
   async loadInstallKitDetails(){
     this.installkit=await this.divisionService.getInstallKits();
     this.installkititems=this.installkit.map(item=>item.item).sort();
+    return true;
+  }
+  async loadBranches(){
+    this.branches=await this.divisionService.getBranches();
     return true;
   }
   onMachineChange(event,element){
