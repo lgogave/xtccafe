@@ -61,14 +61,11 @@
         <ion-row  formArrayName="dataEntry">
           <ion-col size-sm="6" offset-sm="3" style="margin-inline:0px">
             <div [formGroupName]="i">
-
               <div id="container">
                 <div class="center"><ion-label style="color: #fff;padding-right: 70px;">Location Detail</ion-label></div>
                 <div class="right"><button class="close-icon-info" (click)="deleteLocatios(i)"></button></div>
               </div>
-
-
-
+              <ion-input style="display:none;"  value="Readonly" readonly formControlName="id"></ion-input>
               <ion-row>
                 <ion-col size-sm="6" offset-sm="3">
                   <ion-item>
@@ -82,16 +79,32 @@
                   <p class="error-label">City should not be empty.</p>
                 </ion-col>
               </ion-row>
-
-
               <ion-row>
                 <ion-col size-sm="6" offset-sm="3">
                   <ion-item>
-                    <ion-label position="floating" >Address<span style="color: #FF6347;">*</span></ion-label>
+                    <ion-label position="floating" >Billing Address<span style="color: #FF6347;">*</span></ion-label>
                     <ion-textarea rows="3"  formControlName="address"></ion-textarea>
                   </ion-item>
               </ion-col>
               </ion-row>
+              <ion-row>
+                <ion-col size-sm="6" offset-sm="3">
+                  <ion-item>
+                    <ion-label position="floating" >Installed At <span style="color: #FF6347;">*</span></ion-label>
+                    <ion-input type="text" formControlName="installAt"></ion-input>
+                  </ion-item>
+              </ion-col>
+              </ion-row>
+
+              <ion-row>
+                <ion-col size-sm="6" offset-sm="3">
+                  <ion-item>
+                    <ion-label position="floating" >Installation Address <span style="color: #FF6347;">*</span></ion-label>
+                    <ion-textarea rows="3"  formControlName="installAddress"></ion-textarea>
+                  </ion-item>
+              </ion-col>
+              </ion-row>
+
               <ion-row>
                 <ion-col size-sm="6" offset-sm="3">
               <ion-item>
@@ -205,6 +218,15 @@
                         <ion-item>
                           <ion-label position="floating" >Machine Count <span style="color: #FF6347;">*</span></ion-label>
                           <ion-input type="number" formControlName="machineCount"></ion-input>
+                        </ion-item>
+                    </ion-col>
+                    </ion-row>
+
+                    <ion-row>
+                      <ion-col size-sm="6" offset-sm="3">
+                        <ion-item>
+                          <ion-label position="floating" >Machine Serial No <span style="color: #FF6347;">*</span></ion-label>
+                          <ion-input type="text" formControlName="machineSrNo"></ion-input>
                         </ion-item>
                     </ion-col>
                     </ion-row>

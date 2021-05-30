@@ -4,8 +4,9 @@ import { AngularFirestore } from '@angular/fire/firestore';
 import { BehaviorSubject, combineLatest, observable, of } from 'rxjs';
 import { first, map, switchMap, take, tap } from 'rxjs/operators';
 import { AuthService } from '../auth/auth.service';
-import { ClientComment, ClientCommentModel, ClientSales, ClientSalesPipeline, SalesPipeline } from './salespipeline.model';
+import { BillingDetail, ClientComment, ClientCommentModel, ClientSales, ClientSalesPipeline, SalesPipeline } from './salespipeline.model';
 import type firebase from 'firebase';
+import { GetNewId } from '../utilities/dataconverters';
 
 
 @Injectable({
@@ -506,6 +507,56 @@ export class SalespipelineService {
             client: {...(clients[0][0]as {})}
           }
       }),first());
+  }
+
+
+  addupdateBillingDetail(billingDetail: BillingDetail,isUpdate:boolean=false) {
+    let fetchedUserId: string;
+    return this.authService.userId.pipe(
+      map((userId) => {
+        if (!userId) {
+          throw new Error('No User Id Found!');
+        }
+        fetchedUserId = userId;
+      }),
+      switchMap(() => {
+        billingDetail.userId = fetchedUserId;
+        billingDetail.createdOn = new Date();
+        if(!isUpdate){
+          billingDetail.id=GetNewId();
+          return this.firebaseService
+          .collection('billing-detail')
+          .add(Object.assign({}, billingDetail));
+        }
+        else{
+          return this.firebaseService
+          .collection('billing-detail').doc(billingDetail.id)
+          .update(Object.assign({}, billingDetail));
+        }
+      }),
+      map((doc) => {
+        return doc;
+      }),
+      take(1)
+    );
+  }
+
+  async getBillingDetail(salesId: string,locationId:string): Promise<any> {
+    let snaps = await this.firebaseService
+      .collection('billing-detail', (ref) =>
+        ref.where('salesId', '==', salesId).where('locationId', '==', locationId))
+      .snapshotChanges()
+      .pipe(first())
+      .toPromise();
+      let billingRate:BillingDetail[];
+      billingRate=snaps.map((billDetail) => {
+          var sl = <BillingDetail>{
+            ...(billDetail.payload.doc.data() as {}),
+          };
+          sl.id = billDetail.payload.doc.id;
+          return sl;
+        });
+    return billingRate.length>0?billingRate[0]:null;
   }
 }
 

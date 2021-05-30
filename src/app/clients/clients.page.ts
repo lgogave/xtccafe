@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { AlertController, IonItemSliding, LoadingController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import { Client } from './client.model';
@@ -11,11 +11,12 @@ import { ClientService } from './client.service';
 })
 export class ClientsPage implements OnInit, OnDestroy {
   loadedClients: Client[];
+  filterloadedClients:Client[];
   isLoading = false;
   private clientSub: Subscription;
   private clientSub1: Subscription;
   private clientSub2: Subscription;
-
+  @ViewChild('searchElement') searchElement;
   constructor(
     private clientService: ClientService,
     private loadingCtrl: LoadingController,
@@ -27,6 +28,7 @@ export class ClientsPage implements OnInit, OnDestroy {
     //  });
     this.clientSub = this.clientService.clients.subscribe((clients) => {
       this.loadedClients = clients;
+      this.applyFilter('');
     });
   }
   ionViewWillEnter() {
@@ -41,6 +43,23 @@ export class ClientsPage implements OnInit, OnDestroy {
       event.target.complete();
     });
   }
+  search(event){
+  const searchTerm = event.srcElement.value;
+  this.applyFilter(searchTerm);
+  }
+  applyFilter(searchTerm:string){
+  searchTerm=this.searchElement==undefined?'':this.searchElement.value;
+  if (!searchTerm) {
+    this.filterloadedClients=this.loadedClients;
+    return;
+  }
+  this.filterloadedClients = this.loadedClients.filter(client => {
+    if (client.name && searchTerm) {
+      return (client.name.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1 || client.group?.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1);
+    }
+  });
+  }
+
 
   ngOnDestroy() {
     if (this.clientSub) {

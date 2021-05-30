@@ -115,9 +115,8 @@ export class ClientService {
   }
 
   async getClientList(): Promise<any> {
-    console.log("2222");
     const clientList = await this.firebaseService
-      .collection('clients',   (ref) =>  ref.where('isActive', '==', true))
+      .collection('clients',   (ref) =>  ref.where('isActive', '==', true).orderBy('name',"asc"))
       .valueChanges()
       .pipe(take(1))
       .toPromise();

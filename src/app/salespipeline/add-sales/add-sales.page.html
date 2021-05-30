@@ -11,7 +11,6 @@
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
-
 <ion-content>
   <form [formGroup]="form">
     <ion-grid>
@@ -28,11 +27,9 @@
             <ion-label>Client <span style="color: #FF6347;">*</span></ion-label>
             <ion-label></ion-label>
             <ion-select placeholder="Select One"  interface="popover" formControlName="client">
-              <ion-select-option *ngFor="let client of loadedClients" [value]="client.id">
+              <ion-select-option *ngFor="let client of loadedClients" [value]="client.id" >
                 {{client.name}}
-
               </ion-select-option>
-
             </ion-select>
           </ion-item>
       </ion-col>
@@ -93,12 +90,29 @@
           </ion-col>
         </ion-row>
 
+        <ion-row>
+          <ion-col size-sm="6" offset-sm="3">
+            <ion-item>
+              <ion-label position="floating" >Billing Address <span style="color: #FF6347;">*</span></ion-label>
+              <ion-textarea rows="3"  formControlName="address"></ion-textarea>
+            </ion-item>
+        </ion-col>
+        </ion-row>
 
         <ion-row>
           <ion-col size-sm="6" offset-sm="3">
             <ion-item>
-              <ion-label position="floating" >Address <span style="color: #FF6347;">*</span></ion-label>
-              <ion-textarea rows="3"  formControlName="address"></ion-textarea>
+              <ion-label position="floating" >Installed At <span style="color: #FF6347;">*</span></ion-label>
+              <ion-input type="text" formControlName="installAt"></ion-input>
+            </ion-item>
+        </ion-col>
+        </ion-row>
+
+        <ion-row>
+          <ion-col size-sm="6" offset-sm="3">
+            <ion-item>
+              <ion-label position="floating" >Installation Address <span style="color: #FF6347;">*</span></ion-label>
+              <ion-textarea rows="3"  formControlName="installAddress"></ion-textarea>
             </ion-item>
         </ion-col>
         </ion-row>
@@ -215,7 +229,16 @@
                 <ion-col size-sm="6" offset-sm="3">
                   <ion-item>
                     <ion-label position="floating" >Machine Count <span style="color: #FF6347;">*</span></ion-label>
-                    <ion-input type="number" formControlName="machineCount"></ion-input>
+                    <ion-input type="text" formControlName="machineCount"></ion-input>
+                  </ion-item>
+              </ion-col>
+              </ion-row>
+
+              <ion-row>
+                <ion-col size-sm="6" offset-sm="3">
+                  <ion-item>
+                    <ion-label position="floating" >Machine Serial No <span style="color: #FF6347;">*</span></ion-label>
+                    <ion-input type="text" formControlName="machineSrNo"></ion-input>
                   </ion-item>
               </ion-col>
               </ion-row>

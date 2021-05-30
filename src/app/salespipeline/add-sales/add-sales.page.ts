@@ -7,6 +7,7 @@ import { Client } from 'src/app/clients/client.model';
 import { ClientService } from 'src/app/clients/client.service';
 import { ClientStatus, MachineDetail } from 'src/app/models/division.model';
 import { DivisionService } from 'src/app/services/division.service';
+import { GetNewId } from 'src/app/utilities/dataconverters';
 import { ClientSalesPipeline, Location, Machine, SalesPipeline } from '../salespipeline.model';
 import { SalespipelineService } from '../salespipeline.service';
 
@@ -66,6 +67,12 @@ export class AddSalesPage implements OnInit {
       updateOn: "blur",
       validators: [Validators.required],
     }),
+    installAt: new FormControl(null, {
+      updateOn: "blur",
+    }),
+    installAddress: new FormControl(null, {
+      updateOn: "blur",
+    }),
     currentStatus: new FormControl(null, {
       updateOn: "blur",
       validators: [Validators.required],
@@ -102,6 +109,9 @@ buildMachineDetailForm(){
     machineCount: new FormControl(null, {
       updateOn: "blur",
       validators: [Validators.required],
+    }),
+    machineSrNo: new FormControl(null, {
+      updateOn: "blur",
     }),
     rate: new FormControl(null, {
       updateOn: "blur",
@@ -146,8 +156,6 @@ buildMachineDetailForm(){
       machineCount: new FormControl(null, {
         updateOn: 'blur',
       }),
-
-
     });
     this.form.valueChanges.subscribe(val=>{
       if(val.client == null)
@@ -196,7 +204,7 @@ buildMachineDetailForm(){
       .map((item) => item.group)
       .filter((value, index, self) => {
         if (value != null) return self.indexOf(value) === index;
-      });
+      }).sort();
       this.loadedClients=this.clients;
       this.clientsStatus=await this.divisionService.getClientStatusList();
       this.machineDetail=await this.divisionService.getMachineDetailList();
@@ -260,6 +268,7 @@ private AddClientSalesPipeLine(){
             machine.machineType,
             machine.volumeType,
             machine.machineCount,
+            machine.machineSrNo,
             machine.rate,
             machine.amount,
             machine.conflevel,
@@ -269,12 +278,15 @@ private AddClientSalesPipeLine(){
       }
       locations.push(new Location(location.city,
         location.address,
+        location.installAt,
+        location.installAddress,
         location.currentStatus,
         new Date(location.closureDate),
         location.amount,
         machines.map((obj)=> {return Object.assign({}, obj)}),
         location.billingAmount,
         location.machineCount,
+        GetNewId()
         ))
     }
     let clientSalesPipeline: ClientSalesPipeline = new ClientSalesPipeline(
@@ -313,12 +325,15 @@ private AddSalesPipeline():SalesPipeline[]{
         this.form.value.comments,
         location.city,
         location.address,
+        location.installAt,
+        location.installAddress,
         location.currentStatus,
         new Date(location.closureDate),
         machine.machineName,
         machine.machineType,
         machine.volumeType,
         machine.machineCount,
+        machine.machineSrNo,
         machine.rate,
         machine.amount,
         location.amount,

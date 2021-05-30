@@ -79,6 +79,9 @@ export class EditClientPage implements OnInit, OnDestroy {
         this.client = res[0];
         this.divisionList = res[1];
         this.clientTypeList=res[2];
+        //console.log(JSON.stringify(res[1]));
+        //console.log(JSON.stringify(res[2]));
+        console.log(JSON.stringify(res[3]));
         this.potentialNatureList=res[3];
         this.locationList=res[4];
         let ncountry=this.client.country?this.client.country:null;

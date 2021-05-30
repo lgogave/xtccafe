@@ -13,6 +13,7 @@
         </ion-button>
       </ion-buttons>
     </ion-buttons>
+    <ion-searchbar placeholder="Filter Clients" (ionInput)="search($event)" #searchElement></ion-searchbar>
   </ion-toolbar>
 </ion-header>
 
@@ -27,12 +28,13 @@
       <div *ngIf="isLoading" class="ion-text-center">
         <ion-spinner color="primary" ></ion-spinner>
       </div>
-      <div *ngIf="!isLoading && loadedClients.length<=0" class="ion-text-center">
+      <div *ngIf="!isLoading && filterloadedClients.length<=0" class="ion-text-center">
         <p>No Clients found! please create one first!</p>
         <ion-button color="primary" routerLink="/clients/new">Add Client</ion-button>
       </div>
-      <ion-list *ngIf="!isLoading && loadedClients.length>0">
-        <ion-item-sliding *ngFor="let client of loadedClients" #slidingClients>
+
+      <ion-list *ngIf="!isLoading && filterloadedClients.length>0">
+        <ion-item-sliding *ngFor="let client of filterloadedClients" #slidingClients>
         <ion-item detail  [routerLink]="['/','clients','detail',client.id]" >
           <ion-icon name="person" slot="start"></ion-icon>
          <div>

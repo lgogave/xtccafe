@@ -3,6 +3,7 @@ import { FormControl, FormGroup, Validators,FormArray } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController, LoadingController, NavController, ToastController } from '@ionic/angular';
 import { combineLatest, Subscription } from 'rxjs';
+import { GetNewId } from 'src/app/utilities/dataconverters';
 import { Client } from '../../clients/client.model';
 import { ClientService } from '../../clients/client.service';
 import { ClientStatus, MachineDetail } from '../../models/division.model';
@@ -67,6 +68,12 @@ export class EditSalesPage implements OnInit {
         updateOn: 'blur',
         validators: [Validators.required],
       }),
+      installAt: new FormControl(location!=null?location.installAt:null, {
+        updateOn: 'blur',
+      }),
+      installAddress: new FormControl(location!=null?location.installAddress:null, {
+        updateOn: 'blur',
+      }),
       currentStatus: new FormControl(location!=null?location.currentStatus:null, {
         updateOn: 'blur',
         validators: [Validators.required],
@@ -88,6 +95,9 @@ export class EditSalesPage implements OnInit {
       machineCount: new FormControl(location!=null?location.machineCount:null, {
         updateOn: 'blur',
       }),
+      id: new FormControl(location!=null?location.id:GetNewId(), {
+        updateOn: 'blur',
+      }),
     });
   }
   buildMachineDetailForm(machine?:Machine) {
@@ -107,6 +117,9 @@ export class EditSalesPage implements OnInit {
       machineCount: new FormControl(machine!=null?machine.machineCount:null, {
         updateOn: 'blur',
         validators: [Validators.required],
+      }),
+      machineSrNo: new FormControl(machine!=null?machine.machineSrNo:null, {
+        updateOn: 'blur',
       }),
       rate: new FormControl(machine!=null?machine.rate:null, {
         updateOn: 'blur',
@@ -325,6 +338,7 @@ this.isLoading=false;
             machine.machineType,
             machine.volumeType,
             machine.machineCount,
+            machine.machineSrNo,
             machine.rate,
             machine.amount,
             machine.conflevel,
@@ -336,6 +350,8 @@ this.isLoading=false;
         new Location(
           location.city,
           location.address,
+          location.installAt,
+          location.installAddress,
           location.currentStatus,
           new Date(location.closureDate),
           location.amount,
@@ -344,6 +360,7 @@ this.isLoading=false;
           }),
           location.billingAmount,
           location.machineCount,
+          location.id
         )
       );
     }
@@ -387,12 +404,15 @@ this.isLoading=false;
             this.form.value.comments,
             location.city,
             location.address,
+            location.installAt,
+            location.installAddress,
             location.currentStatus,
             new Date(location.closureDate),
             machine.machineName,
             machine.machineType,
             machine.volumeType,
             machine.machineCount,
+            machine.machineSrNo,
             machine.rate,
             machine.amount,
             location.amount,

@@ -18,7 +18,7 @@ export class SalespipelinePage implements OnInit, OnDestroy {
   segmentValue:string='0';
   private salespipelineSub: Subscription;
   @ViewChild('segmentButton', { static: false }) segmentButton: IonSegment;
-
+  @ViewChild('searchElement') searchElement;
   constructor(
     private salespipelineService: SalespipelineService,
     private loadingCtrl: LoadingController,
@@ -112,11 +112,19 @@ export class SalespipelinePage implements OnInit, OnDestroy {
             flag = true;
           }
         });
+        if(this.searchElement!=undefined && flag){
+          let serchTerm = this.searchElement.value;
+          if (sp.client.name.toLowerCase().indexOf(serchTerm.toLowerCase()) > -1) {
+            flag = true;
+          } else {
+            flag = false;
+          }
+        }
         if (flag) {
           filterClient.push(sp);
         }
       });
-      return filterClient;
+      return filterClient.sort((a,b)=>a.client.name.localeCompare(b.client.name));
     } else if (value == '2') {
       this.loadedClientSales.forEach((sp) => {
         let flag: boolean = false;
@@ -125,11 +133,20 @@ export class SalespipelinePage implements OnInit, OnDestroy {
             flag = true;
           }
         });
+        if(this.searchElement!=undefined && flag){
+          let serchTerm = this.searchElement.value;
+          if (sp.client.name.toLowerCase().indexOf(serchTerm.toLowerCase()) > -1) {
+            flag = true;
+          } else {
+            flag = false;
+          }
+        }
         if (flag) {
           filterClient.push(sp);
         }
       });
-      return filterClient;
+
+      return filterClient.sort((a,b)=>a.client.name.localeCompare(b.client.name));
     } else if (value == '0') {
       this.loadedClientSales.forEach((sp) => {
         let flag: boolean = false;
@@ -138,15 +155,27 @@ export class SalespipelinePage implements OnInit, OnDestroy {
             flag = true;
           }
         });
+        if(this.searchElement!=undefined && flag){
+          let serchTerm = this.searchElement.value;
+          if (sp.client.name.toLowerCase().indexOf(serchTerm.toLowerCase()) > -1) {
+            flag = true;
+          } else {
+            flag = false;
+          }
+        }
         if (flag) {
           filterClient.push(sp);
         }
       });
-      return filterClient;
+      return filterClient.sort((a,b)=>a.client.name.localeCompare(b.client.name));
     }
     else {
       return this.loadedClientSales;
     }
   }
+  search($event){
+    this.relevantClientSales=this.applyFilter(this.segmentButton.value);
+  }
+
 
 }

@@ -39,6 +39,14 @@ const routes: Routes = [
   {
     path: 'editdemorequest/:demoId',
     loadChildren: () => import('./edit-demo-request/edit-demo-request.module').then( m => m.EditDemoRequestPageModule)
+  },
+  {
+    path: 'clientbilling/:salesId/:locId',
+    loadChildren: () => import('./client-billing/client-billing.module').then( m => m.ClientBillingPageModule)
+  },
+  {
+    path: 'deliverychallan/:salesId/:locId',
+    loadChildren: () => import('./delivery-challan/delivery-challan.module').then( m => m.DeliveryChallanPageModule)
   }
 ];
 
