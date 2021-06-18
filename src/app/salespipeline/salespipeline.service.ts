@@ -4,7 +4,7 @@ import { AngularFirestore } from '@angular/fire/firestore';
 import { BehaviorSubject, combineLatest, observable, of } from 'rxjs';
 import { first, map, switchMap, take, tap } from 'rxjs/operators';
 import { AuthService } from '../auth/auth.service';
-import { BillingDetail, ClientComment, ClientCommentModel, ClientSales, ClientSalesPipeline, SalesPipeline } from './salespipeline.model';
+import { BillingDetail, ClientComment, ClientCommentModel, ClientSales, ClientSalesPipeline, DCDetail, DCDetailModel, Invoice, InvoiceMonth, SalesPipeline } from './salespipeline.model';
 import type firebase from 'firebase';
 import { GetNewId } from '../utilities/dataconverters';
 
@@ -540,6 +540,67 @@ export class SalespipelineService {
       take(1)
     );
   }
+  addupdateDC(dc: DCDetail,isUpdate:boolean=false) {
+    let fetchedUserId: string;
+    return this.authService.userId.pipe(
+      map((userId) => {
+        if (!userId) {
+          throw new Error('No User Id Found!');
+        }
+        fetchedUserId = userId;
+      }),
+      switchMap(() => {
+        dc.userId = fetchedUserId;
+        dc.createdOn = new Date();
+        if(!isUpdate){
+          dc.id=GetNewId();
+          return this.firebaseService
+          .collection('delivery-challan')
+          .add(Object.assign({}, dc));
+        }
+        else{
+          return this.firebaseService
+          .collection('delivery-challan').doc(dc.id)
+          .update(Object.assign({}, dc));
+        }
+      }),
+      map((doc) => {
+        return doc;
+      }),
+      take(1)
+    );
+  }
+
+  addupdateInvoice(invoice: Invoice,isUpdate:boolean=false) {
+    let fetchedUserId: string;
+    return this.authService.userId.pipe(
+      map((userId) => {
+        if (!userId) {
+          throw new Error('No User Id Found!');
+        }
+        fetchedUserId = userId;
+      }),
+      switchMap(() => {
+        invoice.userId = fetchedUserId;
+        invoice.createdOn = new Date();
+        if(!isUpdate){
+          invoice.id=GetNewId();
+          return this.firebaseService
+          .collection('invoice')
+          .add(Object.assign({}, invoice));
+        }
+        else{
+          return this.firebaseService
+          .collection('invoice').doc(invoice.id)
+          .update(Object.assign({}, invoice));
+        }
+      }),
+      map((doc) => {
+        return doc;
+      }),
+      take(1)
+    );
+  }
 
   async getBillingDetail(salesId: string,locationId:string): Promise<any> {
     let snaps = await this.firebaseService
@@ -558,6 +619,69 @@ export class SalespipelineService {
         });
     return billingRate.length>0?billingRate[0]:null;
   }
+
+  async getDCDetail(dcId: string): Promise<any> {
+    let snaps = await this.firebaseService
+      .collection('delivery-challan').doc(dcId).get().toPromise();
+      var result = <DCDetail>{
+        ...(snaps.data() as {}),
+      };
+      result.id = snaps.id;
+    return result;
+  }
+
+  async getDeliveryChallans(clientId:string): Promise<DCDetailModel[]> {
+    let snaps:any;
+    if(clientId==null){
+      snaps= await this.firebaseService
+      .collection('delivery-challan', (ref) =>
+        ref.orderBy('date','desc'))
+      .snapshotChanges()
+      .pipe(first())
+      .toPromise();
+    }
+    else
+    {
+      snaps= await this.firebaseService
+      .collection('delivery-challan', (ref) =>
+      ref.where('clientId','==',clientId)
+      .orderBy('date','desc'))
+      .snapshotChanges()
+      .pipe(first())
+      .toPromise();
+    }
+
+      let dcdetail:DCDetailModel[];
+      dcdetail=snaps.map((billDetail) => {
+          var sl = <DCDetailModel>{
+            ...(billDetail.payload.doc.data() as {}),
+          };
+          sl.id = billDetail.payload.doc.id;
+          return sl;
+        });
+        return dcdetail;
+  }
+
+  async getInvoiceMonth():Promise<InvoiceMonth[]>{
+    let snaps=await this.firebaseService
+    .collection('invoice-month', (ref) =>
+      ref.orderBy('month','desc'))
+    .snapshotChanges()
+    .pipe(first())
+    .toPromise();
+    let invMonth:InvoiceMonth[];
+    invMonth=snaps.map((month) => {
+        var sl = <InvoiceMonth>{
+          ...(month.payload.doc.data() as {}),
+        };
+        sl.id = month.payload.doc.id;
+        return sl;
+      });
+      return invMonth;
+  }
+
+
+
 }
 
 

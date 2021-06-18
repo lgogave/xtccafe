@@ -45,6 +45,13 @@ export class MastBranch{
     public address:string,
     public gstno:string,
     public isActive:string,
+    public state:string,
+    public code:string,
+    public cin:string,
+    public bankName:string,
+    public accNo:string,
+    public branchifscode:string,
+    public pan:string,
   ){}
 }
 

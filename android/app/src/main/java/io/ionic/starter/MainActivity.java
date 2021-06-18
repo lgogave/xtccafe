@@ -1,4 +1,4 @@
-package io.ionic.starter;
+package com.xtccafe.dev;
 
 import android.os.Bundle;
 

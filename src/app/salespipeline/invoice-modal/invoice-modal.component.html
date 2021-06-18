@@ -1,0 +1,28 @@
+<ion-header>
+  <ion-toolbar  color="primary">
+    <ion-buttons>
+      <ion-title>Create Invoice</ion-title>
+      <ion-button (click)="dismissModal()"> <ion-icon name="close-circle-outline" slot="icon-only"></ion-icon></ion-button>
+      </ion-buttons>
+      </ion-toolbar>
+      <ion-item>
+        <ion-select placeholder="Select Invoice Month"  interface="popover" [formControl]="_invoiceMonth">
+          <ion-select-option *ngFor="let m of months" [value]="m.id">{{m.displaymonth}}
+          </ion-select-option>
+        </ion-select>
+        <ion-button color="success" style="margin-left: 10px;" (click)="generateInvoice()" >Create</ion-button>
+      </ion-item>
+  </ion-header>
+  <ion-content>
+    <ion-card  *ngFor="let req of dclist ; let i = index">
+      <!-- <ion-item  [routerLink]="['/','salespipeline','deliverychallan',req.salesId,req.locationId,req.id]"> -->
+        <ion-item>
+        <div>
+        <ion-label style="margin-top:20px!important;"> {{req.billName}}</ion-label>
+         <h6><b>Location: </b>{{req.location}}</h6>
+         <h6><b>Date: </b><ion-icon name="time-outline" size="small" style="color: #787878;"></ion-icon><a style="color: #787878"> {{req.date | date}}</a></h6>
+         <h6><b>ID: </b>{{req.id}}</h6>
+        </div>
+      </ion-item>
+    </ion-card>
+  </ion-content>

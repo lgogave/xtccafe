@@ -5,7 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { LoadingController, NavController, ToastController } from '@ionic/angular';
 import { MastBranch, MastStock } from 'src/app/models/division.model';
 import { DivisionService } from 'src/app/services/division.service';
-import { BillingDetail, BillingRate, ClientSales,Location } from '../salespipeline.model';
+import { BillingDetail, BillingRate, ClientSales,DCAddHocMaterial,DCDetail,Location } from '../salespipeline.model';
 import { SalespipelineService } from '../salespipeline.service';
 
 
@@ -25,8 +25,10 @@ export class DeliveryChallanPage implements OnInit {
   stockType:string[];
   perPipe:PercentPipe;
   saleId: string;
+  dcId: string=null;
   locationId: string;
   billingDetail:BillingDetail;
+  dcDetail:DCDetail;
   branches:MastBranch[];
   constructor(private route: ActivatedRoute,private navCtrl: NavController,private divisionService:DivisionService,
     private loadingCtrl: LoadingController, private router: Router,private salespiplineService:SalespipelineService,
@@ -40,12 +42,22 @@ export class DeliveryChallanPage implements OnInit {
         if (!paramMap.has('locId')) {
           this.navCtrl.navigateBack('/salespipeline');
         }
+        if (paramMap.has('dcId')) {
+         this.dcId= paramMap.get('dcId');
+        }
         this.saleId = paramMap.get('salesId');
         this.locationId = paramMap.get('locId');
         this.perPipe = new PercentPipe('en-US');
+        if(this.dcId!=null){
+          this.dcDetail = await this.salespiplineService.getDCDetail(this.dcId);
+          console.log(this.dcDetail);
+        }
+
         this.billingDetail=await this.salespiplineService.getBillingDetail(this.saleId,this.locationId);
         await this.loadStockDetails();
         await this.loadBranches();
+        console.log(this.stockDetail);
+
         this.loadingCtrl.create({ keyboardClose: true }).then((loadingEl) => {
           loadingEl.present();
           this.salespiplineService
@@ -57,7 +69,12 @@ export class DeliveryChallanPage implements OnInit {
                   this.clientLocation=location;
                 }
               });
+              if(this.dcDetail==null)
               var result = this.initializeForm();
+              else
+              var result = this.initializeUpdateForm();
+
+              console.log(this.form);
               loadingEl.dismiss();
               this.isLoading = false;
             });
@@ -73,20 +90,50 @@ export class DeliveryChallanPage implements OnInit {
         address: new FormControl(this.billingDetail!=null?this.billingDetail.installAddress:this.clientLocation.address, { updateOn: 'blur',validators: [Validators.required] }),
         pincode: new FormControl(null, { updateOn: 'blur',validators: [Validators.required] }),
         branch: new FormControl(null, { updateOn: 'blur',validators: [Validators.required] }),
+        date: new FormControl(null, { updateOn: 'blur',validators: [Validators.required] }),
         materialDetails:new FormArray([this.createMaterialDetail()]),
+        materialAddhoc:new FormArray([this.createaddhocDetail()]),
       });
       return true;
     }
-    buildMaterialDetail(billDetail:BillingDetail){
+
+
+    initializeUpdateForm() {
+      this.form = new FormGroup({
+        billName: new FormControl(this.dcDetail.billName, { updateOn: 'blur',validators: [Validators.required] }),
+        billAddress: new FormControl(this.dcDetail.billAddress, { updateOn: 'blur',validators: [Validators.required] }),
+        location: new FormControl(this.dcDetail.location, { updateOn: 'blur',validators: [Validators.required] }),
+        address: new FormControl(this.dcDetail.address, { updateOn: 'blur',validators: [Validators.required] }),
+        pincode: new FormControl(this.dcDetail.pincode, { updateOn: 'blur',validators: [Validators.required] }),
+        branch: new FormControl(this.dcDetail.branch, { updateOn: 'blur',validators: [Validators.required] }),
+        date: new FormControl(this.dcDetail.date, { updateOn: 'blur',validators: [Validators.required] }),
+        materialDetails:this.buildMaterialDetail(this.dcDetail),
+        materialAddhoc:this.buildAddHocMaterialDetail(this.dcDetail),
+      });
+      return true;
+    }
+
+
+    buildMaterialDetail(dcdetail:DCDetail){
+      console.log(dcdetail.materialDetails);
       let fmarray=new FormArray([]);
-      billDetail.materialDetails.forEach((material,index) => {
+      dcdetail.materialDetails.forEach((material,index) => {
         fmarray.push(this.createMaterialDetail(material));
         let ref=this.stockDetail.filter(item=>item.category==material.category)[0].category;
         this.materialstockType[index].stockType=this.stockDetail.filter(item=>item.category==ref).map(item=>item.item).sort();
       });
       return fmarray;
     }
-    createMaterialDetail(materialRate?:BillingRate){
+    buildAddHocMaterialDetail(dcdetail:DCDetail){
+      let fmarray=new FormArray([]);
+      dcdetail.materialAddhoc.forEach((material,index) => {
+        fmarray.push(this.createaddhocDetail(material));
+      });
+      return fmarray;
+    }
+
+
+    createMaterialDetail(materialRate?:any){
       this.materialstockType.push({stockType:[]});
       return new FormGroup({
         category: new FormControl(materialRate!=null?materialRate.category:null, {
@@ -109,24 +156,39 @@ export class DeliveryChallanPage implements OnInit {
           updateOn: "blur",
           //validators: [Validators.required],
         }),
-        price: new FormControl(materialRate!=null?materialRate.price:null, {
+        qty: new FormControl(this.dcDetail!=null?materialRate.qty:null, {
           updateOn: "blur",
           //validators: [Validators.required],
         }),
       })
     }
-
+    createaddhocDetail(dcAddHocMaterial?:DCAddHocMaterial){
+      return new FormGroup({
+        item: new FormControl(dcAddHocMaterial!=null?dcAddHocMaterial.item: null, {
+          updateOn: "blur",
+          //validators: [Validators.required],
+        }),
+        price: new FormControl(dcAddHocMaterial!=null?dcAddHocMaterial.price:null, {
+          updateOn: "blur",
+          //validators: [Validators.required],
+        }),
+      })
+    }
     async loadStockDetails(){
-      this.stockDetail=await this.divisionService.getStock();
-      this.stockCategory=this.stockDetail.map(item=>item.category).filter((value, index, self) => self.indexOf(value) === index).sort();
+      if(this.billingDetail!=null){
+        this.stockDetail=this.billingDetail.materialDetails as MastStock[];
+        this.stockCategory=this.stockDetail.map(item=>item.category).filter((value, index, self) => self.indexOf(value) === index).sort();
+      }
+      else{
+      this.stockDetail=[];
+      this.stockCategory=[];
+      }
       return true;
     }
     async loadBranches(){
       this.branches=await this.divisionService.getBranches();
       return true;
     }
-
-
     addMaterial(){
       let matdetails=this.form.get('materialDetails') as FormArray;
       matdetails.push(this.createMaterialDetail());
@@ -136,7 +198,14 @@ export class DeliveryChallanPage implements OnInit {
       matdetails.removeAt(index);
       this.materialstockType.splice(index,1);
     }
-
+    addMaterialAddhoc(){
+      let matdetails=this.form.get('materialAddhoc') as FormArray;
+      matdetails.push(this.createaddhocDetail());
+    }
+    deleteMaterialAddhoc(index){
+      let matdetails=this.form.get('materialAddhoc') as FormArray;
+      matdetails.removeAt(index);
+    }
     onMaterialChange(event,element,index){
       if (!event.target.value) return;
       let ref=this.stockDetail.filter(item=>item.category==event.target.value)[0].category;
@@ -146,23 +215,19 @@ export class DeliveryChallanPage implements OnInit {
       element.controls['gst'].patchValue(null,{emitEvent: false});
       this.materialstockType[index].stockType=this.stockDetail.filter(item=>item.category==ref).map(item=>item.item).sort();
     }
-
-
-
-
     onMaterialTypeChange(event,element){
       if (!event.target.value) return;
       let ref=this.stockDetail.filter(item=>item.item==event.target.value)[0];
       element.controls['uom'].patchValue(ref.uom,{emitEvent: false});
       element.controls['hsnNo'].patchValue(ref.hsnNo,{emitEvent: false});
-      element.controls['gst'].patchValue(this.perPipe.transform(ref.gst),{emitEvent: false});
+      element.controls['gst'].patchValue(ref.gst,{emitEvent: false});
     }
-
-    addBillingDetail(){
+    addDC(){
       if (!this.form.valid) {
         return;
       }
-      let fmbillingDetail = <BillingDetail>this.form.value;
+      let fmbillingDetail = <DCDetail>this.form.value;
+
       fmbillingDetail.salesId=this.saleId;
       fmbillingDetail.clientId = this.clientSales.clientsale.clientId;
       fmbillingDetail.locationId = this.locationId;
@@ -172,8 +237,38 @@ export class DeliveryChallanPage implements OnInit {
       if (fmbillingDetail.materialDetails.length == 0) {
         return;
       }
-      this.salespiplineService
-        .addupdateBillingDetail(fmbillingDetail,this.billingDetail!=null?true:false)
+      fmbillingDetail.materialDetails.forEach(material => {
+        let filterresult=this.billingDetail.materialDetails.filter(m=>m.item==material.item && m.category==material.category && m.hsnNo==material.hsnNo);
+        material.rate=Number(filterresult[0].price);
+        material.amount=Number(filterresult[0].price) * Number(material.qty);
+        material.tax= material.amount*(Number(filterresult[0].gst.replace('%',''))/100);
+        material.totamount=material.amount+material.tax;
+      });
+
+
+      if(this.dcDetail==null){
+        fmbillingDetail.isUsed=false;
+        this.salespiplineService
+        .addupdateDC(fmbillingDetail,false)
+        .subscribe((res) => {
+          this.toastController
+            .create({
+              message: 'Data updated',
+              duration: 2000,
+              color: 'success',
+            })
+            .then((tost) => {
+              tost.present();
+              this.router.navigate(['/salespipeline/deliverychallanlist/'+fmbillingDetail.clientId]);
+            });
+        });
+      }
+      else
+      {
+        fmbillingDetail.isUsed=this.dcDetail.isUsed;
+        fmbillingDetail.id=this.dcId;
+        this.salespiplineService
+        .addupdateDC(fmbillingDetail,true)
         .subscribe((res) => {
           this.toastController
             .create({
@@ -183,8 +278,9 @@ export class DeliveryChallanPage implements OnInit {
             })
             .then((tost) => {
               tost.present();
-              this.router.navigate(['/salespipeline']);
+              this.router.navigate(['/salespipeline/deliverychallanlist/'+fmbillingDetail.clientId]);
             });
         });
+      }
     }
   }

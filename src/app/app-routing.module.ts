@@ -44,6 +44,10 @@ const routes: Routes = [
     loadChildren: () => import('./about/about.module').then( m => m.AboutPageModule),
     canLoad:[AuthGuard]
   },
+  {
+    path: 'notificationdetail/:id',
+    loadChildren: () => import('./notification-detail/notification-detail.module').then( m => m.NotificationDetailPageModule)
+  },
 
 ];
 

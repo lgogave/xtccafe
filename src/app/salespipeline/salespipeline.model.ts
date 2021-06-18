@@ -123,13 +123,12 @@ export class BillingRate {
     ){}
 }
 
-export class DCDetail {
+export class DCDetailModel {
   constructor(
     public id?:string,
     public clientId?:string,
     public salesId?:string,
     public locationId?:string,
-    public salesLocId?:string,
     public billName?:string,
     public billAddress?:string,
     public location?:string,
@@ -139,8 +138,33 @@ export class DCDetail {
     public gstno?:string,
     public date?:Date,
     public materialDetails?:DCMaterial[],
+    public materialAddhoc?:DCAddHocMaterial[],
     public userId?:string,
-    public createdOn?:Date
+    public createdOn?:Date,
+    public isSelected:boolean=false,
+    public isUsed:boolean=false
+    ){}
+}
+
+export class DCDetail {
+  constructor(
+    public id?:string,
+    public clientId?:string,
+    public salesId?:string,
+    public locationId?:string,
+    public billName?:string,
+    public billAddress?:string,
+    public location?:string,
+    public address?:string,
+    public pincode?:string,
+    public branch?:string,
+    public gstno?:string,
+    public date?:Date,
+    public materialDetails?:DCMaterial[],
+    public materialAddhoc?:DCAddHocMaterial[],
+    public userId?:string,
+    public createdOn?:Date,
+    public isUsed?:boolean
     ){}
 }
 export class DCMaterial {
@@ -151,12 +175,18 @@ export class DCMaterial {
     public gst?:string,
     public uom?:string,
     public qty?:number,
+    public rate?:number,
+    public amount?:number,
+    public tax?:number,
+    public totamount?:number,
     ){}
 }
-
-
-
-
+export class DCAddHocMaterial {
+  constructor(
+    public item?:string,
+    public price?:number
+    ){}
+}
 
 export class Machine {
   constructor(
@@ -171,6 +201,30 @@ export class Machine {
       public billingAmount?: number,
   ) {}
 }
+
+export class InvoiceMonth{
+  constructor(public id?:string,public month?:Date,public displaymonth?:string){}
+}
+
+export class Invoice{
+constructor(
+  public id?:string,
+  public month?:Date,
+  public status?:string,
+  public displaymonth?:string,
+  public clientId?:string,
+  public clientLocationId?:string,
+  public clientName?:string,
+  public clientLocation?:string,
+  public amount?:number,
+  public tax?:number,
+  public totamount?:number,
+  public dcIds?:string[],
+  public dc?:DCDetailModel[],
+  public userId?:string,
+  public createdOn?:Date){}
+}
+
 
 
 

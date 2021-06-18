@@ -4,6 +4,7 @@ import { AuthService } from './auth/auth.service';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { AngularFireAuth } from '@angular/fire/auth';
+import { FcmService } from './services/fcm.service';
 
 @Component({
   selector: 'app-root',
@@ -18,7 +19,9 @@ export class AppComponent  implements OnInit,OnDestroy{
   constructor(  private authService:AuthService,
     private firebaseAuth:AngularFireAuth,
     private platform: Platform,
-    private router:Router) {
+    private router:Router,
+    private fcmService:FcmService
+    ) {
     }
     ngOnInit(){
       this.isadmin=false;
@@ -35,17 +38,20 @@ export class AppComponent  implements OnInit,OnDestroy{
           }
         }
       });
-      //this.initializeApp();
+      this.initializeApp();
   }
 
   initializeApp() {
+
     this.platform.ready().then(() => {
-      this.firebaseAuth.onAuthStateChanged(user => {
-        if (user) {
-        console.log('auth state changed');
-        console.log(user);
-        }
-      });
+      console.log("I am ready");
+      this.fcmService.initPush();
+      // this.firebaseAuth.onAuthStateChanged(user => {
+      //   if (user) {
+      //   console.log('auth state changed');
+      //   console.log(user);
+      //   }
+      // });
     });
   }
 

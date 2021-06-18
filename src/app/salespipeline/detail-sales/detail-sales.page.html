@@ -43,8 +43,14 @@
                 <ion-item color="success" style="padding-right: 5px;">
                   <ion-icon name="location-outline"></ion-icon>
                   <ion-label><b> City : </b> {{location.city}} </ion-label>
-                  <button [routerLink]="['/','salespipeline','clientbilling',salespipeline.id,location.id]" style="color: #000033;border:none!important; outline:none!important;background: #ffce00;padding:5px;">Billing Rates...</button>
                  </ion-item>
+                 <ion-item>
+                  <button [routerLink]="['/','salespipeline','clientbilling',salespipeline.id,location.id]" style="color: #000033;border:none!important; outline:none!important;background: #ffce00;padding:5px;">Billing Rates</button>
+                  <button [routerLink]="['/','salespipeline','deliverychallan',salespipeline.id,location.id]" style="color: #000033;border:none!important; outline:none!important;background: #ffce00;padding:5px;margin: 12px;">Create DC</button>
+                  <button [routerLink]="['/','salespipeline','deliverychallanlist',salespipeline.clientId]" style="color: #000033;border:none!important; outline:none!important;background: #ffce00;padding:5px;">View DC</button>
+                  <button [routerLink]="['/','salespipeline','deliverychallanlist',salespipeline.clientId]" style="color: #000033;border:none!important; outline:none!important;background: #ffce00;padding:5px;margin: 12px;">View Invoice</button>
+                </ion-item>
+
 
                  <ion-item>
                   <ion-label text-wrap><b> Billing Address : </b> {{location.address}} </ion-label>

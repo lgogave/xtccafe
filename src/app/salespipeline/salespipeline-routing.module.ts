@@ -47,6 +47,18 @@ const routes: Routes = [
   {
     path: 'deliverychallan/:salesId/:locId',
     loadChildren: () => import('./delivery-challan/delivery-challan.module').then( m => m.DeliveryChallanPageModule)
+  },
+  {
+    path: 'deliverychallan/:salesId/:locId/:dcId',
+    loadChildren: () => import('./delivery-challan/delivery-challan.module').then( m => m.DeliveryChallanPageModule)
+  },
+  {
+    path: 'deliverychallanlist/:clientId',
+    loadChildren: () => import('./delivery-challan-list/delivery-challan-list.module').then( m => m.DeliveryChallanListPageModule)
+  },
+  {
+    path: 'deliverychallanlist/',
+    loadChildren: () => import('./delivery-challan-list/delivery-challan-list.module').then( m => m.DeliveryChallanListPageModule)
   }
 ];
 

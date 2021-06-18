@@ -35,6 +35,7 @@
     "firebase": "^8.2.8",
     "ionic-native": "^2.9.0",
     "jetifier": "^1.6.6",
+    "number-to-words": "^1.2.4",
     "pdfmake": "^0.1.71",
     "rxjs": "~6.6.0",
     "tslib": "^2.0.0",

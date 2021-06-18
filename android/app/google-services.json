@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "678229863683",
+    "project_id": "db-xtc-cafe-dev",
+    "storage_bucket": "db-xtc-cafe-dev.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:678229863683:android:6f838b7916a180eae1cd36",
+        "android_client_info": {
+          "package_name": "com.xtccafe.dev"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "678229863683-0k80l6q9ehi5of8knsksjfpmidtl0urr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDkEY8jLHYXt_fR4m0cyBjhxAcG5M7g-Aw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "678229863683-0k80l6q9ehi5of8knsksjfpmidtl0urr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -7,11 +7,18 @@
   "plugins": {
     "SplashScreen": {
       "launchShowDuration": 0
+    },
+    "PushNotifications": {
+      "presentationOptions": [
+        "badge",
+        "sound",
+        "alert"
+      ]
     }
   },
   "cordova": {},
   "server": {
-    "url": "http://localhost:8101",
+    "url": "http://localhost:8102",
     "cleartext": true,
     "originalUrl": "http://localhost:8101",
     "originalCleartext": true

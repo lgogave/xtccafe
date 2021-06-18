@@ -4,7 +4,7 @@
       <ion-back-button defaultHref="/salespipeline">
       </ion-back-button>
       <ion-title>Delivery Challan</ion-title>
-      <ion-button (click)="addBillingDetail()" [disabled]="!isLoading && !form.valid">
+      <ion-button (click)="addDC()" [disabled]="!isLoading && !form.valid">
         <ion-icon name="checkmark" slot="icon-only"></ion-icon>
       </ion-button>
     </ion-buttons>
@@ -26,7 +26,7 @@
     <ion-col>
       <ion-item>
         <ion-label position="floating" >Billing Address <span style="color: #FF6347;">*</span></ion-label>
-        <ion-textarea rows="3"  formControlName="billAddress"></ion-textarea>
+        <ion-textarea rows="4"  formControlName="billAddress"></ion-textarea>
       </ion-item>
   </ion-col>
   </ion-row>
@@ -42,7 +42,7 @@
     <ion-col>
       <ion-item>
         <ion-label position="floating" >Delivery address<span style="color: #FF6347;">*</span></ion-label>
-        <ion-input type="text" formControlName="address"></ion-input>
+        <ion-textarea rows="4"  type="text" formControlName="address"></ion-textarea>
       </ion-item>
   </ion-col>
   </ion-row>
@@ -74,6 +74,20 @@
       </ion-item>
     </ion-col>
   </ion-row>
+
+  <ion-row>
+    <ion-col size-sm="6" offset-sm="3">
+      <ion-item>
+        <ion-label position="floating" >DC Date <span style="color: #FF6347;">*</span></ion-label>
+        <ion-datetime
+        formControlName="date"
+        display-format="MMM DD YYYY"
+        picker-format="YY MMM DD"
+        ></ion-datetime>
+      </ion-item>
+    </ion-col>
+  </ion-row>
+
 
   <div class="section">
     <ion-row>
@@ -132,9 +146,9 @@
               </ion-col>
               <ion-col  size="12">
                 <ion-item>
-                  <ion-label position="floating" class="label">Price
+                  <ion-label position="floating" class="label">Quantity
                   </ion-label>
-                  <ion-input type="number" autocomplete autocorrect formControlName="price"></ion-input>
+                  <ion-input type="number" autocomplete autocorrect formControlName="qty"></ion-input>
                 </ion-item>
               </ion-col>
             </ion-row>
@@ -159,6 +173,55 @@
     </ion-row>
   </div>
 
+
+  <div class="section">
+    <ion-row>
+      <ion-col size-sm="6" offset-sm="3">
+        <span style="font-size:13px">Addhoc Material</span>
+      </ion-col>
+    </ion-row>
+    <div *ngFor="let item of form.get('materialAddhoc')['controls']; let i = index;"
+      formArrayName="materialAddhoc">
+      <div [formGroupName]="i">
+        <ion-row>
+          <ion-col size="10">
+            <ion-row>
+              <ion-col size="12">
+                <ion-item>
+                  <ion-label position="floating" class="label">Material
+                  </ion-label>
+                 <ion-input type="text" formControlName="item"></ion-input>
+                </ion-item>
+              </ion-col>
+              <ion-col  size="12">
+                <ion-item>
+                  <ion-label position="floating" class="label">Price
+                  </ion-label>
+                  <ion-input type="number" autocomplete autocorrect formControlName="price"></ion-input>
+                </ion-item>
+              </ion-col>
+            </ion-row>
+          </ion-col>
+          <ion-col size="2">
+            <div style="height: 95%; border-left:2px solid #FF69B4;">
+              <ion-button size="small" class=" button-assertive button-clear" style="margin-top: 75px;"
+                (click)="deleteMaterialAddhoc(i)">
+                <ion-icon name="trash" slot="icon-only"></ion-icon>
+              </ion-button>
+            </div>
+          </ion-col>
+        </ion-row>
+      </div>
+    </div>
+    <ion-row>
+      <ion-col size-sm="6" offset-sm="3">
+        <ion-button size="small" (click)="addMaterialAddhoc()">
+          <ion-icon name="add-circle"></ion-icon> Add Material
+        </ion-button>
+      </ion-col>
+    </ion-row>
+
+  </div>
 
   </ion-grid>
   </form>
