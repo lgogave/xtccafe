@@ -1,4 +1,5 @@
 import { Client } from "../clients/client.model";
+import { MachineDetail } from "../models/division.model";
 
   export class SalesPipeline {
     constructor(
@@ -107,9 +108,12 @@ export class BillingDetail {
     public installAt?:string,
     public installAddress?:string,
     public gstno?:string,
+    public taxType?:string,
     public materialDetails?:BillingRate[],
     public userId?:string,
-    public createdOn?:Date
+    public createdOn?:Date,
+    public pincode?:number,
+    public bank?:InvoiceBank
     ){}
 }
 export class BillingRate {
@@ -126,6 +130,7 @@ export class BillingRate {
 export class DCDetailModel {
   constructor(
     public id?:string,
+    public srNo?:string,
     public clientId?:string,
     public salesId?:string,
     public locationId?:string,
@@ -149,6 +154,7 @@ export class DCDetailModel {
 export class DCDetail {
   constructor(
     public id?:string,
+    public srNo?:string,
     public clientId?:string,
     public salesId?:string,
     public locationId?:string,
@@ -164,7 +170,8 @@ export class DCDetail {
     public materialAddhoc?:DCAddHocMaterial[],
     public userId?:string,
     public createdOn?:Date,
-    public isUsed?:boolean
+    public isUsed?:boolean,
+    public isDelete?:boolean
     ){}
 }
 export class DCMaterial {
@@ -199,6 +206,11 @@ export class Machine {
       public amount?: number,
       public conflevel?: number,
       public billingAmount?: number,
+      public mchRent?: number,
+      public consumableCap?: number,
+      public mchInstCharges?: number,
+      public mchSecDeposite?: number,
+      public isInstChargesConsider?: boolean,
   ) {}
 }
 
@@ -209,6 +221,9 @@ export class InvoiceMonth{
 export class Invoice{
 constructor(
   public id?:string,
+  public srNo?:string,
+  public bank?:InvoiceBank,
+  public branch?:string,
   public month?:Date,
   public status?:string,
   public displaymonth?:string,
@@ -216,13 +231,73 @@ constructor(
   public clientLocationId?:string,
   public clientName?:string,
   public clientLocation?:string,
+  public taxType?:string,
   public amount?:number,
   public tax?:number,
   public totamount?:number,
   public dcIds?:string[],
   public dc?:DCDetailModel[],
+  public machines?:Machine[],
+  public mchRent?:number,
+  public mchdeposite?:number,
+  public mchinstCharges?:number,
+  public consumableCap?:number,
   public userId?:string,
+  public ponumber?:string,
   public createdOn?:Date){}
+}
+
+export class RentalInvoice{
+  constructor(
+    public id?:string,
+    public srNo?:string,
+    public branch?:string,
+    public month?:Date,
+    public status?:string,
+    public displaymonth?:string,
+    public clientId?:string,
+    public clientLocationId?:string,
+    public clientName?:string,
+    public clientLocation?:string,
+    public taxType?:string,
+    public machines?:Machine[],
+    public mchRent?:number,
+    public mchdeposite?:number,
+    public mchinstCharges?:number,
+    public consumableCap?:number,
+    public userId?:string,
+    public createdOn?:Date){}
+  }
+
+export class ReceiptBook{
+  constructor(
+    public id?:string,
+    public category?:string,
+    public type?:string,
+    public branch?:string,
+    public year?:number,
+    public srnumber?:number,
+    public userId?:string,
+    public createdOn?:Date){}
+  }
+
+
+export class InvoiceBank {
+  constructor(
+    public id?: string,
+    public name?: string,
+    public branch?: string,
+    public address?: string,
+    public ifsc?: string,
+    public accno?: string,
+  ) {}
+}
+
+export class InvoiceModel{
+  constructor(
+    public ponumber?: string,
+    public rent?: number,
+  ){}
 }
 
 

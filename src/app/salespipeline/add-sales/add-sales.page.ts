@@ -127,10 +127,23 @@ buildMachineDetailForm(){
     billingAmount: new FormControl(null, {
       updateOn: 'blur',
     }),
+    mchRent: new FormControl(null, {
+      updateOn: 'blur',
+    }),
+    consumableCap: new FormControl(null, {
+      updateOn: 'blur',
+    }),
+    mchInstCharges: new FormControl(null, {
+      updateOn: 'blur',
+    }),
+    isInstChargesConsider: new FormControl(null, {
+      updateOn: 'blur',
+    }),
+    mchSecDeposite: new FormControl(null, {
+      updateOn: 'blur',
+    }),
   });
 }
-
-
   constructor(private route:Router,private loadingCtrl:LoadingController,private clientService:ClientService,
   private salesPipelineService:SalespipelineService,private divisionService:DivisionService,private toastController: ToastController) { }
   async ngOnInit() {
@@ -273,6 +286,11 @@ private AddClientSalesPipeLine(){
             machine.amount,
             machine.conflevel,
             machine.billingAmount,
+            machine.mchRent,
+            machine.consumableCap,
+            machine.mchInstCharges,
+            machine.mchSecDeposite,
+            false
           )
         );
       }

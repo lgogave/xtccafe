@@ -1,5 +1,5 @@
 import { Component,OnInit, OnDestroy } from '@angular/core';
-import { Platform } from '@ionic/angular';
+import { NavController, Platform } from '@ionic/angular';
 import { AuthService } from './auth/auth.service';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -18,6 +18,7 @@ export class AppComponent  implements OnInit,OnDestroy{
   isadmin:boolean=false;
   constructor(  private authService:AuthService,
     private firebaseAuth:AngularFireAuth,
+    private navCtrl: NavController,
     private platform: Platform,
     private router:Router,
     private fcmService:FcmService
@@ -58,6 +59,8 @@ export class AppComponent  implements OnInit,OnDestroy{
 
   onLogout(){
     this.authService.logout();
+    this.navCtrl.navigateBack('/auth');
+
   }
   ngOnDestroy(){
     if(this.authSub){

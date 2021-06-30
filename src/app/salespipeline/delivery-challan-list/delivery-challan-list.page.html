@@ -11,7 +11,7 @@
         <ion-icon name="contract-outline" slot="icon-only"></ion-icon>
       </ion-button>
       <ion-button [style.visibility]="longPressActive ? 'visible' : 'hidden'" (click)="generateInvoice()">
-        <ion-icon name="checkmark" slot="icon-only"></ion-icon>
+        <ion-icon name="newspaper-outline" slot="icon-only"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -36,7 +36,7 @@
     <ion-col>
     <ion-card  *ngFor="let req of dcDetail ; let i = index">
       <!-- <ion-item  [routerLink]="['/','salespipeline','deliverychallan',req.salesId,req.locationId,req.id]"> -->
-        <ion-item [ngClass]="!req.isUsed?'active-card':'deactive-card'">
+        <ion-item [ngClass]="(!req.isUsed && !req.isDelete) ?'active-card':'deactive-card'">
         <div style="width: 10%;">
           <ion-checkbox  [(ngModel)]="req.isSelected" slot="start"
           [style.visibility]="!req.isUsed ? 'visible' : 'hidden'"
@@ -46,10 +46,16 @@
         <ion-label style="margin-top:20px!important;"> {{req.billName}}</ion-label>
          <h6><b>Location: </b>{{req.location}}</h6>
          <h6><b>Date: </b><ion-icon name="time-outline" size="small"></ion-icon><a style="color: #000"> {{req.date | date}}</a></h6>
-         <h6><b>ID: </b>{{req.id}}</h6>
+         <h6><b>ID: </b>{{req.srNo}}</h6>
          <div style="text-align: right;">
           <ion-button color="warning" (click)="navigateToDetail(req)">Detail</ion-button>
           <ion-button color="warning" (click)="viewPdf(req)">Pdf</ion-button>
+          <ion-button color="light" [style.visibility]="(!req.isUsed && !req.isDelete) ? 'visible' : 'hidden'" (click)="deleteDC(req)">
+            <ion-icon  color="primary" name="trash" slot="icon-only"></ion-icon>
+          </ion-button>
+          <ion-button color="light" [style.visibility]="(!req.isDelete) ? 'hidden' : 'visible'">
+            <ion-icon  color="danger" name="close-circle-outline" slot="icon-only" size="large"></ion-icon>
+          </ion-button>
         </div>
 
         </div>

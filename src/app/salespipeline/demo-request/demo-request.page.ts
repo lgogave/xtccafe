@@ -5,7 +5,7 @@ import { LoadingController, NavController, ToastController } from '@ionic/angula
 import { DemoRequest } from '../../models/demo-request.model';
 import { MachineDetail, MastBranch, MastInstallKit, MastStock } from 'src/app/models/division.model';
 import { DemoRequestService } from 'src/app/services/demo-request.service';
-import { ClientSales } from '../salespipeline.model';
+import { ClientSales, ReceiptBook } from '../salespipeline.model';
 import { SalespipelineService } from '../salespipeline.service';
 import { DivisionService } from 'src/app/services/division.service';
 import { PercentPipe } from '@angular/common';
@@ -148,7 +148,7 @@ export class DemoRequestPage implements OnInit {
 
     })
   }
-  addDemoRequest(){
+  async addDemoRequest(){
     if (!this.form.valid) {
       return;
     }
@@ -162,12 +162,35 @@ export class DemoRequestPage implements OnInit {
     let id=Math.floor(Math.random() * 26) + Date.now();
     demoRequest.id=id;
     demoRequest.salespipelineId=this.saleId;
+    let branch=this.branches.filter(x=>x.name==demoRequest.satBranch)[0];
+    let receiptBook=new ReceiptBook();
+    receiptBook.category="DDC";
+    receiptBook.type="CON";
+    receiptBook.branch=branch.initials;
+    receiptBook.year = 2021;
+    let receiptNo=await this.salespiplineService.getlastReceiptNumber(receiptBook);
+    if(receiptNo!=null){
+      receiptBook.id=receiptNo.id;
+      receiptBook.srnumber = receiptNo.srnumber + 1;
+    }
+    else{
+      receiptBook.srnumber=1;
+      receiptBook.id=null;
+    }
+    let srNo=await this.padLeadingZeros(receiptBook.srnumber,6);
+    demoRequest.srNo=`${receiptBook.category}/${receiptBook.type}/${branch.initials}/${receiptBook.year}/${srNo}`;
+
+
+
+
+
     this.demoRequestService.addDemoRequest(demoRequest).subscribe((res) => {
        this.toastController.create({
-        message: 'Demo Request Created. Id:'+id,
+        message: 'Demo Request Created. Id:'+demoRequest.srNo,
         duration: 2000,
         color:'danger',
       }).then((tost)=>{
+        this.updateReceiptBook(receiptBook);
         tost.present();
         this.router.navigate(['/salespipeline/demorequests']);
       });
@@ -238,6 +261,15 @@ export class DemoRequestPage implements OnInit {
     element.controls['uom'].patchValue(ref.uom,{emitEvent: false});
     element.controls['hsnNo'].patchValue(ref.hsnNo,{emitEvent: false});
     element.controls['gst'].patchValue(this.perPipe.transform(ref.gst),{emitEvent: false});
+  }
+  updateReceiptBook(receipt:ReceiptBook){
+    this.salespiplineService.addupdateReceiptBook(receipt,receipt.id==null?false:true).subscribe()
+  }
+
+  async  padLeadingZeros(num, size) {
+    var s = num + '';
+    while (s.length < size) s = '0' + s;
+    return await s;
   }
 
 

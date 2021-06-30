@@ -33,7 +33,8 @@ export class DemoRequest{
     public approverUserName?:string,
     public approverDate?:Date,
     public machineDetails?:MachineDetail[],
-    public materialDetails?:MastStock[]
+    public materialDetails?:MastStock[],
+    public srNo?:string
   ){}
 }
 

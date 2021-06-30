@@ -15,6 +15,10 @@ export function convertTimestampToDate(date:any){
   return (date as firebase.firestore.Timestamp).toDate();
  }
 
+export function  convertTimeStampToDate(date:any){
+  return new Date(date.seconds*1000);
+ }
+
 export function GetNewId() {
   return '_' + Math.random().toString(36).substr(2, 9);
 };

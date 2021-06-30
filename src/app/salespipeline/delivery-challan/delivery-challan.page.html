@@ -4,7 +4,7 @@
       <ion-back-button defaultHref="/salespipeline">
       </ion-back-button>
       <ion-title>Delivery Challan</ion-title>
-      <ion-button (click)="addDC()" [disabled]="!isLoading && !form.valid">
+      <ion-button (click)="addDC()" [disabled]="!isLoading && !form.valid" [style.visibility]="(!isLoading && (dcDetail==null  || (!dcDetail.isDelete))) ? 'visible' : 'hidden'">
         <ion-icon name="checkmark" slot="icon-only"></ion-icon>
       </ion-button>
     </ion-buttons>
@@ -174,7 +174,7 @@
   </div>
 
 
-  <div class="section">
+  <div class="section" style="display: none;">
     <ion-row>
       <ion-col size-sm="6" offset-sm="3">
         <span style="font-size:13px">Addhoc Material</span>

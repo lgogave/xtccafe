@@ -12,6 +12,10 @@
         </ion-select>
         <ion-button color="success" style="margin-left: 10px;" (click)="generateInvoice()" >Create</ion-button>
       </ion-item>
+          <ion-item>
+            <ion-label position="floating" >PO Number<span style="color: #FF6347;"></span></ion-label>
+            <ion-input type="text" [formControl]="_ponumber"></ion-input>
+          </ion-item>
   </ion-header>
   <ion-content>
     <ion-card  *ngFor="let req of dclist ; let i = index">

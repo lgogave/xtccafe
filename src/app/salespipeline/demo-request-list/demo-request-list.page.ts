@@ -310,6 +310,7 @@ export class DemoRequestListPage implements OnInit, OnDestroy {
       logo: this.getBase64Image(),
       clientaddress: `Consignee\n${req['orgName']}\n${req['address']}\n${req['addLocation']}-${req['addPincode']}\n${req['addState']}`,
       reqId: req['id'],
+      srNo: req['srNo'],
     };
     var docDefinition = {
       content: [
@@ -346,7 +347,7 @@ export class DemoRequestListPage implements OnInit, OnDestroy {
                 '',
                 {
                   colSpan: 2,
-                  text: `Delivery Challan No:Demo/${demodata.reqId}\n Stock Transfer Date:-`,
+                  text: `Delivery Challan No:Demo/${demodata.srNo}\n Stock Transfer Date:-`,
                 },
                 '',
               ],

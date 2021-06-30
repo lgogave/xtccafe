@@ -37,7 +37,7 @@
                   {{req.orgName}}
                 </div>
               </div>
-              <h6>Request Id: {{req.id}}</h6>
+              <h6>Request Id: {{req.srNo}}</h6>
               <h6>Request Status: {{req.reqStatus}}</h6>
               <div *ngIf="req.reqStatus=='Approved' || req.reqStatus=='Rejected'">
                 <h6>Comment: {{req.approverComment}}</h6>

@@ -52,6 +52,7 @@ export class MastBranch{
     public accNo:string,
     public branchifscode:string,
     public pan:string,
+    public initials:string,
   ){}
 }
 

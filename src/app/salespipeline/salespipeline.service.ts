@@ -4,7 +4,7 @@ import { AngularFirestore } from '@angular/fire/firestore';
 import { BehaviorSubject, combineLatest, observable, of } from 'rxjs';
 import { first, map, switchMap, take, tap } from 'rxjs/operators';
 import { AuthService } from '../auth/auth.service';
-import { BillingDetail, ClientComment, ClientCommentModel, ClientSales, ClientSalesPipeline, DCDetail, DCDetailModel, Invoice, InvoiceMonth, SalesPipeline } from './salespipeline.model';
+import { BillingDetail, ClientComment, ClientCommentModel, ClientSales, ClientSalesPipeline, DCDetail, DCDetailModel, Invoice, InvoiceMonth, InvoiceSeries, ReceiptBook, RentalInvoice, SalesPipeline } from './salespipeline.model';
 import type firebase from 'firebase';
 import { GetNewId } from '../utilities/dataconverters';
 
@@ -508,8 +508,6 @@ export class SalespipelineService {
           }
       }),first());
   }
-
-
   addupdateBillingDetail(billingDetail: BillingDetail,isUpdate:boolean=false) {
     let fetchedUserId: string;
     return this.authService.userId.pipe(
@@ -570,7 +568,6 @@ export class SalespipelineService {
       take(1)
     );
   }
-
   addupdateInvoice(invoice: Invoice,isUpdate:boolean=false) {
     let fetchedUserId: string;
     return this.authService.userId.pipe(
@@ -601,11 +598,89 @@ export class SalespipelineService {
       take(1)
     );
   }
+  addupdateRentalInvoice(invoice: RentalInvoice,isUpdate:boolean=false) {
+    let fetchedUserId: string;
+    return this.authService.userId.pipe(
+      map((userId) => {
+        if (!userId) {
+          throw new Error('No User Id Found!');
+        }
+        fetchedUserId = userId;
+      }),
+      switchMap(() => {
+        invoice.userId = fetchedUserId;
+        invoice.createdOn = new Date();
+        if(!isUpdate){
+          invoice.id=GetNewId();
+          return this.firebaseService
+          .collection('rental-invoice')
+          .add(Object.assign({}, invoice));
+        }
+        else{
+          return this.firebaseService
+          .collection('rental-invoice').doc(invoice.id)
+          .update(Object.assign({}, invoice));
+        }
+      }),
+      map((doc) => {
+        return doc;
+      }),
+      take(1)
+    );
+  }
+  addupdateReceiptBook(receipt: ReceiptBook,isUpdate:boolean=false) {
+    let fetchedUserId: string;
+    return this.authService.userId.pipe(
+      map((userId) => {
+        if (!userId) {
+          throw new Error('No User Id Found!');
+        }
+        fetchedUserId = userId;
+      }),
+      switchMap(() => {
+        receipt.userId = fetchedUserId;
+        receipt.createdOn = new Date();
+        if(!isUpdate){
+          receipt.id=GetNewId();
+          return this.firebaseService
+          .collection('invoice-series')
+          .add(Object.assign({}, receipt));
+        }
+        else{
+          return this.firebaseService
+          .collection('invoice-series').doc(receipt.id)
+          .update(Object.assign({}, receipt));
+        }
+      }),
+      map((doc) => {
+        return doc;
+      }),
+      take(1)
+    );
+  }
 
   async getBillingDetail(salesId: string,locationId:string): Promise<any> {
     let snaps = await this.firebaseService
       .collection('billing-detail', (ref) =>
-        ref.where('salesId', '==', salesId).where('locationId', '==', locationId))
+        ref.where('salesId', '==', salesId)
+        .where('locationId', '==', locationId))
+      .snapshotChanges()
+      .pipe(first())
+      .toPromise();
+      let billingRate:BillingDetail[];
+      billingRate=snaps.map((billDetail) => {
+          var sl = <BillingDetail>{
+            ...(billDetail.payload.doc.data() as {}),
+          };
+          sl.id = billDetail.payload.doc.id;
+          return sl;
+        });
+    return billingRate.length>0?billingRate[0]:null;
+  }
+  async getMastRateByLocation(locationId:string): Promise<any> {
+    let snaps = await this.firebaseService
+      .collection('billing-detail', (ref) =>
+        ref.where('locationId', '==', locationId))
       .snapshotChanges()
       .pipe(first())
       .toPromise();
@@ -662,6 +737,103 @@ export class SalespipelineService {
         return dcdetail;
   }
 
+  async getSalesPiplineById(salesId:string): Promise<ClientSalesPipeline> {
+        let snaps = await this.firebaseService
+        .collection('client-sales-pipeline').doc(salesId).get().toPromise();
+        var result = <ClientSalesPipeline>{
+          ...(snaps.data() as {}),
+        };
+        result.id = snaps.id;
+      return result;
+  }
+
+  async getInvoices(locId:string): Promise<Invoice[]> {
+    let snaps:any;
+    if(locId==null){
+      snaps= await this.firebaseService
+      .collection('invoice', (ref) =>
+        ref.orderBy('date','desc'))
+      .snapshotChanges()
+      .pipe(first())
+      .toPromise();
+    }
+    else
+    {
+      snaps= await this.firebaseService
+      .collection('invoice', (ref) =>
+      ref.where('clientLocationId','==',locId)
+      )
+      .snapshotChanges()
+      .pipe(first())
+      .toPromise();
+    }
+      let dcdetail:Invoice[];
+      dcdetail=snaps.map((billDetail) => {
+          var sl = <Invoice>{
+            ...(billDetail.payload.doc.data() as {}),
+          };
+          sl.id = billDetail.payload.doc.id;
+          return sl;
+        });
+        return dcdetail;
+  }
+
+  async getInvoiceByDCId(dcId: string): Promise<any> {
+    let snaps = await this.firebaseService
+      .collection('invoice', (ref) =>
+        ref.where('dcIds', 'array-contains', dcId))
+      .snapshotChanges()
+      .pipe(first())
+      .toPromise();
+      let invoices:Invoice[];
+      invoices=snaps.map((inv) => {
+          var sl = <Invoice>{
+            ...(inv.payload.doc.data() as {}),
+          };
+          sl.id = inv.payload.doc.id;
+          return sl;
+        });
+    return invoices.length>0?invoices[0]:null;
+  }
+
+  async getInvoiceById(invId:string): Promise<Invoice> {
+    let snaps = await this.firebaseService
+    .collection('invoice').doc(invId).get().toPromise();
+    var result = <Invoice>{
+      ...(snaps.data() as {}),
+    };
+    result.id = snaps.id;
+  return result;
+}
+
+  async getlastReceiptNumber(receipt:ReceiptBook): Promise<ReceiptBook>{
+    let snaps:any;
+      snaps= await this.firebaseService
+      .collection('invoice-series', (ref) =>
+      ref.where('category','==',receipt.category)
+      .where('type','==',receipt.type)
+      .where('branch','==',receipt.branch)
+      .where('year','==',receipt.year)
+      .orderBy("createdOn","desc").limit(1)
+      )
+      .snapshotChanges()
+      .pipe(first())
+      .toPromise();
+      let receiptNumber:ReceiptBook[]=snaps.map((receipt) => {
+          var obj = <ReceiptBook>{
+            ...(receipt.payload.doc.data() as {}),
+          };
+          obj.id = receipt.payload.doc.id;
+          return obj;
+        });
+        if(receiptNumber && receiptNumber.length>0){
+          return receiptNumber[0];
+        }
+        else{
+          return null;
+        }
+  }
+
   async getInvoiceMonth():Promise<InvoiceMonth[]>{
     let snaps=await this.firebaseService
     .collection('invoice-month', (ref) =>
@@ -678,9 +850,44 @@ export class SalespipelineService {
         return sl;
       });
       return invMonth;
-  }
 
 
+
+
+    }
+
+    async getRentalInvoice(clientId:string,locId:string,displyMonth:string): Promise<RentalInvoice[]> {
+      let snaps:any;
+      if(clientId==null){
+        snaps= await this.firebaseService
+        .collection('rental-invoice', (ref) =>
+          ref.orderBy('createdOn','desc'))
+        .snapshotChanges()
+        .pipe(first())
+        .toPromise();
+      }
+      else
+      {
+        snaps= await this.firebaseService
+        .collection('rental-invoice', (ref) =>
+        ref.where('clientId','==',clientId)
+        .where('clientLocationId','==',locId)
+        .where('displaymonth','==',displyMonth))
+        .snapshotChanges()
+        .pipe(first())
+        .toPromise();
+      }
+
+        let rentdetail:RentalInvoice[];
+        rentdetail=snaps.map((rcDetail) => {
+            var sl = <RentalInvoice>{
+              ...(rcDetail.payload.doc.data() as {}),
+            };
+            sl.id = rcDetail.payload.doc.id;
+            return sl;
+          });
+          return rentdetail;
+    }
 
 }
 

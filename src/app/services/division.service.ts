@@ -6,6 +6,7 @@ import { AuthService } from '../auth/auth.service';
 import { AngularFirestore } from '@angular/fire/firestore';
 import 'firebase/firestore';
 import { Division,ClientStatus, MachineDetail, MastStock, MastInstallKit, MastBranch } from '../models/division.model';
+import { BillingDetail, InvoiceBank } from '../salespipeline/salespipeline.model';
 
 @Injectable({
   providedIn: 'root',
@@ -73,6 +74,12 @@ export class DivisionService {
       .valueChanges().pipe(first()).toPromise();
     return result as MastStock[];
   }
+  async getBanks(): Promise<any> {
+    const result = await this.firebaseService
+    .collection('invoice-bank')
+      .valueChanges().pipe(first()).toPromise();
+    return result as InvoiceBank[];
+  }
   async getInstallKits(): Promise<any> {
     const result = await this.firebaseService
     .collection('master-install-kit')
@@ -92,6 +99,7 @@ export class DivisionService {
       .valueChanges().pipe(first()).toPromise();
     return result as MastBranch[];
   }
+
 
 }
 

@@ -14,6 +14,7 @@ export class AuthGuard implements CanLoad {
   canLoad(route: Route, segments: UrlSegment[]
     ): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree{
       return this.authService.userIsAutheticated.pipe(take(1),switchMap(isAuthenticated=>{
+        console.log(route.path);
         if(!isAuthenticated){
           return this.authService.autoLogin();
         } else {

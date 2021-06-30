@@ -1,0 +1,33 @@
+<ion-header>
+  <ion-toolbar  color="primary">
+    <ion-buttons>
+      <ion-back-button defaultHref='/salespipeline'>
+      </ion-back-button>
+      <ion-title>Edit Invoice</ion-title>
+      <ion-button  (click)="editInvoice()" [disabled]="!isLoading && !form.valid">
+        <ion-icon name="checkmark" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <form [formGroup]="form"  *ngIf="!isLoading">
+  <ion-grid>
+    <ion-row>
+      <ion-col>
+        <ion-item color="success">
+          <ion-input type="text" formControlName="month" ReadOnly></ion-input>
+        </ion-item>
+            <ion-item>
+              <ion-label position="floating">PO Number<span style="color: #FF6347;"></span></ion-label>
+              <ion-input type="text" formControlName="ponumber"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="floating">Rent<span style="color: #FF6347;"></span></ion-label>
+              <ion-input type="text" formControlName="rent"></ion-input>
+            </ion-item>
+        </ion-col>
+        </ion-row>
+  </ion-grid>
+  </form>
+</ion-content>

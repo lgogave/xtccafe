@@ -48,7 +48,7 @@
                   <button [routerLink]="['/','salespipeline','clientbilling',salespipeline.id,location.id]" style="color: #000033;border:none!important; outline:none!important;background: #ffce00;padding:5px;">Billing Rates</button>
                   <button [routerLink]="['/','salespipeline','deliverychallan',salespipeline.id,location.id]" style="color: #000033;border:none!important; outline:none!important;background: #ffce00;padding:5px;margin: 12px;">Create DC</button>
                   <button [routerLink]="['/','salespipeline','deliverychallanlist',salespipeline.clientId]" style="color: #000033;border:none!important; outline:none!important;background: #ffce00;padding:5px;">View DC</button>
-                  <button [routerLink]="['/','salespipeline','deliverychallanlist',salespipeline.clientId]" style="color: #000033;border:none!important; outline:none!important;background: #ffce00;padding:5px;margin: 12px;">View Invoice</button>
+                  <button [routerLink]="['/','salespipeline','invoicelist',location.id]" style="color: #000033;border:none!important; outline:none!important;background: #ffce00;padding:5px;margin: 12px;">View Invoice</button>
                 </ion-item>
 
 
@@ -111,6 +111,19 @@
                       <ion-label style="font-size: 15px;">
                          <b> Amount : </b>{{machine.amount}}</ion-label>
                     </ion-item>
+
+                    <ion-item color="secondary">
+                      <ion-label><b> Machine Rent : </b> {{machine.mchRent}} </ion-label>
+                     </ion-item>
+                     <ion-item color="secondary">
+                      <ion-label><b> Consumable CAP : </b> {{machine.consumableCap}} </ion-label>
+                     </ion-item>
+                     <ion-item color="secondary">
+                      <ion-label><b> Installation Charges : </b> {{machine.mchInstCharges}} </ion-label>
+                     </ion-item>
+                     <ion-item color="secondary">
+                      <ion-label><b> Security Deposite : </b> {{machine.mchSecDeposite}} </ion-label>
+                     </ion-item>
                   </ion-col>
                 </ion-row>
               </ion-col>

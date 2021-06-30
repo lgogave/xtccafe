@@ -5,7 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { LoadingController, NavController, ToastController } from '@ionic/angular';
 import { MastStock } from 'src/app/models/division.model';
 import { DivisionService } from 'src/app/services/division.service';
-import { BillingDetail, BillingRate, ClientSales,Location } from '../salespipeline.model';
+import { BillingDetail, BillingRate, ClientSales,InvoiceBank,Location } from '../salespipeline.model';
 import { SalespipelineService } from '../salespipeline.service';
 
 
@@ -27,8 +27,14 @@ export class ClientBillingPage implements OnInit {
   saleId: string;
   locationId: string;
   billingDetail:BillingDetail;
-  constructor(private route: ActivatedRoute,private navCtrl: NavController,private divisionService:DivisionService,
-    private loadingCtrl: LoadingController, private router: Router,private salespiplineService:SalespipelineService,
+  banks:InvoiceBank[];
+  banknames:string[];
+  constructor(private route: ActivatedRoute,
+    private navCtrl: NavController,
+    private divisionService:DivisionService,
+    private loadingCtrl: LoadingController,
+    private router: Router,
+    private salespiplineService:SalespipelineService,
     private toastController: ToastController) { }
   async ngOnInit() {
     this.route.paramMap.subscribe(async (paramMap) => {
@@ -43,6 +49,7 @@ export class ClientBillingPage implements OnInit {
       this.perPipe = new PercentPipe('en-US');
       this.billingDetail=await this.salespiplineService.getBillingDetail(this.saleId,this.locationId);
       await this.loadStockDetails();
+      await this.loadBankDetails();
       this.loadingCtrl.create({ keyboardClose: true }).then((loadingEl) => {
         loadingEl.present();
         this.salespiplineService
@@ -70,7 +77,10 @@ export class ClientBillingPage implements OnInit {
       installAt: new FormControl(this.billingDetail!=null?this.billingDetail.installAt:this.clientLocation.installAt, { updateOn: 'blur',validators: [Validators.required] }),
       installAddress: new FormControl(this.billingDetail!=null?this.billingDetail.installAddress:this.clientLocation.installAddress, { updateOn: 'blur',validators: [Validators.required] }),
       gstno: new FormControl(this.billingDetail!=null?this.billingDetail.gstno:this.clientSales.client.gstNumber, { updateOn: 'blur',validators: [Validators.required] }),
+      taxType: new FormControl(this.billingDetail!=null?this.billingDetail.taxType:null, { updateOn: 'blur',validators: [Validators.required] }),
       materialDetails:this.billingDetail!=null?this.buildMaterialDetail(this.billingDetail):new FormArray([this.createMaterialDetail()]),
+      pincode:  new FormControl(this.billingDetail!=null?this.billingDetail.pincode:null, { updateOn: 'blur',validators: [Validators.required] }),
+      bank: new FormControl(this.billingDetail!=null?this.billingDetail.bank.name:null, { updateOn: 'blur',validators: [Validators.required] }),
     });
     return true;
   }
@@ -118,6 +128,11 @@ export class ClientBillingPage implements OnInit {
     this.stockCategory=this.stockDetail.map(item=>item.category).filter((value, index, self) => self.indexOf(value) === index).sort();
     return true;
   }
+  async loadBankDetails(){
+    this.banks=await this.divisionService.getBanks();
+    this.banknames=this.banks.map(item=>item.name).filter((value, index, self) => self.indexOf(value) === index).sort();
+    return true;
+  }
 
   addMaterial(){
     let matdetails=this.form.get('materialDetails') as FormArray;
@@ -158,6 +173,7 @@ export class ClientBillingPage implements OnInit {
     fmbillingDetail.salesId=this.saleId;
     fmbillingDetail.clientId = this.clientSales.clientsale.clientId;
     fmbillingDetail.locationId = this.locationId;
+    fmbillingDetail.bank=this.banks.filter(x=>x.name==fmbillingDetail.bank)[0];
     if(this.billingDetail!=null){
       fmbillingDetail.id=this.billingDetail.id;
     }
@@ -171,7 +187,7 @@ export class ClientBillingPage implements OnInit {
           .create({
             message: 'Data updated',
             duration: 2000,
-            color: 'danger',
+            color: 'success',
           })
           .then((tost) => {
             tost.present();

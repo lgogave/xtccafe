@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule,ReactiveFormsModule } from '@angular/forms';
 
 
@@ -17,6 +17,9 @@ import { InvoiceModalComponent } from '../invoice-modal/invoice-modal.component'
     ReactiveFormsModule,
     IonicModule,
     DeliveryChallanListPageRoutingModule
+  ],
+  providers: [
+    DatePipe
   ],
   declarations: [DeliveryChallanListPage,InvoiceModalComponent],
   entryComponents:[InvoiceModalComponent]

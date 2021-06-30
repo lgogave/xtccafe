@@ -135,6 +135,21 @@ export class EditSalesPage implements OnInit {
       billingAmount: new FormControl(machine!=null?machine.billingAmount:null, {
         updateOn: 'blur',
       }),
+      mchRent: new FormControl(machine!=null?machine.mchRent:null, {
+        updateOn: 'blur',
+      }),
+      consumableCap: new FormControl(machine!=null?machine.consumableCap:null, {
+        updateOn: 'blur',
+      }),
+      mchInstCharges: new FormControl(machine!=null?machine.mchInstCharges:null, {
+        updateOn: 'blur',
+      }),
+      isInstChargesConsider: new FormControl(machine!=null?machine.isInstChargesConsider:null, {
+        updateOn: 'blur',
+      }),
+      mchSecDeposite: new FormControl(machine!=null?machine.mchSecDeposite:null, {
+        updateOn: 'blur',
+      }),
     });
   }
 
@@ -342,7 +357,12 @@ this.isLoading=false;
             machine.rate,
             machine.amount,
             machine.conflevel,
-            machine.billingAmount
+            machine.billingAmount,
+            machine.mchRent,
+            machine.consumableCap,
+            machine.mchInstCharges,
+            machine.mchSecDeposite,
+            machine.isInstChargesConsider
           )
         );
       }

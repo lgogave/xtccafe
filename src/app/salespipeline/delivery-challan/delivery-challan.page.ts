@@ -5,7 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { LoadingController, NavController, ToastController } from '@ionic/angular';
 import { MastBranch, MastStock } from 'src/app/models/division.model';
 import { DivisionService } from 'src/app/services/division.service';
-import { BillingDetail, BillingRate, ClientSales,DCAddHocMaterial,DCDetail,Location } from '../salespipeline.model';
+import { BillingDetail, BillingRate, ClientSales,DCAddHocMaterial,DCDetail,DCDetailModel,Invoice,Location, ReceiptBook } from '../salespipeline.model';
 import { SalespipelineService } from '../salespipeline.service';
 
 
@@ -50,7 +50,7 @@ export class DeliveryChallanPage implements OnInit {
         this.perPipe = new PercentPipe('en-US');
         if(this.dcId!=null){
           this.dcDetail = await this.salespiplineService.getDCDetail(this.dcId);
-          console.log(this.dcDetail);
+
         }
 
         this.billingDetail=await this.salespiplineService.getBillingDetail(this.saleId,this.locationId);
@@ -88,7 +88,7 @@ export class DeliveryChallanPage implements OnInit {
         billAddress: new FormControl(this.billingDetail!=null?this.billingDetail.billAddress:this.clientLocation.address, { updateOn: 'blur',validators: [Validators.required] }),
         location: new FormControl(this.billingDetail!=null?this.billingDetail.location:this.clientLocation.address, { updateOn: 'blur',validators: [Validators.required] }),
         address: new FormControl(this.billingDetail!=null?this.billingDetail.installAddress:this.clientLocation.address, { updateOn: 'blur',validators: [Validators.required] }),
-        pincode: new FormControl(null, { updateOn: 'blur',validators: [Validators.required] }),
+        pincode: new FormControl(this.billingDetail!=null?this.billingDetail.pincode:null, { updateOn: 'blur',validators: [Validators.required] }),
         branch: new FormControl(null, { updateOn: 'blur',validators: [Validators.required] }),
         date: new FormControl(null, { updateOn: 'blur',validators: [Validators.required] }),
         materialDetails:new FormArray([this.createMaterialDetail()]),
@@ -222,15 +222,24 @@ export class DeliveryChallanPage implements OnInit {
       element.controls['hsnNo'].patchValue(ref.hsnNo,{emitEvent: false});
       element.controls['gst'].patchValue(ref.gst,{emitEvent: false});
     }
-    addDC(){
+    async  padLeadingZeros(num, size) {
+      var s = num + '';
+      while (s.length < size) s = '0' + s;
+      return await s;
+    }
+    updateReceiptBook(receipt:ReceiptBook){
+      this.salespiplineService.addupdateReceiptBook(receipt,receipt.id==null?false:true).subscribe()
+    }
+    async addDC(){
       if (!this.form.valid) {
         return;
       }
-      let fmbillingDetail = <DCDetail>this.form.value;
-
+    let fmbillingDetail = <DCDetail>this.form.value;
+    let branch=this.branches.filter(x=>x.name==fmbillingDetail.branch)[0];
       fmbillingDetail.salesId=this.saleId;
       fmbillingDetail.clientId = this.clientSales.clientsale.clientId;
       fmbillingDetail.locationId = this.locationId;
+      fmbillingDetail.isDelete =false;
       if(this.billingDetail!=null){
         fmbillingDetail.id=this.billingDetail.id;
       }
@@ -244,12 +253,52 @@ export class DeliveryChallanPage implements OnInit {
         material.tax= material.amount*(Number(filterresult[0].gst.replace('%',''))/100);
         material.totamount=material.amount+material.tax;
       });
-
-
       if(this.dcDetail==null){
-        fmbillingDetail.isUsed=false;
+        let receiptBook = new ReceiptBook();
+        receiptBook.category = 'DC';
+        receiptBook.type = 'CON';
+        receiptBook.branch = branch.initials;
+        receiptBook.year = 2021;
+        let receiptNo = await this.salespiplineService.getlastReceiptNumber(receiptBook);
+        if (receiptNo != null) {
+          receiptBook.id = receiptNo.id;
+          receiptBook.srnumber = receiptNo.srnumber + 1;
+        } else {
+          receiptBook.srnumber = 1;
+          receiptBook.id = null;
+        }
+        let srNo = await this.padLeadingZeros(receiptBook.srnumber, 6);
+        fmbillingDetail.srNo = `${receiptBook.category}/${receiptBook.type}/${branch.initials}/${receiptBook.year}/${srNo}`;
+        fmbillingDetail.isUsed = false;
         this.salespiplineService
-        .addupdateDC(fmbillingDetail,false)
+          .addupdateDC(fmbillingDetail, false)
+          .subscribe((res) => {
+            this.toastController
+              .create({
+                message: 'Data updated',
+                duration: 2000,
+                color: 'success',
+              })
+              .then((tost) => {
+                this.updateReceiptBook(receiptBook);
+                tost.present();
+                this.router.navigate([
+                  '/salespipeline/deliverychallanlist/' +
+                    fmbillingDetail.clientId,
+                ]);
+              });
+          });
+      }
+      else
+      {
+        fmbillingDetail.srNo = this.dcDetail.srNo;
+        fmbillingDetail.isUsed=this.dcDetail.isUsed;
+        fmbillingDetail.id=this.dcId;
+        let invoice:any=await this.salespiplineService.getInvoiceByDCId(this.dcDetail.id);
+        this.updateInvoice(invoice,fmbillingDetail);
+
+        this.salespiplineService
+        .addupdateDC(fmbillingDetail,true)
         .subscribe((res) => {
           this.toastController
             .create({
@@ -263,24 +312,19 @@ export class DeliveryChallanPage implements OnInit {
             });
         });
       }
-      else
-      {
-        fmbillingDetail.isUsed=this.dcDetail.isUsed;
-        fmbillingDetail.id=this.dcId;
-        this.salespiplineService
-        .addupdateDC(fmbillingDetail,true)
-        .subscribe((res) => {
-          this.toastController
-            .create({
-              message: 'Data updated',
-              duration: 2000,
-              color: 'danger',
-            })
-            .then((tost) => {
-              tost.present();
-              this.router.navigate(['/salespipeline/deliverychallanlist/'+fmbillingDetail.clientId]);
-            });
-        });
-      }
+    }
+
+    async updateInvoice(invoice:Invoice,dc:DCDetail){
+      if(invoice==null)
+      return;
+      let inx:any=0;
+      invoice.dc.forEach((element,index)=> {
+        if(element.id===dc.id)
+        {
+          inx=index;
+        }
+      });
+      invoice.dc[inx]=<DCDetailModel>dc;
+      this.salespiplineService.addupdateInvoice(invoice,true).subscribe();
     }
   }
