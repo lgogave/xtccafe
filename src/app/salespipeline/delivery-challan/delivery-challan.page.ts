@@ -325,6 +325,18 @@ export class DeliveryChallanPage implements OnInit {
         }
       });
       invoice.dc[inx]=<DCDetailModel>dc;
+
+     let totamount:number=0; let tax:number=0;let amount:number=0;
+      invoice.dc.forEach(dcelement => {
+        dcelement.materialDetails.forEach((material) => {
+          amount = amount + material.amount;
+          tax = tax + material.tax;
+          totamount = totamount + amount + tax;
+        });
+      });
+      invoice.amount=amount;
+      invoice.tax=tax;
+      invoice.totamount=totamount;
       this.salespiplineService.addupdateInvoice(invoice,true).subscribe();
     }
   }

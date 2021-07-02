@@ -104,7 +104,7 @@ const routes: Routes = [
     canLoad: [AuthGuard],
   },
   {
-    path: 'deliverychallanlist/',
+    path: 'deliverychallanlist',
     loadChildren: () =>
       import('./delivery-challan-list/delivery-challan-list.module').then(
         (m) => m.DeliveryChallanListPageModule

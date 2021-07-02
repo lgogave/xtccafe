@@ -4,7 +4,7 @@ import { AngularFirestore } from '@angular/fire/firestore';
 import { BehaviorSubject, combineLatest, observable, of } from 'rxjs';
 import { first, map, switchMap, take, tap } from 'rxjs/operators';
 import { AuthService } from '../auth/auth.service';
-import { BillingDetail, ClientComment, ClientCommentModel, ClientSales, ClientSalesPipeline, DCDetail, DCDetailModel, Invoice, InvoiceMonth, InvoiceSeries, ReceiptBook, RentalInvoice, SalesPipeline } from './salespipeline.model';
+import { BillingDetail, ClientComment, ClientCommentModel, ClientSales, ClientSalesPipeline, DCDetail, DCDetailModel, Invoice, InvoiceMonth, ReceiptBook, RentalInvoice, SalesPipeline } from './salespipeline.model';
 import type firebase from 'firebase';
 import { GetNewId } from '../utilities/dataconverters';
 
@@ -752,7 +752,7 @@ export class SalespipelineService {
     if(locId==null){
       snaps= await this.firebaseService
       .collection('invoice', (ref) =>
-        ref.orderBy('date','desc'))
+        ref.orderBy('createdOn','desc'))
       .snapshotChanges()
       .pipe(first())
       .toPromise();
