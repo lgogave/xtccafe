@@ -2646,6 +2646,21 @@ async doRefresh(event) {
     event.target.complete();
   }
 }
+
+async invoiceSelect(){
+  var result=this.filterinvoicelist.filter(x=>x['isChecked']==true);
+  if(result.length>0){
+    this.filterinvoicelist.forEach(element=>{
+    element['isChecked']=false;
+    });
+  }
+  else{
+    this.filterinvoicelist.forEach(element=>{
+      element['isChecked']=true;
+      });
+  }
+}
+
 chkInvoiceChange(event,invoice){
   // if(invoice.isChecked){
   //   this.invoiceAmount=this.invoiceAmount+ invoice.amount;

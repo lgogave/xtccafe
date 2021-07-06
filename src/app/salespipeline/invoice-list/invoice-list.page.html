@@ -7,6 +7,9 @@
       <ion-back-button defaultHref="/salespipeline">
       </ion-back-button>
       <ion-title>Invoice List</ion-title>
+      <ion-button (click)="invoiceSelect()">
+        <ion-icon name="contract-outline" slot="icon-only"></ion-icon>
+      </ion-button>
     </ion-buttons>
     <ion-searchbar placeholder="Filter Clients / Invoice month" #searchElement  (ionChange)="onFilterUpdate($event)"></ion-searchbar>
     <ion-item color="success">
