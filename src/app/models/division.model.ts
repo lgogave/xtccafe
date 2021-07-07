@@ -30,6 +30,7 @@ export class MastStock{
     public hsnNo?:string,
     public gst?:string,
     public category?:string,
+    public rate?:string,
   ){}
 }
 export class MastInstallKit{

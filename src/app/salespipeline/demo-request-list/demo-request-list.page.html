@@ -50,25 +50,28 @@
            </div>
            <hr/>
           </ion-item>
-          <div style="text-align: right;border-bottom: 1px solid;width: 100%;padding-right: 10px">
-            <ion-button (click)="req.satSEZ=='Yes'?sezChallan(req):nonsezChallan(req)">Challan</ion-button>
+          <ion-item text-wrap>
+            <ion-button (click)="req.satSEZ=='Yes'?sezChallan(req,0):nonsezChallan(req,0)"> Material Challan</ion-button>
+            <ion-button (click)="req.satSEZ=='Yes'?sezChallan(req,1):nonsezChallan(req,1)">Machine Challan</ion-button>
+          </ion-item>
+          <ion-item>
             <ion-button color="success" [hidden]="!(req.reqStatus=='Demo Request Created' || req.reqStatus=='Rejected'?true:false)" (click)="sendForApproval(req)">
               <ion-icon name="arrow-forward-circle-outline" slot="icon-only"></ion-icon> Send for Approval
             </ion-button>
             <div [hidden]="!(req.reqStatus=='Sent for Approval' && userRoles.indexOf('Demo Requisition Approver')>=0)?true:false">
-             <ion-item>
-              <ion-label position="floating" class="label">Comment</ion-label>
-              <ion-textarea #commentText></ion-textarea>
-             </ion-item>
-              <ion-button color="success"  (click)="onApprove(req,commentText)">
-                <ion-icon name="checkmark-circle-outline" slot="icon-only"></ion-icon> Approve
-              </ion-button>
-              <ion-button color="danger" (click)="onReject(req,commentText)">
-                <ion-icon name="close-circle-outline" slot="icon-only"  ></ion-icon> Reject
-              </ion-button>
-            </div>
+              <ion-item>
+               <ion-label position="floating" class="label">Comment</ion-label>
+               <ion-textarea #commentText></ion-textarea>
+              </ion-item>
+               <ion-button color="success"  (click)="onApprove(req,commentText)">
+                 <ion-icon name="checkmark-circle-outline" slot="icon-only"></ion-icon> Approve
+               </ion-button>
+               <ion-button color="danger" (click)="onReject(req,commentText)">
+                 <ion-icon name="close-circle-outline" slot="icon-only"  ></ion-icon> Reject
+               </ion-button>
+             </div>
+          </ion-item>
 
-          </div>
           <ion-item-options>
             <ion-item-option color="secondary">
               <ion-icon name="create" slot="icon-only"  (click)="onEdit(req.docId,req.reqStatus,slider)"></ion-icon>

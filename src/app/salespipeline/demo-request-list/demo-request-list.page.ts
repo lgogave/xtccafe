@@ -304,13 +304,13 @@ export class DemoRequestListPage implements OnInit, OnDestroy {
         alertEl.present();
       });
   }
-  async sezChallan(req){
+  async nonsezChallan(req,type){
     let branch:MastBranch=await (await this.divisionService.getBrancheByName(req['satBranch']))[0];
     let demodata = {
       logo: this.getBase64Image(),
-      clientaddress: `Consignee\n${req['orgName']}\n${req['address']}\n${req['addLocation']}-${req['addPincode']}\n${req['addState']}`,
+      clientaddress: `Consignee\n${req['orgName']}\n${req['address']}\n${req['addState']}`,
       reqId: req['id'],
-      srNo: req['srNo'],
+      srNo: type==1? req['srNo'].replace('CON/','Machine/'):req['srNo'],
       authSignature:this.getAuthSignature(),
     };
     var docDefinition:any = {
@@ -374,17 +374,36 @@ export class DemoRequestListPage implements OnInit, OnDestroy {
         },
       ],
     };
-    req['materialDetails'].forEach((m, index) => {
-      let mat = [];
-      mat.push(
-        index + 1,
-        m['category'] + '-' + m['item'],
-        m['qty'],
-        m['uom'],
-        m['hsnNo']
-      );
-      docDefinition.content[0].table.body.push(mat);
-    });
+    if(type==0){
+      req['materialDetails'].forEach((m, index) => {
+        let mat = [];
+        mat.push(
+          index + 1,
+          m['category'] + '-' + m['item'],
+          m['qty'],
+          m['uom'],
+          m['hsnNo']
+        );
+        docDefinition.content[0].table.body.push(mat);
+      });
+    }
+ else{
+  req['machineDetails'].forEach((m, index) => {
+    let mat = [];
+    mat.push(
+      index + 1,
+      m['machineName'] + '-' + m['machineType'] + ' [Srno:'+m['machinesrno']+']',
+      m['machineCount'],
+      'Nos',
+      '9973',
+    );
+    docDefinition.content[0].table.body.push(mat);
+  });
+
+}
+
+
+
     docDefinition.content[0].table.body.push([
       Object.assign({}, { text: ' ', colSpan: 5, margin: [0, 0, 0, 40] }),
       '',
@@ -455,148 +474,431 @@ export class DemoRequestListPage implements OnInit, OnDestroy {
       this.pdfObj.download();
     }
   }
-  async nonsezChallan(req){
+  async sezChallan(req,type){
+    console.log('q')
     let branch:MastBranch=await (await this.divisionService.getBrancheByName(req['satBranch']))[0];
     let demodata:any = {
       logo: this.getBase64Image(),
-      clientaddress: `Consignee\n${req['orgName']}\n${req['address']}\n${req['addLocation']}-${req['addPincode']}\n${req['addState']}`,
+      clientaddress: `Consignee\n${req['orgName']}\n${req['address']}\n${req['addState']}`,
       reqId: req['id'],
+      srNo: type==1? req['srNo'].replace('CON/','Machine/'):req['srNo'],
       authSignature:this.getAuthSignature(),
     };
-    var docDefinition:any = {
-      content: [
-        {
-          style: 'tableExample',
-          color: '#444',
-          table: {
-            widths: ['auto', 'auto', 'auto', 'auto', 'auto','auto'],
-            headerRows: 0,
-            // keepWithHeaderRows: 1,
-            body: [
-              [
-                {
-                  text: 'Stock Transfer Note\n(Demo Purposes Only)',
-                  fontSize: 24,
-                  bold: true,
-                  colSpan: 6,
-                  alignment: 'center',
-                  margin: [0, 0, 0, 0],
-                },
-                {},
-                {},
-                {},
-                {},
-                {},
-              ],
-              [
-                { image: demodata.logo, width: 75, height: 75 },
-                {
-                  colSpan: 3,
-                  bold: true,
-                  text:
-                    `Dwija Foods Private Limited\n${branch.address}\n${branch.gstno!=''?'GST NO:'+branch.gstno:''}`,
-                },
-                '',
-                '',
-                {
-                  colSpan: 2,
-                  text: `Delivery Challan No:${demodata.reqId}\n Stock Transfer Date:-`,
-                },
-                '',
-              ],
-              [
-                {
-                  colSpan: 6,
-                  text: demodata.clientaddress,
-                },
-                '',
-                '',
-                '',
-                '',
-                '',
-              ],
-              [
-                { text: 'Sr. No', bold: true },
-                { text: 'Description of Goods', bold: true },
-                { text: 'Quantity', bold: true },
-                { text: 'UOM', bold: true },
-                { text: 'HSN Code', bold: true },
-                { text: 'GST', bold: true },
-              ],
+    var docDefinition:any='';
+    if(req.taxType=="CGST/SGST")
+    {
+      docDefinition={
+        content: [
+          {
+            style: 'tableExample',
+            color: '#444',
+            table: {
+              widths: ['auto', 'auto', 'auto', 'auto', 'auto','auto','auto', 'auto', 'auto','auto'],
+              headerRows: 0,
+              // keepWithHeaderRows: 1,
+              body: [
+                [
+                  {
+                    text: 'Stock Transfer Note\n(Demo Purposes Only)',
+                    fontSize: 20,
+                    bold: true,
+                    colSpan: 10,
+                    alignment: 'center',
+                  },
+                  '','','','','','','','',''
+                ],
 
-            ],
+
+                [
+                  { image: demodata.logo, width: 75, height: 75 },
+                  {
+                    colSpan: 5,
+                    bold: true,
+                    text:
+                      `Dwija Foods Private Limited\n${branch.address}\n${branch.gstno!=''?'GST NO:'+branch.gstno:''}`,
+                  },
+                  '',
+                  '',
+                  '',
+                  '',
+                  {
+                    colSpan: 4,
+                    text: `Delivery Challan No:${demodata.srNo}\n Stock Transfer Date:-`,
+                  },
+                  '',
+                  '',
+                  '',
+                ],
+                [
+                  {
+                    colSpan: 10,
+                    text: demodata.clientaddress,
+                  },
+                  '',
+                  '',
+                  '',
+                  '',
+                  '',
+                  '',
+                  '',
+                  '',
+                  '',
+                ],
+
+                [
+                  { text: 'Sr. No', bold: true , fontSize: 10},
+                  { text: 'Description of Goods', bold: true, fontSize: 10 },
+                  { text: 'Quantity', bold: true, fontSize: 10 },
+                  { text: 'UOM', bold: true, fontSize: 10 },
+                  { text: 'HSN Code', bold: true , fontSize: 10},
+                  { text: 'Rate', bold: true, fontSize: 10 },
+                  { text: 'CGST%', bold: true, fontSize: 10 },
+                  { text: 'SGST%', bold: true, fontSize: 10 },
+                  { text: 'Tax Amount', bold: true, fontSize: 10 },
+                  { text: 'Assessable Amount', bold: true , fontSize: 10},
+                ],
+              ],
+            },
           },
-        },
-      ],
-    };
-    req['materialDetails'].forEach((m, index) => {
-      let mat = [];
-      mat.push(
-        index + 1,
-        m['category'] + '-' + m['item'],
-        m['qty'],
-        m['uom'],
-        m['hsnNo'],
-        m['gst'],
-      );
-      docDefinition.content[0].table.body.push(mat);
-    });
-    docDefinition.content[0].table.body.push([
-      Object.assign({}, { text: ' ', colSpan: 6, margin: [0, 0, 0, 40] }),
-      '',
-      '',
-      '',
-      '',
-      '',
-    ]);
-    docDefinition.content[0].table.body.push([
-      { colSpan: 4, text: '' },
-      '',
-      '',
-      '',
-      { colSpan: 2, text: 'For Dwija Foods Pvt. Ltd.' },
-      '',
-    ]);
-    docDefinition.content[0].table.body.push([
-      Object.assign({}, { text: ' ', colSpan: 5, margin: [0, 0, 0, 40] }),
-      '',
-      '',
-      '',
-      '',
-      { image: demodata.authSignature, width: 100, height: 50, borderColor: ['#ffffff', '#ffffff', '#000000', '#000000']}
-    ]);
-    docDefinition.content[0].table.body.push([
-      { colSpan: 4, text: '' },
-      '',
-      '',
-      '',
-      { colSpan: 2, text: 'Authorised Signatory', bold: true,alignment: 'right' },
-      '',
-    ]);
-    docDefinition.content[0].table.body.push([
-      { text: 'Received goods in good condition', colSpan: 6 },
-      '',
-      '',
-      '',
-      '',
-      '',
-    ]);
-    docDefinition.content[0].table.body.push([
-      Object.assign({}, { text: ' ', colSpan: 6, margin: [0, 0, 0, 40] }),
-      '',
-      '',
-      '',
-      '',
-      '',
-    ]);
-    docDefinition.content[0].table.body.push([
-      { text: 'Buyer / Consignee', colSpan: 6 },
-      '',
-      '',
-      '',
-      '',
-      '',
-    ]);
+        ],
+      };
+      if(type==0){
+        let grandtotal:number=0;
+        req['materialDetails'].forEach((m, index) => {
+          let mat = [];
+          let rate= Number(m['rate'])*Number(m['qty']);
+          let tax= (Number(m['rate'])*Number(m['qty'])) * Number(m['gst'].replace('%',''))/100;
+          let totalamt=rate+tax;
+          grandtotal=grandtotal+rate+tax;
+          mat.push(
+            {text:index + 1, fontSize: 10},
+            {text:m['category'] + '-' + m['item'], fontSize: 10},
+            {text:m['qty'], fontSize: 10},
+            {text:m['uom'], fontSize: 10},
+            {text:m['hsnNo'], fontSize: 10},
+            {text:rate.toFixed(2), fontSize: 10,},
+            {text:Number(m['gst'].replace('%',''))/2 +'%', fontSize: 10,},
+            {text:Number(m['gst'].replace('%',''))/2+'%', fontSize: 10,},
+            {text:tax.toFixed(2), fontSize: 10,},
+            {text:totalamt.toFixed(2), fontSize: 10,},
+          );
+
+
+          docDefinition.content[0].table.body.push(mat);
+        });
+
+
+        docDefinition.content[0].table.body.push([
+          {text:''},
+          {text:''},
+          {text:''},
+          {text:''},
+          {text:''},
+          {text:''},
+          {text:''},
+          {text:''},
+          {text:'Total'},
+          {text:grandtotal.toFixed(2), fontSize: 10,bold:true},
+     ]);
+
+
+      }
+    else{
+      req['machineDetails'].forEach((m, index) => {
+        let mat = [];
+        mat.push(
+          index + 1,
+          m['machineName'] + '-' + m['machineType'] + ' [Srno:'+m['machinesrno']+']',
+          m['machineCount'],
+          'Nos',
+          '9973',
+          '18%',
+          '',
+          '',
+          '',
+          ''
+        );
+        docDefinition.content[0].table.body.push(mat);
+      });
+        }
+      docDefinition.content[0].table.body.push([
+        Object.assign({}, { text: ' ', colSpan: 10}),
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+      ]);
+      docDefinition.content[0].table.body.push([
+        { colSpan: 10, text: 'For Dwija Foods Pvt. Ltd.',alignment: 'right' },
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+      ]);
+      docDefinition.content[0].table.body.push([
+        Object.assign({}, { text: ' ', colSpan: 8 }),
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        { image: demodata.authSignature,colSpan: 2, width: 100, height: 50, borderColor: ['#ffffff', '#ffffff', '#000000', '#000000']},
+        '',
+      ]);
+      docDefinition.content[0].table.body.push([
+        { colSpan: 6, text: '' },
+        '',
+        '',
+        '',
+        '',
+        '',
+        { colSpan: 4, text: 'Authorised Signatory', bold: true,alignment: 'right' },
+        '',
+        '',
+        '',
+      ]);
+      docDefinition.content[0].table.body.push([
+        { text: 'Supply of consumables is on sample / Demo purposes, value declared is for SEZ purposes only and there is no commerical transaction involved.', colSpan: 10,fontSize: 8 },
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+      ]);
+      docDefinition.content[0].table.body.push([
+        { text: 'Buyer / Consignee', colSpan: 10 },
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+      ]);
+
+
+    }
+    else
+    {
+      docDefinition={
+        content: [
+          {
+            style: 'tableExample',
+            color: '#444',
+            table: {
+              widths: ['auto', 'auto', 'auto', 'auto', 'auto','auto','auto', 'auto', 'auto'],
+              headerRows: 0,
+              // keepWithHeaderRows: 1,
+              body: [
+                [
+                  {
+                    text: 'Stock Transfer Note\n(Demo Purposes Only)',
+                    fontSize: 20,
+                    bold: true,
+                    colSpan: 9,
+                    alignment: 'center',
+                  },
+                  '','','','','','','',''
+                ],
+
+
+                [
+                  { image: demodata.logo, width: 75, height: 75 },
+                  {
+                    colSpan: 4,
+                    bold: true,
+                    text:
+                      `Dwija Foods Private Limited\n${branch.address}\n${branch.gstno!=''?'GST NO:'+branch.gstno:''}`,
+                  },
+                  '',
+                  '',
+                  '',
+
+                  {
+                    colSpan: 4,
+                    text: `Delivery Challan No:${demodata.srNo}\n Stock Transfer Date:-`,
+                  },
+                  '',
+                  '',
+                  '',
+                ],
+                [
+                  {
+                    colSpan: 9,
+                    text: demodata.clientaddress,
+                  },
+                  '',
+                  '',
+                  '',
+                  '',
+                  '',
+                  '',
+                  '',
+                  '',
+                ],
+
+                [
+                  { text: 'Sr. No', bold: true , fontSize: 10},
+                  { text: 'Description of Goods', bold: true, fontSize: 10 },
+                  { text: 'Quantity', bold: true, fontSize: 10 },
+                  { text: 'UOM', bold: true, fontSize: 10 },
+                  { text: 'HSN Code', bold: true , fontSize: 10},
+                  { text: 'Rate', bold: true, fontSize: 10 },
+                  { text: 'IGST%', bold: true, fontSize: 10 },
+                  { text: 'Tax Amount', bold: true, fontSize: 10 },
+                  { text: 'Assessable Amount', bold: true , fontSize: 10},
+                ],
+              ],
+            },
+          },
+        ],
+      };
+      if(type==0){
+        let grandtotal:number=0;
+        req['materialDetails'].forEach((m, index) => {
+          let mat = [];
+          let rate= Number(m['rate'])*Number(m['qty']);
+          let tax= (Number(m['rate'])*Number(m['qty'])) * Number(m['gst'].replace('%',''))/100;
+          let totalamt=rate+tax;
+          grandtotal=grandtotal+rate+tax;
+          mat.push(
+            {text:index + 1, fontSize: 10},
+            {text:m['category'] + '-' + m['item'], fontSize: 10},
+            {text:m['qty'], fontSize: 10},
+            {text:m['uom'], fontSize: 10},
+            {text:m['hsnNo'], fontSize: 10},
+            {text:rate.toFixed(2), fontSize: 10,},
+            {text:Number(m['gst'].replace('%','')) +'%', fontSize: 10,},
+            {text:tax.toFixed(2), fontSize: 10,},
+            {text:totalamt.toFixed(2), fontSize: 10,},
+          );
+          docDefinition.content[0].table.body.push(mat);
+        });
+
+
+        docDefinition.content[0].table.body.push([
+          {text:''},
+          {text:''},
+          {text:''},
+          {text:''},
+          {text:''},
+          {text:''},
+          {text:''},
+          {text:'Total'},
+          {text:grandtotal.toFixed(2), fontSize: 10,bold:true},
+     ]);
+
+
+      }
+    else{
+      req['machineDetails'].forEach((m, index) => {
+        let mat = [];
+        mat.push(
+          index + 1,
+          m['machineName'] + '-' + m['machineType'] + ' [Srno:'+m['machinesrno']+']',
+          m['machineCount'],
+          'Nos',
+          '9973',
+          '18%',
+          '',
+          '',
+          ''
+        );
+        docDefinition.content[0].table.body.push(mat);
+      });
+        }
+      docDefinition.content[0].table.body.push([
+        Object.assign({}, { text: ' ', colSpan: 9}),
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+      ]);
+      docDefinition.content[0].table.body.push([
+        { colSpan: 9, text: 'For Dwija Foods Pvt. Ltd.',alignment: 'right' },
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+      ]);
+      docDefinition.content[0].table.body.push([
+        Object.assign({}, { text: ' ', colSpan: 7 }),
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        { image: demodata.authSignature,colSpan: 2, width: 100, height: 50, borderColor: ['#ffffff', '#ffffff', '#000000', '#000000']},
+        '',
+      ]);
+      docDefinition.content[0].table.body.push([
+        { colSpan: 5, text: '' },
+        '',
+        '',
+        '',
+        '',
+        { colSpan: 4, text: 'Authorised Signatory', bold: true,alignment: 'right' },
+        '',
+        '',
+        '',
+      ]);
+      docDefinition.content[0].table.body.push([
+        { text: 'Supply of consumables is on sample / Demo purposes, value declared is for SEZ purposes only and there is no commerical transaction involved.', colSpan: 9,fontSize: 8 },
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+      ]);
+      docDefinition.content[0].table.body.push([
+        { text: 'Buyer / Consignee', colSpan: 9 },
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+      ]);
+
+
+    }
+
+
+
+
+
     this.pdfObj = pdfMake.createPdf(docDefinition);
     if (this.plt.is('cordova')) {
       this.pdfObj.getBuffer((buffer) => {

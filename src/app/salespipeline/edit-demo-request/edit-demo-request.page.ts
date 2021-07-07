@@ -74,7 +74,7 @@ export class EditDemoRequestPage implements OnInit {
     let res=this.initDependantDropDown();
 
 
-
+    console.log(this.demoRequest);
     this.form = new FormGroup({
       machineDetails: machineArray,
       materialDetails:materialArray,
@@ -123,14 +123,21 @@ export class EditDemoRequestPage implements OnInit {
       satGSTNo: new FormControl(this.demoRequest.satGSTNo, {
         updateOn: 'blur',
       }),
-      satSEZ: new FormControl(this.demoRequest.satSEZ, { updateOn: 'blur',validators: [Validators.required] }),
-      satBranch:new FormControl(this.demoRequest.satBranch, { updateOn: 'blur',validators: [Validators.required] }),
+
+      taxType:new FormControl(this.demoRequest.taxType,
+        { updateOn: 'blur',validators: [Validators.required] }),
+
+      satSEZ: new FormControl(this.demoRequest.satSEZ,
+        { updateOn: 'blur',validators: [Validators.required] }),
+      satBranch:new FormControl(this.demoRequest.satBranch,
+        { updateOn: 'blur',validators: [Validators.required] }),
       cnsNoEmp: new FormControl(this.demoRequest.cnsNoEmp, {
         updateOn: 'blur',
       }),
       cnsNoCups: new FormControl(this.demoRequest.cnsNoCups, {
         updateOn: 'blur',
       }),
+
     });
     return true;
   }
@@ -153,9 +160,9 @@ export class EditDemoRequestPage implements OnInit {
       .subscribe((res) => {
         this.toastController
           .create({
-            message: 'Demo Request Updated. Id:' + this.demoRequest.id,
+            message: 'Demo Request Updated. Id:' + this.demoRequest.srNo,
             duration: 2000,
-            color: 'danger',
+            color: 'success',
           })
           .then((tost) => {
             tost.present();
@@ -178,6 +185,10 @@ export class EditDemoRequestPage implements OnInit {
         //validators: [Validators.required],
       }),
       machineCount: new FormControl(machine!=null?machine['machineCount']: null, {
+        updateOn: "blur",
+        //validators: [Validators.required],
+      }),
+      machinesrno: new FormControl(machine!=null?machine['machinesrno']: null, {
         updateOn: "blur",
         //validators: [Validators.required],
       })
@@ -208,6 +219,10 @@ export class EditDemoRequestPage implements OnInit {
         //validators: [Validators.required],
       }),
       qty: new FormControl(material!=null?material['qty']:null, {
+        updateOn: "blur",
+        //validators: [Validators.required],
+      }),
+      rate: new FormControl(material!=null?material['rate']:null, {
         updateOn: "blur",
         //validators: [Validators.required],
       }),

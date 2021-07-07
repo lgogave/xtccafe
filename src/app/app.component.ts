@@ -45,14 +45,7 @@ export class AppComponent  implements OnInit,OnDestroy{
   initializeApp() {
 
     this.platform.ready().then(() => {
-      console.log("I am ready");
       this.fcmService.initPush();
-      // this.firebaseAuth.onAuthStateChanged(user => {
-      //   if (user) {
-      //   console.log('auth state changed');
-      //   console.log(user);
-      //   }
-      // });
     });
   }
 

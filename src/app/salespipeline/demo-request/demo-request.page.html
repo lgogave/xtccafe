@@ -47,6 +47,19 @@
           </ion-col>
         </ion-row>
         <ion-row>
+        <ion-col size-sm="3" offset-sm="3">
+        <ion-item>
+          <ion-label position="floating" class="label">Tax Type
+          </ion-label>
+          <ion-select placeholder="Select One"  interface="popover" formControlName="taxType">
+            <ion-select-option [value]="CGSTSGST">CGST/SGST</ion-select-option>
+              <ion-select-option [value]="IGST">IGST
+            </ion-select-option>
+            </ion-select>
+        </ion-item>
+        </ion-col>
+        </ion-row>
+        <ion-row>
           <ion-col size-sm="3" offset-sm="3">
             <ion-item>
               <ion-label position="floating" class="label">GST No</ion-label>
@@ -54,7 +67,6 @@
             </ion-item>
           </ion-col>
         </ion-row>
-
         <ion-row>
           <ion-col size-sm="6" offset-sm="3">
             <ion-item>
@@ -234,6 +246,13 @@
                       <ion-label position="floating" class="label">No.of Machine
                       </ion-label>
                       <ion-input type="text" autocomplete autocorrect formControlName="machineCount"></ion-input>
+                    </ion-item>
+                  </ion-col>
+                  <ion-col size="12">
+                    <ion-item>
+                      <ion-label position="floating" class="label">Machine Serial Number
+                      </ion-label>
+                      <ion-input type="text" autocomplete autocorrect formControlName="machinesrno"></ion-input>
                     </ion-item>
                   </ion-col>
                 </ion-row>
@@ -458,6 +477,15 @@
                       <ion-label position="floating" class="label">Qty
                       </ion-label>
                       <ion-input type="text" autocomplete autocorrect formControlName="qty"></ion-input>
+                    </ion-item>
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col  size="12">
+                    <ion-item>
+                      <ion-label position="floating" class="label">Rate (* Applicable for SEZ)
+                      </ion-label>
+                      <ion-input type="text" autocomplete autocorrect formControlName="rate"></ion-input>
                     </ion-item>
                   </ion-col>
                 </ion-row>

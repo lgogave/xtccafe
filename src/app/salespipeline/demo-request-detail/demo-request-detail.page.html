@@ -113,6 +113,10 @@
             <h6 class="label">Count:</h6>
             <h6>{{item['machineCount']}}</h6>
           </ion-item>
+          <ion-item>
+            <h6 class="label">Serial No:</h6>
+            <h6>{{item['machinesrno']}}</h6>
+          </ion-item>
         </div>
         </div>
       </ion-col>
@@ -210,6 +214,14 @@
       <ion-row>
         <ion-col size-sm="6" offset-sm="3">
           <ion-item>
+            <h6  class="label">Tax Type : </h6>
+            <h6>{{demoRequest.taxType}}</h6>
+          </ion-item>
+      </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size-sm="6" offset-sm="3">
+          <ion-item>
             <h6  class="label">GST No : </h6>
             <h6>{{demoRequest.satGSTNo}}</h6>
           </ion-item>
@@ -286,6 +298,10 @@
           <ion-item>
             <h6 class="label">Qty:</h6>
             <h6>{{item['qty']}}</h6>
+          </ion-item>
+          <ion-item>
+            <h6 class="label">Rate (Applicable for SEZ only):</h6>
+            <h6>{{item['rate']}}</h6>
           </ion-item>
         </div>
         </div>

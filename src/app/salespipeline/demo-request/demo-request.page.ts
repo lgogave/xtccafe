@@ -73,17 +73,17 @@ export class DemoRequestPage implements OnInit {
 
   initializeForm() {
     this.form = new FormGroup({
-      machineDetails: new FormArray([this.createMachineDetail()]),
+      machineDetails: this.buildMachineDetail(),
       materialDetails:new FormArray([this.createMaterialDetail()]),
       orgName: new FormControl(this.clientSales.clientsale.client, { updateOn: 'blur',validators: [Validators.required] }),
       orgStatus: new FormControl(this.clientSales.client.potentialNature, { updateOn: 'blur' }),
-      address: new FormControl(this.clientSales.clientsale.locations[this.locationIndex].address, { updateOn: 'blur',validators: [Validators.required] }),
-      addLocation: new FormControl(this.clientSales.clientsale.locations[this.locationIndex].city, { updateOn: 'blur',validators: [Validators.required] }),
+      address: new FormControl(this.clientSales.clientsale.locations[this.locationIndex].installAddress, { updateOn: 'blur',validators: [Validators.required] }),
+      addLocation: new FormControl(this.clientSales.clientsale.locations[this.locationIndex].installAt, { updateOn: 'blur',validators: [Validators.required] }),
       addPincode: new FormControl(null, { updateOn: 'blur',validators: [Validators.required] }),
       addState: new FormControl(null, { updateOn: 'blur',validators: [Validators.required] }),
-      conName: new FormControl(null, { updateOn: 'blur',validators: [Validators.required] }),
-      conMobile: new FormControl(null, { updateOn: 'blur',validators: [Validators.required] }),
-      conEmail: new FormControl(null, { updateOn: 'blur' }),
+      conName: new FormControl(this.clientSales.client.contactPerson, { updateOn: 'blur',validators: [Validators.required] }),
+      conMobile: new FormControl(this.clientSales.client.contactNumber, { updateOn: 'blur',validators: [Validators.required] }),
+      conEmail: new FormControl(this.clientSales.client.email, { updateOn: 'blur' }),
       accInstallation: new FormControl(null, { updateOn: 'blur' }),
       accOther: new FormControl(null, { updateOn: 'blur' }),
       instDemo: new FormControl(null, { updateOn: 'blur' }),
@@ -96,9 +96,42 @@ export class DemoRequestPage implements OnInit {
       satBranch:new FormControl(null, { updateOn: 'blur',validators: [Validators.required] }),
       cnsNoEmp: new FormControl(null, { updateOn: 'blur' }),
       cnsNoCups: new FormControl(null, { updateOn: 'blur' }),
+      taxType: new FormControl(null, { updateOn: 'blur',validators: [Validators.required] }),
     });
     return true;
   }
+
+  buildMachineDetail(){
+    let machines= [];
+    this.clientSales.clientsale.locations[this.locationIndex].machines.forEach(element => {
+      machines.push(
+        new FormGroup({
+          machineName: new FormControl(element.machineName, {
+            updateOn: "blur",
+            //validators: [Validators.required],
+          }),
+          machineType: new FormControl(element.machineType, {
+            updateOn: "blur",
+            //validators: [Validators.required],
+          }),
+          volumeType: new FormControl(element.machineCategory, {
+            updateOn: "blur",
+            //validators: [Validators.required],
+          }),
+          machineCount: new FormControl(element.machineCount, {
+            updateOn: "blur",
+            //validators: [Validators.required],
+          }),
+          machinesrno: new FormControl(element.machineSrNo, {
+            updateOn: "blur",
+            //validators: [Validators.required],
+          })
+        })
+      )
+    });
+    return new FormArray(machines)
+  }
+
   createMachineDetail(){
     return new FormGroup({
       machineName: new FormControl(null, {
@@ -114,6 +147,10 @@ export class DemoRequestPage implements OnInit {
         //validators: [Validators.required],
       }),
       machineCount: new FormControl(null, {
+        updateOn: "blur",
+        //validators: [Validators.required],
+      }),
+      machinesrno: new FormControl(null, {
         updateOn: "blur",
         //validators: [Validators.required],
       })
@@ -142,6 +179,10 @@ export class DemoRequestPage implements OnInit {
         //validators: [Validators.required],
       }),
       qty: new FormControl(null, {
+        updateOn: "blur",
+        //validators: [Validators.required],
+      }),
+      rate: new FormControl(null, {
         updateOn: "blur",
         //validators: [Validators.required],
       }),
@@ -188,7 +229,7 @@ export class DemoRequestPage implements OnInit {
        this.toastController.create({
         message: 'Demo Request Created. Id:'+demoRequest.srNo,
         duration: 2000,
-        color:'danger',
+        color:'success',
       }).then((tost)=>{
         this.updateReceiptBook(receiptBook);
         tost.present();
@@ -216,6 +257,8 @@ export class DemoRequestPage implements OnInit {
     this.machineDetail=await this.divisionService.getMachineDetailList();
     this.machines=this.machineDetail.filter(item=>item.group==0).sort((a,b)=>a.srno-b.srno).map(item=>item.name);
     this.machineType=this.machineDetail.filter(item=>item.group==1).sort((a,b)=>a.srno-b.srno).map(item=>item.name);
+    this.machineCategory=this.machineDetail.filter(item=>item.group==2).sort((a,b)=>a.srno-b.srno).map(item=>item.name);
+
     return true;
   }
   async loadStockDetails(){

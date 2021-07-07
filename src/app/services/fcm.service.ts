@@ -1,18 +1,26 @@
 import { Injectable } from '@angular/core';
+import { BehaviorSubject, combineLatest, Observable, observable, of, pipe } from 'rxjs';
+import { first, map, switchMap, take, tap } from 'rxjs/operators';
+import { AuthService } from '../auth/auth.service';
+import { AngularFirestore } from '@angular/fire/firestore';
+import 'firebase/firestore';
+
+
 import{
 Plugins,
 PushNotification,
 PushNotificationToken,
 PushNotificationActionPerformed,
-Capacitor
+Capacitor,
 } from '@capacitor/core'
 import {Router} from '@angular/router';
-const {PushNotifications}=Plugins;
+import { UserNotification } from '../models/user-notification';
+const {PushNotifications,Modals}=Plugins;
 @Injectable({
   providedIn: 'root',
 })
 export class FcmService {
-  constructor(private router: Router) {}
+  constructor(private router: Router,private firebaseService: AngularFirestore,  private authService: AuthService) {}
   public initPush() {
     console.log(Capacitor.platform);
     if (Capacitor.platform !== 'web') {
@@ -28,21 +36,26 @@ export class FcmService {
       }
     });
 
-    PushNotifications.addListener(
+     PushNotifications.addListener(
       'registration',
-      (token: PushNotificationToken) => {
+      async(token: PushNotificationToken) =>  {
         console.log('My token:' + JSON.stringify(token));
+         this.updateDeviceToken(token);
       }
     );
 
     PushNotifications.addListener('registrationError', (error: any) => {
-      console.log('Error:' + JSON.stringify(error));
+      //console.log('Error:' + JSON.stringify(error));
     });
 
     PushNotifications.addListener(
       'pushNotificationReceived',
       async (notification: PushNotification) => {
-        console.log('Push Received' + JSON.stringify(notification));
+        //console.log('Push Received' + JSON.stringify(notification));
+        let alert=Modals.alert({
+          title:notification.title,
+          message:notification.body
+        });
       }
     );
 
@@ -59,5 +72,32 @@ export class FcmService {
         }
       }
     );
+  }
+
+
+
+   updateDeviceToken(token) {
+    console.log('Called');
+    this.firebaseService
+    .collection('user-devices')
+    .add(Object.assign({}, new UserNotification('123',token.value,new Date()))).then(()=>{
+      console.log('Called END');
+    });
+    // let snaps:any= await this.firebaseService
+    //   .collection('user-devices', (ref) =>
+    //   ref.where('userId','==',userId)
+    //   .where('deviceToken','==',token))
+    //   .snapshotChanges()
+    //   .pipe(first())
+    //   .toPromise();
+    //  if(snaps.length<=0){
+
+      // return this.firebaseService
+      // .collection('user-devices')
+      // .add(Object.assign({}, new UserNotification(userId,token.value,new Date()))).then(()=>{
+      //   console.log("token udated");
+      // });
+
+     //}
   }
 }

@@ -34,7 +34,8 @@ export class DemoRequest{
     public approverDate?:Date,
     public machineDetails?:MachineDetail[],
     public materialDetails?:MastStock[],
-    public srNo?:string
+    public srNo?:string,
+    public taxType?:string,
   ){}
 }
 
