@@ -20,6 +20,9 @@ export class DcPopupComponent implements OnInit {
   }
   createInstallation(){
     this.popoverCtrl.dismiss();
+    this.navCtrl.navigateForward(
+      '/salespipeline/dcinstallation/' + this.salesId + '/' + this.locationId
+    );
   }
 
 }

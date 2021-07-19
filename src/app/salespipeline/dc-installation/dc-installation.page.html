@@ -1,9 +1,179 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-title>dc-installation</ion-title>
+  <ion-toolbar  color="primary">
+    <ion-buttons>
+      <ion-back-button defaultHref="/salespipeline">
+      </ion-back-button>
+      <ion-title>Installation DC</ion-title>
+      <ion-button (click)="addDC()" [disabled]="!isLoading && !form.valid" [style.visibility]="(!isLoading && (dcDetail==null  || (!dcDetail.isDelete))) ? 'visible' : 'hidden'">
+        <ion-icon name="checkmark" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
+  <form  [formGroup]="form"  *ngIf="!isLoading">
+  <ion-grid>
+  <ion-row>
+      <ion-col>
+        <ion-item>
+          <ion-label position="floating" >Client Name <span style="color: #FF6347;">*</span></ion-label>
+          <ion-input type="text"  formControlName="billName"></ion-input>
+        </ion-item>
+    </ion-col>
+  </ion-row>
+  <ion-row style="display: none;">
+    <ion-col>
+      <ion-item>
+        <ion-label position="floating" >Billing Address <span style="color: #FF6347;">*</span></ion-label>
+        <ion-textarea rows="4"  formControlName="billAddress"></ion-textarea>
+      </ion-item>
+  </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col>
+      <ion-item>
+        <ion-label position="floating" >Delivery address<span style="color: #FF6347;">*</span></ion-label>
+        <ion-textarea rows="4"  type="text" formControlName="address"></ion-textarea>
+      </ion-item>
+  </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col size-sm="6">
+      <ion-item>
+        <ion-label position="floating" >City<span style="color: #FF6347;">*</span></ion-label>
+        <ion-input type="text" formControlName="location"></ion-input>
+      </ion-item>
+  </ion-col>
+  <ion-col size-sm="6">
+    <ion-item>
+      <ion-label position="floating" >Delivery pincode<span style="color: #FF6347;">*</span></ion-label>
+      <ion-input type="text" formControlName="pincode"></ion-input>
+    </ion-item>
+</ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col size-sm="6" offset-sm="3">
+      <ion-item>
+        <ion-label position="floating" class="label"> Deliver From Branch
+        </ion-label>
+        <ion-select placeholder="Select One" interface="popover" formControlName="branch">
+          <ion-select-option *ngFor="let branch of branches" [value]="branch.name">{{branch.name}}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+    </ion-col>
+  </ion-row>
 
-</ion-content>
+  <ion-row>
+    <ion-col size-sm="6" offset-sm="3">
+      <ion-item>
+        <ion-label position="floating" >DC Date <span style="color: #FF6347;">*</span></ion-label>
+        <ion-datetime
+        formControlName="date"
+        display-format="MMM DD YYYY"
+        picker-format="YY MMM DD"
+        ></ion-datetime>
+      </ion-item>
+    </ion-col>
+  </ion-row>
+
+
+  <div class="section">
+    <ion-row>
+      <ion-col size-sm="6" offset-sm="3">
+        <span style="font-size:13px">Machine detail</span><span style="color: #FF6347;">*</span>
+      </ion-col>
+    </ion-row>
+    <div *ngFor="let item of form.get('machineDetails')['controls']; let i = index;" formArrayName="machineDetails">
+      <div [formGroupName]="i">
+        <ion-row>
+          <ion-col size="10">
+            <ion-row>
+              <ion-col size="12">
+                <ion-item>
+                  <ion-label position="floating" class="label">Machine
+                  </ion-label>
+                  <ion-select placeholder="Select One"  interface="popover" formControlName="machineName" (ionChange)="onMachineChange($event,form.get('machineDetails')['controls'][i])">
+                    <ion-select-option *ngFor="let machine of machines" [value]="machine">{{machine}}
+                    </ion-select-option>
+                    </ion-select>
+                </ion-item>
+              </ion-col>
+              <ion-col size="12">
+                <ion-item>
+                  <ion-label position="floating" class="label">Type
+                  </ion-label>
+                  <ion-select placeholder="Select One"  interface="popover" formControlName="machineType">
+                    <ion-select-option *ngFor="let machine of machineType" [value]="machine">{{machine}}
+                    </ion-select-option>
+                    </ion-select>
+                </ion-item>
+              </ion-col>
+              <ion-col size="12">
+                <ion-item>
+                  <ion-label position="floating" class="label">Category
+                  </ion-label>
+                  <ion-select placeholder="Select One"  interface="popover" formControlName="volumeType">
+                    <ion-select-option *ngFor="let machine of machineCategory" [value]="machine">{{machine}}
+                    </ion-select-option>
+                    </ion-select>
+                </ion-item>
+              </ion-col>
+              <ion-col size="12">
+                <ion-item>
+                  <ion-label position="floating" class="label">No.of Machine
+                  </ion-label>
+                  <ion-input type="text" autocomplete autocorrect formControlName="machineCount"></ion-input>
+                </ion-item>
+              </ion-col>
+              <ion-col size="12">
+                <ion-item>
+                  <ion-label position="floating" class="label">Machine Serial Number
+                  </ion-label>
+                  <ion-input type="text" autocomplete autocorrect formControlName="machinesrno"></ion-input>
+                </ion-item>
+              </ion-col>
+              <ion-col size="12">
+                <ion-item>
+                  <ion-label position="floating" class="label">HSN Number
+                  </ion-label>
+                  <ion-input type="text" autocomplete autocorrect formControlName="machinehsnNo"></ion-input>
+                </ion-item>
+              </ion-col>
+
+              <ion-col size="12">
+                <ion-item>
+                  <ion-label position="floating" class="label">Rate (* applicable for SEZ)
+                  </ion-label>
+                  <ion-input type="Number" autocomplete autocorrect formControlName="machinerate"></ion-input>
+                </ion-item>
+              </ion-col>
+
+            </ion-row>
+          </ion-col>
+          <ion-col size="2">
+            <div style="height: 95%; border-left:2px solid #FF69B4">
+              <ion-button size="small" class=" button-assertive button-clear" style="margin-top: 75px;"
+                (click)="deleteMachine(i)">
+                <ion-icon name="trash" slot="icon-only"></ion-icon>
+              </ion-button>
+            </div>
+          </ion-col>
+        </ion-row>
+      </div>
+    </div>
+    <ion-row>
+      <ion-col size="12">
+        <ion-button size="small" (click)="addMachine()">
+          <ion-icon name="add-circle"></ion-icon> Add Machine
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </div>
+
+
+
+  </ion-grid>
+  </form>
+  </ion-content>

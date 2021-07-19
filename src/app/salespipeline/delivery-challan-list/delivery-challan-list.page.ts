@@ -179,7 +179,12 @@ export class DeliveryChallanListPage implements OnInit {
 
 
   navigateToDetail(req){
-    this.router.navigate(['/','salespipeline','deliverychallan',req.salesId,req.locationId,req.id]);
+    if(req.type!=undefined){
+      this.router.navigate(['/','salespipeline','dcinstallation',req.salesId,req.locationId,req.id]);
+    }
+    else{
+      this.router.navigate(['/','salespipeline','deliverychallan',req.salesId,req.locationId,req.id]);
+    }
   }
   viewPdf(req){
     this.nonsezChallan(req);
@@ -257,17 +262,37 @@ export class DeliveryChallanListPage implements OnInit {
         },
       ],
     };
-    req['materialDetails'].forEach((m, index) => {
-      let mat = [];
-      mat.push(
-        index + 1,
-        m['category'] + '-' + m['item'],
-        m['qty'],
-        m['uom'],
-        m['hsnNo']
-      );
-      docDefinition.content[0].table.body.push(mat);
-    });
+
+    if(req['type']!=undefined && req['type']==1)
+    {
+      req['machineDetails'].forEach((m, index) => {
+        let mat = [];
+        mat.push(
+          index + 1,
+          m['machineName'] + '-' + m['machineType'] + ' [srno:'+m['machinesrno']+']',
+          m['machineCount'],
+          'Nos',
+          m['machinehsnNo'],
+        );
+        docDefinition.content[0].table.body.push(mat);
+      });
+    }
+    else{
+      req['materialDetails'].forEach((m, index) => {
+        let mat = [];
+        mat.push(
+          index + 1,
+          m['category'] + '-' + m['item'],
+          m['qty'],
+          m['uom'],
+          m['hsnNo']
+        );
+        docDefinition.content[0].table.body.push(mat);
+      });
+    }
+
+
+
     docDefinition.content[0].table.body.push([
       Object.assign({}, { text: ' ', colSpan: 5, margin: [0, 0, 0, 40] }),
       '',
@@ -338,6 +363,7 @@ export class DeliveryChallanListPage implements OnInit {
       this.pdfObj.download();
     }
   }
+
   async  sezChallan(req){
     let branch:MastBranch=await (await this.divisionService.getBrancheByName(req['branch']))[0];
     let demodata = {
@@ -502,6 +528,7 @@ export class DeliveryChallanListPage implements OnInit {
       this.pdfObj.download();
     }
   }
+
   deleteDC(req){
     this.alertCtrl.create({
       header: 'Delete!',

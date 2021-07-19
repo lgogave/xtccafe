@@ -4,7 +4,7 @@ import { AngularFirestore } from '@angular/fire/firestore';
 import { BehaviorSubject, combineLatest, observable, of } from 'rxjs';
 import { first, map, switchMap, take, tap } from 'rxjs/operators';
 import { AuthService } from '../auth/auth.service';
-import { BillingDetail, ClientComment, ClientCommentModel, ClientSales, ClientSalesPipeline, DCDetail, DCDetailModel, Invoice, InvoiceMonth, ReceiptBook, RentalInvoice, SalesPipeline } from './salespipeline.model';
+import { BillingDetail, ClientComment, ClientCommentModel, ClientSales, ClientSalesPipeline, DCDetail, DCDetailModel, InstallDCDetail, Invoice, InvoiceMonth, ReceiptBook, RentalInvoice, SalesPipeline } from './salespipeline.model';
 import type firebase from 'firebase';
 import { GetNewId } from '../utilities/dataconverters';
 
@@ -538,7 +538,7 @@ export class SalespipelineService {
       take(1)
     );
   }
-  addupdateDC(dc: DCDetail,isUpdate:boolean=false) {
+  addupdateDC(dc: any,isUpdate:boolean=false) {
     let fetchedUserId: string;
     return this.authService.userId.pipe(
       map((userId) => {
@@ -695,14 +695,29 @@ export class SalespipelineService {
     return billingRate.length>0?billingRate[0]:null;
   }
 
-  async getDCDetail(dcId: string): Promise<any> {
-    let snaps = await this.firebaseService
+  async getDCDetail(dcId: string,type:number=0): Promise<any> {
+    if(type==0){
+      let snaps = await this.firebaseService
       .collection('delivery-challan').doc(dcId).get().toPromise();
       var result = <DCDetail>{
         ...(snaps.data() as {}),
       };
       result.id = snaps.id;
     return result;
+    }
+    else if(type==1){
+      let snaps = await this.firebaseService
+        .collection('delivery-challan')
+        .doc(dcId)
+        .get()
+        .toPromise();
+      var installresult = <InstallDCDetail>{
+        ...(snaps.data() as {}),
+      };
+      installresult.id = snaps.id;
+      return installresult;
+    }
+
   }
 
   async getDeliveryChallans(clientId:string): Promise<DCDetailModel[]> {

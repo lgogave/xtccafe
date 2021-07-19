@@ -392,7 +392,7 @@ export class DemoRequestListPage implements OnInit, OnDestroy {
     let mat = [];
     mat.push(
       index + 1,
-      m['machineName'] + '-' + m['machineType'] + ' [Srno:'+m['machinesrno']+']',
+      m['machineName'] + '-' + m['machineType'] + ' [srno:'+m['machinesrno']+']',
       m['machineCount'],
       'Nos',
       m['machinehsnNo'],

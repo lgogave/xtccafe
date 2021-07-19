@@ -176,6 +176,31 @@ export class DCDetail {
     public isDelete?:boolean
     ){}
 }
+
+export class InstallDCDetail {
+  constructor(
+    public id?:string,
+    public type?:Number,
+    public srNo?:string,
+    public clientId?:string,
+    public salesId?:string,
+    public locationId?:string,
+    public billName?:string,
+    public billAddress?:string,
+    public location?:string,
+    public address?:string,
+    public pincode?:string,
+    public branch?:string,
+    public gstno?:string,
+    public date?:Date,
+    public machineDetails?:Machine[],
+    public userId?:string,
+    public createdOn?:Date,
+    public isUsed?:boolean,
+    public isDelete?:boolean
+    ){}
+}
+
 export class DCMaterial {
   constructor(
     public category?:string,

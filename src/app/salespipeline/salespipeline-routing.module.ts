@@ -134,7 +134,11 @@ const routes: Routes = [
 
   },
   {
-    path: 'dc-installation',
+    path: 'dcinstallation/:salesId/:locId',
+    loadChildren: () => import('./dc-installation/dc-installation.module').then( m => m.DcInstallationPageModule)
+  },
+  {
+    path: 'dcinstallation/:salesId/:locId/:dcId',
     loadChildren: () => import('./dc-installation/dc-installation.module').then( m => m.DcInstallationPageModule)
   },
 ];
