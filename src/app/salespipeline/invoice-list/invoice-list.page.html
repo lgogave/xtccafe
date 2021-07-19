@@ -15,7 +15,8 @@
     <ion-item color="success">
      <span>Amount: ₹{{invoiceAmount |  number:'1.0':'en-US'  }}</span> ||
      <span>Tax: ₹{{invoiceTax |  number:'1.0':'en-US'  }}</span> ||
-     <span> Total: ₹{{invoiceTotal |  number:'1.0':'en-US'  }} </span>
+     <span> Total: ₹{{invoiceTotal |  number:'1.0':'en-US'  }} </span>  ||
+     <span> Count: {{ invoiceCount}} </span>
 
     </ion-item>
   </ion-toolbar>
@@ -50,6 +51,7 @@
               <ion-label style="margin-top:20px!important;"> {{inv.clientName}}</ion-label>
                <h6><b>Location: </b>{{inv.clientLocation}}</h6>
                <h6><b>Month: </b><ion-icon name="time-outline" size="small"></ion-icon><a style="color: #000"> {{inv.displaymonth}}</a></h6>
+               <h6><b>Amount: </b><a style="color: #000"> {{inv.amount+inv.tax| currency:"INR":"symbol"}}</a></h6>
                <h6><b>ID: </b>{{inv.srNo}}</h6>
               <div>
                 <ion-button color="warning" (click)="consumableInvoice(inv)">Consumables</ion-button>

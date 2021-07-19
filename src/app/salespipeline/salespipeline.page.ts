@@ -1,6 +1,8 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { AlertController, IonItemSliding, IonSegment, LoadingController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
+import { AuthService } from '../auth/auth.service';
+import { UserService } from '../services/user.service';
 import { ClientSales, ClientSalesPipeline } from './salespipeline.model';
 import { SalespipelineService } from './salespipeline.service';
 
@@ -22,7 +24,8 @@ export class SalespipelinePage implements OnInit, OnDestroy {
   constructor(
     private salespipelineService: SalespipelineService,
     private loadingCtrl: LoadingController,
-    private alertCtrl: AlertController
+    private alertCtrl: AlertController,
+    private userService:UserService
   ) {}
 
   ngOnInit() {

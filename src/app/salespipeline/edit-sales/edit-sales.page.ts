@@ -104,33 +104,30 @@ export class EditSalesPage implements OnInit {
     return new FormGroup({
       machineName: new FormControl(machine!=null?machine.machineName:null, {
         updateOn: 'blur',
-        validators: [Validators.required],
       }),
       machineType: new FormControl(machine!=null?machine.machineType:null, {
         updateOn: 'blur',
-        validators: [Validators.required],
       }),
       volumeType: new FormControl(machine!=null?machine.machineCategory:null, {
         updateOn: 'blur',
-        validators: [Validators.required],
       }),
       machineCount: new FormControl(machine!=null?machine.machineCount:null, {
         updateOn: 'blur',
-        validators: [Validators.required],
       }),
       machineSrNo: new FormControl(machine!=null?machine.machineSrNo:null, {
         updateOn: 'blur',
       }),
+      machinehsncode: new FormControl(machine!=null?machine.machinehsncode:null, {
+        updateOn: 'blur',
+      }),
       rate: new FormControl(machine!=null?machine.rate:null, {
         updateOn: 'blur',
-        validators: [Validators.required],
       }),
       amount: new FormControl(machine!=null?machine.amount:null, {
         updateOn: 'blur',
       }),
       conflevel: new FormControl(machine!=null?machine.conflevel:null, {
         updateOn: 'blur',
-        validators: [Validators.required,Validators.min(0),Validators.max(100)],
       }),
       billingAmount: new FormControl(machine!=null?machine.billingAmount:null, {
         updateOn: 'blur',
@@ -319,18 +316,18 @@ this.isLoading=false;
     this.loadingCtrl.create({ keyboardClose: true }).then((loadingEl) => {
       loadingEl.present();
       // Tree Structue Input
-      this.AddClientSalesPipeLine();
-      let arrayLength = salesPipeline.length - 1;
-        salesPipeline.forEach((item, index) => {
-          this.salesPipelineService
-            .addSalesPipeline(item)
-            .subscribe((response) => {
-              console.log(index);
-              if (arrayLength == index) {
-                this.removeLoading(loadingEl,redirection);
-              }
-            });
-        });
+      this.AddClientSalesPipeLine(loadingEl,redirection);
+      // let arrayLength = salesPipeline.length - 1;
+      //   salesPipeline.forEach((item, index) => {
+      //     this.salesPipelineService
+      //       .addSalesPipeline(item)
+      //       .subscribe((response) => {
+      //         console.log(index);
+      //         if (arrayLength == index) {
+      //           this.removeLoading(loadingEl,redirection);
+      //         }
+      //       });
+      //   });
     });
   }
   removeLoading(loadingEl: HTMLIonLoadingElement,redirection:boolean=true) {
@@ -340,7 +337,7 @@ this.isLoading=false;
     if(redirection)
     this.router.navigate(['/salespipeline']);
   }
-  private AddClientSalesPipeLine() {
+  private AddClientSalesPipeLine(loadingEl: HTMLIonLoadingElement,redirection:boolean=true) {
     let locations = [];
     for (let i = 0; i < this.form.value.dataEntry.length; i++) {
       let location = this.form.value.dataEntry[i];
@@ -362,7 +359,8 @@ this.isLoading=false;
             machine.consumableCap,
             machine.mchInstCharges,
             machine.mchSecDeposite,
-            machine.isInstChargesConsider
+            machine.isInstChargesConsider,
+            machine.machinehsncode
           )
         );
       }
@@ -404,7 +402,9 @@ this.isLoading=false;
     );
     this.salesPipelineService
       .editClientSalesPipeline(this.saleId,clientSalesPipeline,this.lastComment)
-      .subscribe((response) => {});
+      .subscribe((response) => {
+        this.removeLoading(loadingEl,redirection);
+      });
   }
 
   private AddSalesPipeline(): SalesPipeline[] {
@@ -439,7 +439,8 @@ this.isLoading=false;
             this.form.value.amount,
             '',
             new Date(),
-            machine.conflevel
+            machine.conflevel,
+            machine.machinehsncode
           )
         );
       }

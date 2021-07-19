@@ -14,6 +14,7 @@ import { ClientUser, ClientUserAccess } from '../models/client-user.model';
   providedIn: 'root'
 })
 export class UserService {
+  private _appuser:User = new User(null,null,null,null,null);
   constructor(private firebaseService:AngularFirestore) { }
   async getusers(){
     const users = await this.firebaseService.collection('user-roles')
@@ -43,6 +44,13 @@ export class UserService {
         .collection('client-user-access').doc(doc.id).delete();
       })
     });
+  }
+
+  get deviceToken(){
+    return this._appuser.deviceToken;
+  }
+  setdeviceToken(token){
+    this._appuser.deviceToken=token;
   }
 
 }

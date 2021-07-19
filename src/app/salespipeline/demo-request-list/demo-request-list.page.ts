@@ -395,7 +395,7 @@ export class DemoRequestListPage implements OnInit, OnDestroy {
       m['machineName'] + '-' + m['machineType'] + ' [Srno:'+m['machinesrno']+']',
       m['machineCount'],
       'Nos',
-      '9973',
+      m['machinehsnNo'],
     );
     docDefinition.content[0].table.body.push(mat);
   });
@@ -475,7 +475,6 @@ export class DemoRequestListPage implements OnInit, OnDestroy {
     }
   }
   async sezChallan(req,type){
-    console.log('q')
     let branch:MastBranch=await (await this.divisionService.getBrancheByName(req['satBranch']))[0];
     let demodata:any = {
       logo: this.getBase64Image(),
@@ -600,26 +599,44 @@ export class DemoRequestListPage implements OnInit, OnDestroy {
           {text:'Total'},
           {text:grandtotal.toFixed(2), fontSize: 10,bold:true},
      ]);
-
-
       }
     else{
+
+      let grandtotal=0;
       req['machineDetails'].forEach((m, index) => {
         let mat = [];
+        let rate= m['machinerate'];
+        let rrate=Number(rate)*Number(m['machineCount']);
+        let tax= Number(rate) * 18/100;
+        let totalamt=rrate+tax;
+        grandtotal=grandtotal+rrate+tax;
         mat.push(
-          index + 1,
-          m['machineName'] + '-' + m['machineType'] + ' [Srno:'+m['machinesrno']+']',
-          m['machineCount'],
-          'Nos',
-          '9973',
-          '18%',
-          '',
-          '',
-          '',
-          ''
+          {text:index + 1,fontSize: 10,},
+          {text:m['machineName'] + '-' + m['machineType'] + ' [Srno:'+m['machinesrno']+']',fontSize: 10,},
+          {text:m['machineCount'],fontSize: 10,},
+          {text:'Nos',fontSize: 10,},
+          {text:m['machinehsnNo'],fontSize: 10,},
+          {text:rrate.toFixed(2),fontSize: 10,},
+          {text:'0.9%',fontSize: 10,},
+          {text:'0.9%',fontSize: 10,},
+          {text:tax,fontSize: 10,},
+          {text:totalamt.toFixed(2),fontSize: 10,},
         );
         docDefinition.content[0].table.body.push(mat);
       });
+
+      docDefinition.content[0].table.body.push([
+        {text:''},
+        {text:''},
+        {text:''},
+        {text:''},
+        {text:''},
+        {text:''},
+        {text:''},
+        {text:''},
+        {text:'Total'},
+        {text:grandtotal.toFixed(2), fontSize: 10,bold:true},
+   ]);
         }
       docDefinition.content[0].table.body.push([
         Object.assign({}, { text: ' ', colSpan: 10}),
@@ -809,22 +826,41 @@ export class DemoRequestListPage implements OnInit, OnDestroy {
 
       }
     else{
+      let grandtotal=0;
       req['machineDetails'].forEach((m, index) => {
         let mat = [];
+        let rate= m['machinerate'];
+        let rrate=Number(rate)*Number(m['machineCount']);
+        let tax= Number(rate) * 18/100;
+        let totalamt=rrate+tax;
+        grandtotal=grandtotal+rrate+tax;
         mat.push(
-          index + 1,
-          m['machineName'] + '-' + m['machineType'] + ' [Srno:'+m['machinesrno']+']',
-          m['machineCount'],
-          'Nos',
-          '9973',
-          '18%',
-          '',
-          '',
-          ''
+          {text:index + 1,fontSize: 10,},
+          {text:m['machineName'] + '-' + m['machineType'] + ' [Srno:'+m['machinesrno']+']',fontSize: 10,},
+          {text:m['machineCount'],fontSize: 10,},
+          {text:'Nos',fontSize: 10,},
+          {text:m['machinehsnNo'],fontSize: 10,},
+          {text:rrate.toFixed(2),fontSize: 10,},
+          {text:'18%',fontSize: 10,},
+          {text:tax,fontSize: 10,},
+          {text:totalamt.toFixed(2),fontSize: 10,},
         );
         docDefinition.content[0].table.body.push(mat);
       });
-        }
+
+      docDefinition.content[0].table.body.push([
+        {text:''},
+        {text:''},
+        {text:''},
+        {text:''},
+        {text:''},
+        {text:''},
+        {text:''},
+        {text:'Total'},
+        {text:grandtotal.toFixed(2), fontSize: 10,bold:true},
+   ]);
+
+  }
       docDefinition.content[0].table.body.push([
         Object.assign({}, { text: ' ', colSpan: 9}),
         '',

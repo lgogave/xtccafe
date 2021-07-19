@@ -29,6 +29,7 @@ export class InvoiceListPage implements OnInit {
   invoiceAmount:number=0;
   invoiceTax:number=0;
   invoiceTotal:number=0;
+  invoiceCount:number=0;
   filterinvoicelist:Invoice[];
   @ViewChild('searchElement') searchElement;
 
@@ -84,8 +85,8 @@ export class InvoiceListPage implements OnInit {
     let demodata = {
       logo: this.getBase64Image(),
       authSignature:this.getAuthSignature(),
-      clientaddress: `Consignee (Ship to)\n${req['billName']}\n${req['billAddress']}`,
-      buyeraddress: `Buyer (Bill to)\n${req['billName']}\n${req['billAddress']}`,
+      clientaddress: `Consignee (Ship to)\n${invoice['billName']}\n${invoice['billAddress']}`,
+      buyeraddress: `Buyer (Bill to)\n${invoice['installAt']}\n${invoice['installAddress']}`,
       reqId: req['id'],
       date: convertTimeStampToDate(invoice.createdOn),
     };
@@ -100,7 +101,7 @@ export class InvoiceListPage implements OnInit {
     nbody.push([
       {
         text: 'Tax Invoice',
-        fontSize: 24,
+        fontSize: 16,
         bold: true,
         colSpan: 8,
         alignment: 'center',
@@ -119,7 +120,7 @@ export class InvoiceListPage implements OnInit {
     nbody.push([
       {
         text: '#'+invoice.ponumber,
-        fontSize: 14,
+        fontSize: 10,
         bold: true,
         colSpan: 8,
         alignment: 'center',
@@ -156,13 +157,13 @@ export class InvoiceListPage implements OnInit {
       {
         colSpan: 2,
         text: `Invoice No.:\n${invoice['srNo']}`,
-        fontSize: 9,
+        fontSize: 8,
       },
       '',
       {
         colSpan: 2,
         text: `Dated.:\n${this.datePipe.transform(new Date(demodata.date), 'dd-MMM-yy')}`,
-        fontSize: 9,
+        fontSize: 8,
       },
       '',
     ]);
@@ -174,13 +175,13 @@ export class InvoiceListPage implements OnInit {
       {
         colSpan: 2,
         text: `Delivery Note.:`,
-        fontSize: 9,
+        fontSize: 8,
       },
       '',
       {
         colSpan: 2,
         text: `Mode/Terms of Payment:\n30 Days`,
-        fontSize: 9,
+        fontSize: 8,
       },
       '',
     ]);
@@ -192,13 +193,13 @@ export class InvoiceListPage implements OnInit {
       {
         colSpan: 2,
         text: `Reference No. & Date.:`,
-        fontSize: 9,
+        fontSize: 8,
       },
       '',
       {
         colSpan: 2,
         text: `Other References.:`,
-        fontSize: 9,
+        fontSize: 8,
       },
       '',
     ]);
@@ -207,7 +208,7 @@ export class InvoiceListPage implements OnInit {
         colSpan: 4,
         rowSpan: 3,
         bold: true,
-        fontSize: 9,
+        fontSize: 8,
         text: demodata.clientaddress,
       },
       '',
@@ -216,13 +217,13 @@ export class InvoiceListPage implements OnInit {
       {
         colSpan: 2,
         text: `Buyer's Order No..:`,
-        fontSize: 9,
+        fontSize: 8,
       },
       '',
       {
         colSpan: 2,
         text: `Dated.:`,
-        fontSize: 9,
+        fontSize: 8,
       },
       '',
     ]);
@@ -234,13 +235,13 @@ export class InvoiceListPage implements OnInit {
       {
         colSpan: 2,
         text: `Dispatch Doc No.:`,
-        fontSize: 9,
+        fontSize: 8,
       },
       '',
       {
         colSpan: 2,
         text: `Delivery Note Date:`,
-        fontSize: 9,
+        fontSize: 8,
       },
       '',
     ]);
@@ -253,13 +254,13 @@ export class InvoiceListPage implements OnInit {
         {
           colSpan: 2,
           text: `Dispatched through.:`,
-          fontSize: 9,
+          fontSize: 8,
         },
         '',
         {
           colSpan: 2,
           text: `Destination.:`,
-          fontSize: 9,
+          fontSize: 8,
         },
         '',
       ],
@@ -269,7 +270,7 @@ export class InvoiceListPage implements OnInit {
         {
           colSpan: 4,
           bold: true,
-          fontSize: 10,
+          fontSize: 8,
           text: demodata.buyeraddress,
         },
         '',
@@ -278,7 +279,7 @@ export class InvoiceListPage implements OnInit {
         {
           colSpan: 4,
           text: `Terms of Delivery:`,
-          fontSize: 9,
+          fontSize: 8,
         },
         '',
         '',
@@ -297,7 +298,7 @@ export class InvoiceListPage implements OnInit {
             body: [
               [
                 {
-                  fontSize: 9,
+                  fontSize: 8,
                   text: 'Sl No.',
                   borderColor: [
                     '#000000',
@@ -307,7 +308,7 @@ export class InvoiceListPage implements OnInit {
                   ],
                 },
                 {
-                  fontSize: 9,
+                  fontSize: 8,
                   text: 'Description of Goods.',
                   borderColor: [
                     '#000000',
@@ -317,7 +318,7 @@ export class InvoiceListPage implements OnInit {
                   ],
                 },
                 {
-                  fontSize: 9,
+                  fontSize: 8,
                   text: 'HSN/SAC.',
                   borderColor: [
                     '#000000',
@@ -327,7 +328,7 @@ export class InvoiceListPage implements OnInit {
                   ],
                 },
                 {
-                  fontSize: 9,
+                  fontSize: 8,
                   text: 'GST Rate.',
                   borderColor: [
                     '#000000',
@@ -337,7 +338,7 @@ export class InvoiceListPage implements OnInit {
                   ],
                 },
                 {
-                  fontSize: 9,
+                  fontSize: 8,
                   text: 'Quantity.',
                   borderColor: [
                     '#000000',
@@ -347,7 +348,7 @@ export class InvoiceListPage implements OnInit {
                   ],
                 },
                 {
-                  fontSize: 9,
+                  fontSize: 8,
                   text: 'Rate.',
                   borderColor: [
                     '#000000',
@@ -357,7 +358,7 @@ export class InvoiceListPage implements OnInit {
                   ],
                 },
                 {
-                  fontSize: 9,
+                  fontSize: 8,
                   text: 'per.',
                   borderColor: [
                     '#000000',
@@ -367,7 +368,7 @@ export class InvoiceListPage implements OnInit {
                   ],
                 },
                 {
-                  fontSize: 9,
+                  fontSize: 8,
                   text: 'Amount.',
                   borderColor: [
                     '#000000',
@@ -460,44 +461,44 @@ export class InvoiceListPage implements OnInit {
       mat.push(
         {
           text: index + 1,
-          fontSize: 10,
+          fontSize: 8,
           borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
         },
         {
           text: m['category'] + '-' + m['item'],
-          fontSize: 10,
+          fontSize: 8,
           borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
         },
         {
           text: m['hsnNo'],
-          fontSize: 10,
+          fontSize: 8,
           borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
         },
         {
           text: m['gst'],
-          fontSize: 10,
+          fontSize: 8,
           alignment: 'right',
           borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
         },
         {
           text: m['qty'] + ' ' + m['uom'],
-          fontSize: 10,
+          fontSize: 8,
           borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
         },
         {
           text: m['rate'],
-          fontSize: 10,
+          fontSize: 8,
           alignment: 'right',
           borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
         },
         {
           text: m['uom'],
-          fontSize: 10,
+          fontSize: 8,
           borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
         },
         {
           text: m['amount'].toFixed(2),
-          fontSize: 10,
+          fontSize: 8,
           alignment: 'right',
           borderColor:
             mergemat.materials.length - 1 == index
@@ -541,7 +542,7 @@ export class InvoiceListPage implements OnInit {
       {
         text: amt.toFixed(2),
         alignment: 'right',
-        fontSize: 10,
+        fontSize: 8,
         bold: true,
         borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
       },
@@ -590,7 +591,7 @@ export class InvoiceListPage implements OnInit {
       },
       {
         text: 'IGST Payable',
-        fontSize: 10,
+        fontSize: 8,
         bold: true,
         borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
       },
@@ -617,7 +618,7 @@ export class InvoiceListPage implements OnInit {
       {
         text: tax.toFixed(2),
         alignment: 'right',
-        fontSize: 10,
+        fontSize: 8,
         bold: true,
         borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
       },
@@ -631,7 +632,7 @@ export class InvoiceListPage implements OnInit {
       },
       {
         text: 'CGST Payable',
-        fontSize: 10,
+        fontSize: 8,
         bold: true,
         borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
       },
@@ -658,7 +659,7 @@ export class InvoiceListPage implements OnInit {
       {
         text: cgsttax.toFixed(2),
         alignment: 'right',
-        fontSize: 10,
+        fontSize: 8,
         bold: true,
         borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
       },
@@ -670,7 +671,7 @@ export class InvoiceListPage implements OnInit {
       },
       {
         text: 'SGST Payable',
-        fontSize: 10,
+        fontSize: 8,
         bold: true,
         borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
       },
@@ -697,19 +698,14 @@ export class InvoiceListPage implements OnInit {
       {
         text: sgsttax.toFixed(2),
         alignment: 'right',
-        fontSize: 10,
+        fontSize: 8,
         bold: true,
         borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
       },
     ]);
   }
-    let totrows = 9;
-    totrows =
-      totrows < subtable.body.length
-        ? subtable.body.length
-        : totrows - subtable.body.length;
-    console.log(subtable.body.length);
-    console.log(totrows);
+
+    let totrows =subtable.body.length > 10 ? 1 : 23-subtable.body.length;
     for (let i = 0; i <= totrows; i++) {
       subtable.body.push([
         {
@@ -757,7 +753,7 @@ export class InvoiceListPage implements OnInit {
       '',
       {
         text: '₹ ' + (amt + tax).toFixed(2),
-        fontSize: 14,
+        fontSize: 12,
         bold: true,
         alignment: 'right',
       },
@@ -768,7 +764,7 @@ export class InvoiceListPage implements OnInit {
       {
         text: 'Amount Chargeable (in words)',
         colSpan: 7,
-        fontSize: 10,
+        fontSize: 8,
         borderColor: ['#000000', '#ffffff', '#ffffff', '#ffffff'],
       },
       '',
@@ -779,7 +775,7 @@ export class InvoiceListPage implements OnInit {
       '',
       {
         text: 'E. & O.E',
-        fontSize: 10,
+        fontSize: 8,
         borderColor: ['#ffffff', '#000000', '#000000', '#ffffff'],
       } as unknown,
     ]);
@@ -788,7 +784,7 @@ export class InvoiceListPage implements OnInit {
         text: 'INR ' + converter.toWords(totamt).toUpperCase() + ' ONLY',
         colSpan: 8,
         bold: true,
-        fontSize: 10,
+        fontSize: 8,
         borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
       } as unknown,
       '',
@@ -813,19 +809,19 @@ export class InvoiceListPage implements OnInit {
           body: [
             [
               {
-                fontSize: 9,
+                fontSize: 8,
                 text: 'HSN/SAC.',
                 alignment: 'center',
                 borderColor: ['#000000', '#000000', '#000000', '#000000'],
               },
               {
-                fontSize: 9,
+                fontSize: 8,
                 text: 'Taxable Value',
                 alignment: 'center',
                 borderColor: ['#000000', '#000000', '#000000', '#000000'],
               },
               {
-                fontSize: 9,
+                fontSize: 8,
                 text: 'Taxable Integrated Tax',
                 alignment: 'center',
                 colSpan: 2,
@@ -833,7 +829,7 @@ export class InvoiceListPage implements OnInit {
               },
               '',
               {
-                fontSize: 9,
+                fontSize: 8,
                 text: 'Total Tax Amount',
                 alignment: 'center',
                 borderColor: ['#000000', '#000000', '#000000', '#000000'],
@@ -841,29 +837,29 @@ export class InvoiceListPage implements OnInit {
             ],
             [
               {
-                fontSize: 9,
+                fontSize: 8,
                 text: '',
                 borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
               },
               {
-                fontSize: 9,
+                fontSize: 8,
                 text: '',
                 borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
               },
               {
-                fontSize: 9,
+                fontSize: 8,
                 text: 'Rate',
                 alignment: 'center',
                 borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
               },
               {
-                fontSize: 9,
+                fontSize: 8,
                 text: 'Amount',
                 alignment: 'center',
                 borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
               },
               {
-                fontSize: 9,
+                fontSize: 8,
                 text: '',
                 borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
               },
@@ -896,34 +892,34 @@ export class InvoiceListPage implements OnInit {
       }
       taxtable[0].table.body.push([
         {
-          fontSize: 9,
+          fontSize: 8,
           text: mergemat.hsn[i].hsnNo,
           borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
           bold: nbold,
         },
         {
-          fontSize: 9,
+          fontSize: 8,
           text: mergemat.hsn[i].amount.toFixed(2),
           borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
           alignment: 'right',
           bold: nbold,
         },
         {
-          fontSize: 9,
+          fontSize: 8,
           text: mergemat.hsn[i].gst,
           borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
           alignment: 'right',
           bold: nbold,
         },
         {
-          fontSize: 9,
+          fontSize: 8,
           text: mergemat.hsn[i].tax.toFixed(2),
           borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
           alignment: 'right',
           bold: nbold,
         },
         {
-          fontSize: 9,
+          fontSize: 8,
           text: mergemat.hsn[i].tax.toFixed(2),
           borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
           alignment: 'right',
@@ -944,19 +940,19 @@ export class InvoiceListPage implements OnInit {
           body: [
             [
               {
-                fontSize: 9,
+                fontSize: 8,
                 text: 'HSN/SAC.',
                 alignment: 'center',
                 borderColor: ['#000000', '#000000', '#000000', '#000000'],
               },
               {
-                fontSize: 9,
+                fontSize: 8,
                 text: 'Taxable Value',
                 alignment: 'center',
                 borderColor: ['#000000', '#000000', '#000000', '#000000'],
               },
               {
-                fontSize: 9,
+                fontSize: 8,
                 text: 'Central Tax',
                 alignment: 'center',
                 colSpan: 2,
@@ -964,7 +960,7 @@ export class InvoiceListPage implements OnInit {
               },
               '',
               {
-                fontSize: 9,
+                fontSize: 8,
                 text: 'State Tax',
                 alignment: 'center',
                 colSpan: 2,
@@ -972,7 +968,7 @@ export class InvoiceListPage implements OnInit {
               },
               '',
               {
-                fontSize: 9,
+                fontSize: 8,
                 text: 'Total Tax Amount',
                 alignment: 'center',
                 borderColor: ['#000000', '#000000', '#000000', '#000000'],
@@ -980,41 +976,41 @@ export class InvoiceListPage implements OnInit {
             ],
             [
               {
-                fontSize: 9,
+                fontSize: 8,
                 text: '',
                 borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
               },
               {
-                fontSize: 9,
+                fontSize: 8,
                 text: '',
                 borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
               },
               {
-                fontSize: 9,
+                fontSize: 8,
                 text: 'Rate',
                 alignment: 'center',
                 borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
               },
               {
-                fontSize: 9,
+                fontSize: 8,
                 text: 'Amount',
                 alignment: 'center',
                 borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
               },
               {
-                fontSize: 9,
+                fontSize: 8,
                 text: 'Rate',
                 alignment: 'center',
                 borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
               },
               {
-                fontSize: 9,
+                fontSize: 8,
                 text: 'Amount',
                 alignment: 'center',
                 borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
               },
               {
-                fontSize: 9,
+                fontSize: 8,
                 text: '',
                 borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
               },
@@ -1049,48 +1045,48 @@ export class InvoiceListPage implements OnInit {
       }
       taxtable[0].table.body.push([
         {
-          fontSize: 9,
+          fontSize: 8,
           text: mergemat.hsn[i].hsnNo,
           borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
           bold: nbold,
         },
         {
-          fontSize: 9,
+          fontSize: 8,
           text: mergemat.hsn[i].amount.toFixed(2),
           borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
           alignment: 'right',
           bold: nbold,
         },
         {
-          fontSize: 9,
+          fontSize: 8,
           text: ngst!=''? (Number(ngst)/2).toFixed(2):'',
           borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
           alignment: 'right',
           bold: nbold,
         },
         {
-          fontSize: 9,
+          fontSize: 8,
           text: ngst!=''? (mergemat.hsn[i].amount * Number(ngst)/2/100).toFixed(2):cgsttax.toFixed(2),
           borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
           alignment: 'right',
           bold: nbold,
         },
         {
-          fontSize: 9,
+          fontSize: 8,
           text: ngst!=''?(Number(ngst)/2).toFixed(2):'',
           borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
           alignment: 'right',
           bold: nbold,
         },
         {
-          fontSize: 9,
+          fontSize: 8,
           text: ngst!=''? (mergemat.hsn[i].amount * Number(ngst)/2/100).toFixed(2):sgsttax.toFixed(2),
           borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
           alignment: 'right',
           bold: nbold,
         },
         {
-          fontSize: 9,
+          fontSize: 8,
           text: mergemat.hsn[i].tax.toFixed(2),
           borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
           alignment: 'right',
@@ -1124,7 +1120,7 @@ export class InvoiceListPage implements OnInit {
     table.body.push([
       {
         text: '',
-        fontSize: 12,
+        fontSize: 10,
         colSpan: 3,
         borderColor: ['#000000', '#ffffff', '#ffffff', '#ffffff'],
       },
@@ -1244,7 +1240,7 @@ export class InvoiceListPage implements OnInit {
     table.body.push([
       {
         text: 'We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.',
-        fontSize: 10,
+        fontSize: 7,
         colSpan: 3,
         borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
       } as unknown,
@@ -1270,7 +1266,7 @@ export class InvoiceListPage implements OnInit {
       '',
       {
         text: 'Authorised Signatory',
-        fontSize: 10,
+        fontSize: 8,
         alignment: 'right',
         colSpan: 5,
         borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
@@ -1284,7 +1280,7 @@ export class InvoiceListPage implements OnInit {
     table.body.push([
       {
         text: 'FSSAI Regn. No. 11520009000262',
-        fontSize: 8,
+        fontSize: 7,
         alignment: 'center',
         colSpan: 8,
         borderColor: ['#ffffff', '#ffffff', '#ffffff', '#ffffff'],
@@ -1385,8 +1381,8 @@ export class InvoiceListPage implements OnInit {
    let demodata = {
       logo: this.getBase64Image(),
       authSignature:this.getAuthSignature(),
-      clientaddress: `Consignee (Ship to)\n${req['billName']}\n${req['billAddress']}`,
-      buyeraddress: `Buyer (Bill to)\n${req['billName']}\n${req['billAddress']}`,
+      clientaddress: `Consignee (Ship to)\n${invoice['billName']}\n${invoice['billAddress']}`,
+      buyeraddress: `Buyer (Bill to)\n${invoice['installAt']}\n${invoice['installAddress']}`,
       reqId: req['id'],
       date: convertTimeStampToDate(invoice.createdOn),
     };
@@ -1450,13 +1446,13 @@ export class InvoiceListPage implements OnInit {
                 {
                   colSpan: 2,
                   text: `Invoice No.:\n`+rentSrNo,
-                  fontSize: 9,
+                  fontSize: 8,
                 },
                 '',
                 {
                   colSpan: 2,
                   text: `Dated.:\n${this.datePipe.transform(new Date(demodata.date), 'dd-MMM-yy')}`,
-                  fontSize: 9,
+                  fontSize: 8,
                 },
                 '',
               ],
@@ -1468,13 +1464,13 @@ export class InvoiceListPage implements OnInit {
                 {
                   colSpan: 2,
                   text: `Delivery Note.:`,
-                  fontSize: 9,
+                  fontSize: 8,
                 },
                 '',
                 {
                   colSpan: 2,
                   text: `Mode/Terms of Payment:\n30 Days`,
-                  fontSize: 9,
+                  fontSize: 8,
                 },
                 '',
               ],
@@ -1486,13 +1482,13 @@ export class InvoiceListPage implements OnInit {
                 {
                   colSpan: 2,
                   text: `Reference No. & Date.:`,
-                  fontSize: 9,
+                  fontSize: 8,
                 },
                 '',
                 {
                   colSpan: 2,
                   text: `Other References.:`,
-                  fontSize: 9,
+                  fontSize: 8,
                 },
                 '',
               ],
@@ -1502,7 +1498,7 @@ export class InvoiceListPage implements OnInit {
                   colSpan: 4,
                   rowSpan: 3,
                   bold: true,
-                  fontSize: 9,
+                  fontSize: 8,
                   text: demodata.clientaddress,
                 },
                 '',
@@ -1511,13 +1507,13 @@ export class InvoiceListPage implements OnInit {
                 {
                   colSpan: 2,
                   text: `Buyer's Order No..:`,
-                  fontSize: 9,
+                  fontSize: 8,
                 },
                 '',
                 {
                   colSpan: 2,
                   text: `Dated.:`,
-                  fontSize: 9,
+                  fontSize: 8,
                 },
                 '',
               ],
@@ -1529,13 +1525,13 @@ export class InvoiceListPage implements OnInit {
                 {
                   colSpan: 2,
                   text: `Dispatch Doc No.:`,
-                  fontSize: 9,
+                  fontSize: 8,
                 },
                 '',
                 {
                   colSpan: 2,
                   text: `Delivery Note Date:`,
-                  fontSize: 9,
+                  fontSize: 8,
                 },
                 '',
               ],
@@ -1547,13 +1543,13 @@ export class InvoiceListPage implements OnInit {
                 {
                   colSpan: 2,
                   text: `Dispatched through.:`,
-                  fontSize: 9,
+                  fontSize: 8,
                 },
                 '',
                 {
                   colSpan: 2,
                   text: `Destination.:`,
-                  fontSize: 9,
+                  fontSize: 8,
                 },
                 '',
               ],
@@ -1562,7 +1558,7 @@ export class InvoiceListPage implements OnInit {
                 {
                   colSpan: 4,
                   bold: true,
-                  fontSize: 10,
+                  fontSize: 8,
                   text: demodata.buyeraddress,
                 },
                 '',
@@ -1571,7 +1567,7 @@ export class InvoiceListPage implements OnInit {
                 {
                   colSpan: 4,
                   text: `Terms of Delivery:`,
-                  fontSize: 9,
+                  fontSize: 8,
                 },
                 '',
                 '',
@@ -1588,7 +1584,7 @@ export class InvoiceListPage implements OnInit {
                     body: [
                       [
                         {
-                          fontSize: 9,
+                          fontSize: 8,
                           text: 'Sl No.',
                           borderColor: [
                             '#000000',
@@ -1598,7 +1594,7 @@ export class InvoiceListPage implements OnInit {
                           ],
                         },
                         {
-                          fontSize: 9,
+                          fontSize: 8,
                           text: 'Description of Goods.',
                           borderColor: [
                             '#000000',
@@ -1608,7 +1604,7 @@ export class InvoiceListPage implements OnInit {
                           ],
                         },
                         {
-                          fontSize: 9,
+                          fontSize: 8,
                           text: 'HSN/SAC.',
                           borderColor: [
                             '#000000',
@@ -1618,7 +1614,7 @@ export class InvoiceListPage implements OnInit {
                           ],
                         },
                         {
-                          fontSize: 9,
+                          fontSize: 8,
                           text: 'GST Rate.',
                           borderColor: [
                             '#000000',
@@ -1628,7 +1624,7 @@ export class InvoiceListPage implements OnInit {
                           ],
                         },
                         {
-                          fontSize: 9,
+                          fontSize: 8,
                           text: 'Quantity.',
                           borderColor: [
                             '#000000',
@@ -1638,7 +1634,7 @@ export class InvoiceListPage implements OnInit {
                           ],
                         },
                         {
-                          fontSize: 9,
+                          fontSize: 8,
                           text: 'Rate.',
                           borderColor: [
                             '#000000',
@@ -1648,7 +1644,7 @@ export class InvoiceListPage implements OnInit {
                           ],
                         },
                         {
-                          fontSize: 9,
+                          fontSize: 8,
                           text: 'per.',
                           borderColor: [
                             '#000000',
@@ -1658,7 +1654,7 @@ export class InvoiceListPage implements OnInit {
                           ],
                         },
                         {
-                          fontSize: 9,
+                          fontSize: 8,
                           text: 'Amount.',
                           borderColor: [
                             '#000000',
@@ -2020,7 +2016,7 @@ export class InvoiceListPage implements OnInit {
       '',
       {
         text: '₹ ' + (amt + tax).toFixed(2),
-        fontSize: 14,
+        fontSize: 10,
         bold: true,
         alignment: 'right',
       },
@@ -2076,19 +2072,19 @@ export class InvoiceListPage implements OnInit {
             body: [
               [
                 {
-                  fontSize: 9,
+                  fontSize: 8,
                   text: 'HSN/SAC.',
                   alignment: 'center',
                   borderColor: ['#000000', '#000000', '#000000', '#000000'],
                 },
                 {
-                  fontSize: 9,
+                  fontSize: 8,
                   text: 'Taxable Value',
                   alignment: 'center',
                   borderColor: ['#000000', '#000000', '#000000', '#000000'],
                 },
                 {
-                  fontSize: 9,
+                  fontSize: 8,
                   text: 'Taxable Integrated Tax',
                   alignment: 'center',
                   colSpan: 2,
@@ -2096,7 +2092,7 @@ export class InvoiceListPage implements OnInit {
                 },
                 '',
                 {
-                  fontSize: 9,
+                  fontSize: 8,
                   text: 'Total Tax Amount',
                   alignment: 'center',
                   borderColor: ['#000000', '#000000', '#000000', '#000000'],
@@ -2104,29 +2100,29 @@ export class InvoiceListPage implements OnInit {
               ],
               [
                 {
-                  fontSize: 9,
+                  fontSize: 8,
                   text: '',
                   borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
                 },
                 {
-                  fontSize: 9,
+                  fontSize: 8,
                   text: '',
                   borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
                 },
                 {
-                  fontSize: 9,
+                  fontSize: 8,
                   text: 'Rate',
                   alignment: 'center',
                   borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
                 },
                 {
-                  fontSize: 9,
+                  fontSize: 8,
                   text: 'Amount',
                   alignment: 'center',
                   borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
                 },
                 {
-                  fontSize: 9,
+                  fontSize: 8,
                   text: '',
                   borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
                 },
@@ -2165,34 +2161,34 @@ export class InvoiceListPage implements OnInit {
         }
         taxtable[0].table.body.push([
           {
-            fontSize: 9,
+            fontSize: 8,
             text: mergemat.hsn[i].hsnNo,
             borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
             bold: nbold,
           },
           {
-            fontSize: 9,
+            fontSize: 8,
             text: mergemat.hsn[i].amount.toFixed(2),
             borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
             alignment: 'right',
             bold: nbold,
           },
           {
-            fontSize: 9,
+            fontSize: 8,
             text: mergemat.hsn[i].gst,
             borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
             alignment: 'right',
             bold: nbold,
           },
           {
-            fontSize: 9,
+            fontSize: 8,
             text: mergemat.hsn[i].tax.toFixed(2),
             borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
             alignment: 'right',
             bold: nbold,
           },
           {
-            fontSize: 9,
+            fontSize: 8,
             text: mergemat.hsn[i].tax.toFixed(2),
             borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
             alignment: 'right',
@@ -2211,19 +2207,19 @@ export class InvoiceListPage implements OnInit {
             body: [
               [
                 {
-                  fontSize: 9,
+                  fontSize: 8,
                   text: 'HSN/SAC.',
                   alignment: 'center',
                   borderColor: ['#000000', '#000000', '#000000', '#000000'],
                 },
                 {
-                  fontSize: 9,
+                  fontSize: 8,
                   text: 'Taxable Value',
                   alignment: 'center',
                   borderColor: ['#000000', '#000000', '#000000', '#000000'],
                 },
                 {
-                  fontSize: 9,
+                  fontSize: 8,
                   text: 'Central Tax',
                   alignment: 'center',
                   colSpan: 2,
@@ -2231,7 +2227,7 @@ export class InvoiceListPage implements OnInit {
                 },
                 '',
                 {
-                  fontSize: 9,
+                  fontSize: 8,
                   text: 'State Tax',
                   alignment: 'center',
                   colSpan: 2,
@@ -2239,7 +2235,7 @@ export class InvoiceListPage implements OnInit {
                 },
                 '',
                 {
-                  fontSize: 9,
+                  fontSize: 8,
                   text: 'Total Tax Amount',
                   alignment: 'center',
                   borderColor: ['#000000', '#000000', '#000000', '#000000'],
@@ -2247,41 +2243,41 @@ export class InvoiceListPage implements OnInit {
               ],
               [
                 {
-                  fontSize: 9,
+                  fontSize: 8,
                   text: '',
                   borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
                 },
                 {
-                  fontSize: 9,
+                  fontSize: 8,
                   text: '',
                   borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
                 },
                 {
-                  fontSize: 9,
+                  fontSize: 8,
                   text: 'Rate',
                   alignment: 'center',
                   borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
                 },
                 {
-                  fontSize: 9,
+                  fontSize: 8,
                   text: 'Amount',
                   alignment: 'center',
                   borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
                 },
                 {
-                  fontSize: 9,
+                  fontSize: 8,
                   text: 'Rate',
                   alignment: 'center',
                   borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
                 },
                 {
-                  fontSize: 9,
+                  fontSize: 8,
                   text: 'Amount',
                   alignment: 'center',
                   borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
                 },
                 {
-                  fontSize: 9,
+                  fontSize: 8,
                   text: '',
                   borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
                 },
@@ -2321,48 +2317,48 @@ export class InvoiceListPage implements OnInit {
         }
         taxtable[0].table.body.push([
           {
-            fontSize: 9,
+            fontSize: 8,
             text: mergemat.hsn[i].hsnNo,
             borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
             bold: nbold,
           },
           {
-            fontSize: 9,
+            fontSize: 8,
             text: mergemat.hsn[i].amount.toFixed(2),
             borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
             alignment: 'right',
             bold: nbold,
           },
           {
-            fontSize: 9,
+            fontSize: 8,
             text: i==0?'9%':mergemat.hsn[i].gst,
             borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
             alignment: 'right',
             bold: nbold,
           },
           {
-            fontSize: 9,
+            fontSize: 8,
             text:i==0?(mergemat.hsn[i].amount*0.09).toFixed(2):cgsttax.toFixed(2),
             borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
             alignment: 'right',
             bold: nbold,
           },
           {
-            fontSize: 9,
+            fontSize: 8,
             text: i==0?'9%':mergemat.hsn[i].gst,
             borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
             alignment: 'right',
             bold: nbold,
           },
           {
-            fontSize: 9,
+            fontSize: 8,
             text:i==0?(mergemat.hsn[i].amount*0.09).toFixed(2):sgsttax.toFixed(2),
             borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
             alignment: 'right',
             bold: nbold,
           },
           {
-            fontSize: 9,
+            fontSize: 8,
             text: mergemat.hsn[i].tax.toFixed(2),
             borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
             alignment: 'right',
@@ -2399,7 +2395,7 @@ export class InvoiceListPage implements OnInit {
     table.body.push([
       {
         text: '',
-        fontSize: 12,
+        fontSize: 10,
         colSpan: 3,
         borderColor: ['#000000', '#ffffff', '#ffffff', '#ffffff'],
       },
@@ -2635,11 +2631,14 @@ async doRefresh(event) {
   if(this.locId!=null){
     this.invoicelist = await this.salespiplineService.getInvoices(this.locId);
     this.filterinvoicelist=this.invoicelist;
+    this.invoiceCount= this.filterinvoicelist.length;
   }
   else
   {
     this.invoicelist = await this.salespiplineService.getInvoices(null);
     this.filterinvoicelist=await this.applyFilter();
+    this.invoiceCount= this.filterinvoicelist.length;
+
   }
   this.isLoading=false;
   if (event != null) {
@@ -2687,6 +2686,7 @@ chkInvoiceChange(event,invoice){
 
 async onFilterUpdate(ev: any) {
   this.filterinvoicelist= await this.applyFilter();
+  this.invoiceCount= this.filterinvoicelist.length;
 }
 async applyFilter(){
 

@@ -27,6 +27,8 @@ export interface AuthResponseData {
 export class AuthService implements OnDestroy {
   private _user = new BehaviorSubject<User>(null);
   private _activeLogoutTime: any;
+  private _appuser:User = new User(null,null,null,null,null,null);
+
   constructor(
     private http: HttpClient,
     private firebaseAuth: AngularFireAuth,
@@ -51,6 +53,9 @@ export class AuthService implements OnDestroy {
         // if (expirationTime <= new Date()) {
         //   return null;
         // }
+
+
+
         const user = new User(
           parsedData.userId,
           parsedData.email,
@@ -59,6 +64,10 @@ export class AuthService implements OnDestroy {
           parsedData.roles,
           parsedData.name
         );
+        this._appuser.id=user.id;
+        this._appuser.email=user.email;
+        this._appuser.name=user.name;
+        this._appuser.roles=user.roles;
         return user;
       }),
       tap((user) => {
@@ -157,7 +166,9 @@ export class AuthService implements OnDestroy {
       })
     );
   }
-
+  get appuserId(){
+    return this._appuser.id;
+  }
   // login_old(email: string, password: string) {
   //   this.firebaseAuth.signInWithEmailAndPassword(email,password).then(value=>{}).catch(err=>{});
   //   return this.http
@@ -177,13 +188,8 @@ export class AuthService implements OnDestroy {
     }).catch((err) => {
       throw err;
     }) as Promise<AuthResponseData>;
-
-
-
     console.log("********Auth End**********")
     }
-
-
   login(email: string, password: string) {
     var userAuthData: AuthResponseData;
     return from(
@@ -210,8 +216,6 @@ export class AuthService implements OnDestroy {
       }),
       take(1),
       map((userrole) => {
-        console.log(userrole);
-        console.log(userrole[0]['roles']);
         userAuthData.roles = userrole[0]['roles'];
         userAuthData.name = userrole[0]['name'];
         this.setUserData(userAuthData);
@@ -228,6 +232,7 @@ export class AuthService implements OnDestroy {
     if (this._activeLogoutTime) {
       clearTimeout(this._activeLogoutTime);
     }
+    this._appuser=new User(null,null,null,null,null,null);
     this._user.next(null);
     Plugins.Storage.remove({ key: 'authData' });
     this.firebaseAuth.signOut();
@@ -252,6 +257,10 @@ export class AuthService implements OnDestroy {
       .pipe(tap(this.setUserData.bind(this)));
   }
   setUserData(userData: AuthResponseData) {
+    this._appuser.id=userData.uid;
+    this._appuser.email=userData.email;
+    this._appuser.name=userData.name;
+    this._appuser.roles=userData.roles;
     /*const expirationTime = new Date(
       new Date().getTime() + +userData.expiresIn * 1000
     );

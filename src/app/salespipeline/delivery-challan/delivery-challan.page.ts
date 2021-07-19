@@ -85,7 +85,7 @@ export class DeliveryChallanPage implements OnInit {
     initializeForm() {
       this.form = new FormGroup({
         billName: new FormControl(this.billingDetail!=null?this.billingDetail.billName:this.clientSales.client.name, { updateOn: 'blur',validators: [Validators.required] }),
-        billAddress: new FormControl(this.billingDetail!=null?this.billingDetail.billAddress:this.clientLocation.address, { updateOn: 'blur',validators: [Validators.required] }),
+        billAddress: new FormControl(this.billingDetail!=null?this.billingDetail.billAddress:this.clientLocation.address, { updateOn: 'blur' }),
         location: new FormControl(this.billingDetail!=null?this.billingDetail.location:this.clientLocation.address, { updateOn: 'blur',validators: [Validators.required] }),
         address: new FormControl(this.billingDetail!=null?this.billingDetail.installAddress:this.clientLocation.address, { updateOn: 'blur',validators: [Validators.required] }),
         pincode: new FormControl(this.billingDetail!=null?this.billingDetail.pincode:null, { updateOn: 'blur',validators: [Validators.required] }),
@@ -234,6 +234,9 @@ export class DeliveryChallanPage implements OnInit {
       if (!this.form.valid) {
         return;
       }
+    if(this.dcId!=null)
+    this.dcDetail = await this.salespiplineService.getDCDetail(this.dcId);
+
     let fmbillingDetail = <DCDetail>this.form.value;
     let branch=this.branches.filter(x=>x.name==fmbillingDetail.branch)[0];
       fmbillingDetail.salesId=this.saleId;

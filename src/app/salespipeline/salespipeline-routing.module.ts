@@ -133,6 +133,10 @@ const routes: Routes = [
     canLoad: [AuthGuard],
 
   },
+  {
+    path: 'dc-installation',
+    loadChildren: () => import('./dc-installation/dc-installation.module').then( m => m.DcInstallationPageModule)
+  },
 ];
 
 @NgModule({

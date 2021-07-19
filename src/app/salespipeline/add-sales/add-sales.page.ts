@@ -96,33 +96,30 @@ buildMachineDetailForm(){
   return new FormGroup({
     machineName: new FormControl(null, {
       updateOn: "blur",
-      validators: [Validators.required],
     }),
     machineType: new FormControl(null, {
       updateOn: "blur",
-      validators: [Validators.required],
     }),
     volumeType: new FormControl(null, {
       updateOn: "blur",
-      validators: [Validators.required],
     }),
     machineCount: new FormControl(null, {
       updateOn: "blur",
-      validators: [Validators.required],
     }),
     machineSrNo: new FormControl(null, {
       updateOn: "blur",
     }),
+    machinehsncode: new FormControl(null, {
+      updateOn: "blur",
+    }),
     rate: new FormControl(null, {
       updateOn: "blur",
-      validators: [Validators.required],
     }),
     amount: new FormControl(null, {
       updateOn: 'blur',
     }),
     conflevel: new FormControl(null, {
       updateOn: 'blur',
-      validators: [Validators.required,Validators.min(0),Validators.max(100)],
     }),
     billingAmount: new FormControl(null, {
       updateOn: 'blur',
@@ -250,16 +247,16 @@ buildMachineDetailForm(){
     this.loadingCtrl.create({ keyboardClose: true }).then((loadingEl) => {
       loadingEl.present();
       // Tree Structue Input
-      this.AddClientSalesPipeLine();
-      let arrayLength=salesPipeline.length-1;
-      salesPipeline.forEach((item,index)=>{
-        this.salesPipelineService.addSalesPipeline(item).subscribe((response)=>{
+      this.AddClientSalesPipeLine(loadingEl);
+      // let arrayLength=salesPipeline.length-1;
+      // salesPipeline.forEach((item,index)=>{
+      //   this.salesPipelineService.addSalesPipeline(item).subscribe((response)=>{
 
-         if (arrayLength == index) {
-           this.removeLoading(loadingEl);
-          }
-        })
-      })
+      //    if (arrayLength == index) {
+      //      this.removeLoading(loadingEl);
+      //     }
+      //   })
+      // })
     });
   }
  removeLoading(loadingEl:HTMLIonLoadingElement){
@@ -268,7 +265,7 @@ buildMachineDetailForm(){
   this.form.reset();
   this.route.navigate(["/salespipeline"]);
  }
-private AddClientSalesPipeLine(){
+private AddClientSalesPipeLine(loadingEl: HTMLIonLoadingElement){
   let locations=[];
     for(let i=0;i<this.form.value.dataEntry.length;i++){
       let location=this.form.value.dataEntry[i];
@@ -290,7 +287,8 @@ private AddClientSalesPipeLine(){
             machine.consumableCap,
             machine.mchInstCharges,
             machine.mchSecDeposite,
-            false
+            false,
+            machine.machinehsncode
           )
         );
       }
@@ -326,6 +324,7 @@ private AddClientSalesPipeLine(){
 
     );
     this.salesPipelineService.addClientSalesPipeline(clientSalesPipeline).subscribe((response)=>{
+      this.removeLoading(loadingEl);
 })
 }
 private AddSalesPipeline():SalesPipeline[]{
@@ -358,7 +357,8 @@ private AddSalesPipeline():SalesPipeline[]{
         this.form.value.amount,
         "",
         new Date(),
-        machine.conflevel
+        machine.conflevel,
+        machine.machinehsncode
         ))
       }
     }

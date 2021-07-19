@@ -2,9 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { Router,ActivatedRoute } from '@angular/router';
 import { ActionSheetController, ModalController, NavController, LoadingController, AlertController } from '@ionic/angular';
 import { switchMap, take } from 'rxjs/operators';
+import { PopoverController } from '@ionic/angular';
 import { AuthService } from 'src/app/auth/auth.service';
 import { ClientSalesPipeline } from '../salespipeline.model';
 import { SalespipelineService } from '../salespipeline.service';
+import { DcPopupComponent } from '../dc-popup/dc-popup.component';
 @Component({
   selector: 'app-detail-sales',
   templateUrl: './detail-sales.page.html',
@@ -23,7 +25,8 @@ export class DetailSalesPage implements OnInit {
     private actionSheetCtrl: ActionSheetController,
     private loadingCtrl: LoadingController,
     private alertCtrl: AlertController,
-    private authService: AuthService
+    private authService: AuthService,
+    public popoverCtrl: PopoverController
   ) {}
 
   ngOnInit() {
@@ -77,5 +80,17 @@ export class DetailSalesPage implements OnInit {
 
   convertTimestampToDate(date:any){
    return this.salespipelineService.convertTimeStampToDate(date);
+  }
+
+  async presentPopover(ev: any,nsalesId,nlocationId) {
+    const popover = await this.popoverCtrl.create({
+      component: DcPopupComponent,
+      event: ev,
+      translucent: true,
+      // mode:'ios',
+      componentProps:{salesId:nsalesId,locationId:nlocationId}
+    });
+    await popover.present();
+    await popover.onDidDismiss();
   }
 }

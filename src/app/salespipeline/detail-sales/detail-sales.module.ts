@@ -7,6 +7,7 @@ import { IonicModule } from '@ionic/angular';
 import { DetailSalesPageRoutingModule } from './detail-sales-routing.module';
 
 import { DetailSalesPage } from './detail-sales.page';
+import { DcPopupComponent } from '../dc-popup/dc-popup.component';
 
 @NgModule({
   imports: [
@@ -15,6 +16,7 @@ import { DetailSalesPage } from './detail-sales.page';
     IonicModule,
     DetailSalesPageRoutingModule
   ],
-  declarations: [DetailSalesPage]
+  declarations: [DetailSalesPage,DcPopupComponent],
+  entryComponents:[DcPopupComponent]
 })
 export class DetailSalesPageModule {}

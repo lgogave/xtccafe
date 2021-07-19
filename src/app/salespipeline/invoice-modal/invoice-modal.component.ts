@@ -102,7 +102,7 @@ export class InvoiceModalComponent{
   }
   async insertInvoice(req:DCDetailModel,selectedDC:DCDetailModel[],amt:number,tax:number,totamount:number,taxType:string,machines:any){
     let branch: MastBranch = await(await this.divisionService.getBrancheByName(req['branch']))[0];
-    let billDetail:BillingDetail= await(await this.salespiplineService.getBillingDetail(req['salesId'],req['_cotirpehr']))[0];
+    //let billDetail:BillingDetail= await(await this.salespiplineService.getBillingDetail(req['salesId'],req['locationId']));
     let imonth=this.months.filter(x=>x.id==this._invoiceMonth.value)[0];
     let ponumber=this._ponumber.value;
     let receiptBook=new ReceiptBook();
@@ -143,6 +143,10 @@ export class InvoiceModalComponent{
     invoice.consumableCap=machines.consumableCap;
     invoice.machines=machines.machineDetail;
     invoice.status="Created";
+    invoice.billName=this.billingDetail.billName;
+    invoice.billAddress=this.billingDetail.billAddress;
+    invoice.installAt=this.billingDetail.installAt;
+    invoice.installAddress=this.billingDetail.installAddress;
     let counter:number=0;
     this.salespiplineService.addupdateInvoice(invoice,false)
     .subscribe((res) => {

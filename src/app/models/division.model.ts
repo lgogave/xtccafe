@@ -19,6 +19,8 @@ export class MachineDetail{
     public group:number,
     public srno:number,
     public ref?:string,
+    public hsnNo?:string,
+    public gst?:string,
   ){}
 }
 

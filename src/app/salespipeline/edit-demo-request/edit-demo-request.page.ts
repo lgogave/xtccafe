@@ -150,8 +150,6 @@ export class EditDemoRequestPage implements OnInit {
       || demoRequest.materialDetails.length==0){
         return;
       }
-
-
     demoRequest.reqStatus = 'Demo Request Created';
     demoRequest.id = this.demoRequest.id;
     demoRequest.salespipelineId = this.demoRequest.salespipelineId;
@@ -189,6 +187,14 @@ export class EditDemoRequestPage implements OnInit {
         //validators: [Validators.required],
       }),
       machinesrno: new FormControl(machine!=null?machine['machinesrno']: null, {
+        updateOn: "blur",
+        //validators: [Validators.required],
+      }),
+      machinehsnNo: new FormControl(machine!=null?machine['machinehsnNo']: null, {
+        updateOn: "blur",
+        //validators: [Validators.required],
+      }),
+      machinerate: new FormControl(machine!=null?machine['machinerate']: null, {
         updateOn: "blur",
         //validators: [Validators.required],
       })

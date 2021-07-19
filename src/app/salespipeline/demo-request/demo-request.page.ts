@@ -125,6 +125,14 @@ export class DemoRequestPage implements OnInit {
           machinesrno: new FormControl(element.machineSrNo, {
             updateOn: "blur",
             //validators: [Validators.required],
+          }),
+          machinehsnNo: new FormControl(element.machinehsncode?element.machinehsncode:'', {
+            updateOn: "blur",
+            //validators: [Validators.required],
+          }),
+          machinerate: new FormControl(null, {
+            updateOn: "blur",
+            //validators: [Validators.required],
           })
         })
       )
@@ -151,6 +159,14 @@ export class DemoRequestPage implements OnInit {
         //validators: [Validators.required],
       }),
       machinesrno: new FormControl(null, {
+        updateOn: "blur",
+        //validators: [Validators.required],
+      }),
+      machinehsnNo: new FormControl(null, {
+        updateOn: "blur",
+        //validators: [Validators.required],
+      }),
+      machinerate: new FormControl(null, {
         updateOn: "blur",
         //validators: [Validators.required],
       })

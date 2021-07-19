@@ -17,24 +17,16 @@
   <ion-row>
       <ion-col>
         <ion-item>
-          <ion-label position="floating" >Billing Name <span style="color: #FF6347;">*</span></ion-label>
+          <ion-label position="floating" >Client Name <span style="color: #FF6347;">*</span></ion-label>
           <ion-input type="text"  formControlName="billName"></ion-input>
         </ion-item>
     </ion-col>
   </ion-row>
-  <ion-row>
+  <ion-row style="display: none;">
     <ion-col>
       <ion-item>
         <ion-label position="floating" >Billing Address <span style="color: #FF6347;">*</span></ion-label>
         <ion-textarea rows="4"  formControlName="billAddress"></ion-textarea>
-      </ion-item>
-  </ion-col>
-  </ion-row>
-  <ion-row>
-    <ion-col>
-      <ion-item>
-        <ion-label position="floating" >Delivery location<span style="color: #FF6347;">*</span></ion-label>
-        <ion-input type="text" formControlName="location"></ion-input>
       </ion-item>
   </ion-col>
   </ion-row>
@@ -47,25 +39,23 @@
   </ion-col>
   </ion-row>
   <ion-row>
-    <ion-col>
+    <ion-col size-sm="6">
       <ion-item>
-        <ion-label position="floating" >Delivery pincode<span style="color: #FF6347;">*</span></ion-label>
-        <ion-input type="text" formControlName="pincode"></ion-input>
-      </ion-item>
-  </ion-col>
-  </ion-row>
-  <ion-row>
-    <ion-col>
-      <ion-item>
-        <ion-label position="floating" >Client Location<span style="color: #FF6347;">*</span></ion-label>
+        <ion-label position="floating" >City<span style="color: #FF6347;">*</span></ion-label>
         <ion-input type="text" formControlName="location"></ion-input>
       </ion-item>
   </ion-col>
+  <ion-col size-sm="6">
+    <ion-item>
+      <ion-label position="floating" >Delivery pincode<span style="color: #FF6347;">*</span></ion-label>
+      <ion-input type="text" formControlName="pincode"></ion-input>
+    </ion-item>
+</ion-col>
   </ion-row>
   <ion-row>
     <ion-col size-sm="6" offset-sm="3">
       <ion-item>
-        <ion-label position="floating" class="label">Branch
+        <ion-label position="floating" class="label"> Deliver From Branch
         </ion-label>
         <ion-select placeholder="Select One" interface="popover" formControlName="branch">
           <ion-select-option *ngFor="let branch of branches" [value]="branch.name">{{branch.name}}

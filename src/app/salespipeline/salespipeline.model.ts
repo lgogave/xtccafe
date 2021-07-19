@@ -26,6 +26,7 @@ import { MachineDetail } from "../models/division.model";
       public userId?: string,
       public updatedOn?: Date,
       public machineConflevel?: number,
+      public machinehsncode?: number,
     ) {}
   }
   export class ClientSales {
@@ -61,6 +62,7 @@ export class User {
     public userId?:string,
     public role?:string[],
     public isActive?:boolean,
+    public deviceToken?:string,
   ) {}
 }
 
@@ -211,6 +213,7 @@ export class Machine {
       public mchInstCharges?: number,
       public mchSecDeposite?: number,
       public isInstChargesConsider?: boolean,
+      public machinehsncode?: boolean,
   ) {}
 }
 
@@ -244,7 +247,12 @@ constructor(
   public consumableCap?:number,
   public userId?:string,
   public ponumber?:string,
-  public createdOn?:Date){}
+  public createdOn?:Date,
+  public billName?:string,
+  public billAddress?:string,
+  public installAt?:string,
+  public installAddress?:string,
+){}
 }
 
 export class RentalInvoice{
@@ -297,6 +305,10 @@ export class InvoiceModel{
   constructor(
     public ponumber?: string,
     public rent?: number,
+    public billName?:string,
+    public billAddress?:string,
+    public installAt?:string,
+    public installAddress?:string,
   ){}
 }
 

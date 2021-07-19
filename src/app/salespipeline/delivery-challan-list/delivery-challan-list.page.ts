@@ -190,7 +190,7 @@ export class DeliveryChallanListPage implements OnInit {
     let branch:MastBranch=await (await this.divisionService.getBrancheByName(req['branch']))[0];
     let demodata = {
       logo: this.getBase64Image(),
-      clientaddress: `Consignee\n${req['billName']}\n${req['billAddress']}`,
+      clientaddress: `Consignee\n${req['billName']}\n${req['address']}`,
       reqId: req['id'],
       srno: req['srNo'],
       dcdate: req['date'],
@@ -342,7 +342,7 @@ export class DeliveryChallanListPage implements OnInit {
     let branch:MastBranch=await (await this.divisionService.getBrancheByName(req['branch']))[0];
     let demodata = {
       logo: this.getBase64Image(),
-      clientaddress: `Consignee\n${req['billName']}\n${req['billAddress']}`,
+      clientaddress: `Consignee\n${req['billName']}\n${req['address']}`,
       reqId: req['id'],
       srno: req['srNo'],
       authSignature:this.getAuthSignature(),

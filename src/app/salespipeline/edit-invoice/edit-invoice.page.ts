@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LoadingController, NavController, ToastController } from '@ionic/angular';
-import { Invoice, InvoiceModel, InvoiceMonth } from '../salespipeline.model';
+import { forkJoin } from 'rxjs/internal/observable/forkJoin';
+import { Invoice, InvoiceModel, InvoiceMonth, RentalInvoice } from '../salespipeline.model';
 import { SalespipelineService } from '../salespipeline.service';
 
 @Component({
@@ -43,15 +44,31 @@ export class EditInvoicePage implements OnInit {
     });
   }
 
-  editInvoice(){
+  async editInvoice(){
     if (!this.form.valid) {
       return;
     }
+
+    let rentInv= await this.salesService.getRentalInvoice(this.invoice.clientId,this.invoice.clientLocationId,this.invoice.displaymonth);
     let invoiceModel = <InvoiceModel>this.form.value;
-    this.salesService
-    .addupdateInvoice({id:this.invoice.id, ponumber:invoiceModel.ponumber,mchRent:invoiceModel.rent},true)
-    .subscribe((res) => {
-      this.toastController
+
+    let rentInvoice:RentalInvoice=null;
+    if(rentInv.length>0){
+      rentInvoice=rentInv[0];
+      rentInvoice.mchRent=invoiceModel.rent;
+    }
+
+    forkJoin([ this.salesService
+      .addupdateInvoice({id:this.invoice.id,
+        ponumber:invoiceModel.ponumber,
+        mchRent:invoiceModel.rent,
+        billName:invoiceModel.billName,
+        billAddress:invoiceModel.billAddress,
+        installAt:invoiceModel.installAt,
+        installAddress:invoiceModel.installAddress,
+      },true),  this.salesService
+      .addupdateRentalInvoice(rentInvoice,true)]).subscribe((res) => {
+        this.toastController
         .create({
           message: 'Data updated',
           duration: 2000,
@@ -61,14 +78,30 @@ export class EditInvoicePage implements OnInit {
           tost.present();
           this.router.navigate(['/salespipeline/invoicelist/'+this.invoice.clientLocationId]);
         });
-    });
+      });
+    // this.salesService
+    // .addupdateInvoice({id:this.invoice.id,
+    //   ponumber:invoiceModel.ponumber,
+    //   mchRent:invoiceModel.rent,
+    //   billName:invoiceModel.billName,
+    //   billAddress:invoiceModel.billAddress,
+    //   installAt:invoiceModel.installAt,
+    //   installAddress:invoiceModel.installAddress,
+    // },true)
+    // .subscribe((res) => {
+
+    // });
 
   }
   initializeUpdateForm(){
     this.form = new FormGroup({
       ponumber : new FormControl(this.invoice.ponumber, { updateOn: 'blur' }),
       month:new FormControl(this.invoice.displaymonth, { updateOn: 'blur',validators: [Validators.required] }),
-      rent:new FormControl(this.invoice.mchRent, { updateOn: 'blur' })
+      rent:new FormControl(this.invoice.mchRent, { updateOn: 'blur' }),
+      billName:new FormControl(this.invoice.billName, { updateOn: 'blur' }),
+      billAddress:new FormControl(this.invoice.billAddress, { updateOn: 'blur' }),
+      installAt:new FormControl(this.invoice.installAt, { updateOn: 'blur' }),
+      installAddress:new FormControl(this.invoice.installAddress, { updateOn: 'blur' })
     });
   }
 
