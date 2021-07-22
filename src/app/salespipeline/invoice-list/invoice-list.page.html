@@ -53,9 +53,12 @@
                <h6><b>Month: </b><ion-icon name="time-outline" size="small"></ion-icon><a style="color: #000"> {{inv.displaymonth}}</a></h6>
                <h6><b>Amount: </b><a style="color: #000"> {{inv.amount+inv.tax| currency:"INR":"symbol"}}</a></h6>
                <h6><b>ID: </b>{{inv.srNo}}</h6>
-              <div>
+              <div [style.visibility]="inv.machines==null ? 'hidden' : 'visible'">
                 <ion-button color="warning" (click)="consumableInvoice(inv)">Consumables</ion-button>
                 <ion-button color="warning" (click)="rentalinvoice(inv)">Rental</ion-button>
+              </div>
+              <div [style.visibility]="inv.machines!=null ? 'hidden' : 'visible'">
+                <ion-button color="warning" (click)="installationInvoice(inv)">Installation</ion-button>
               </div>
           <div style="text-align: right;padding: 0px;">
             <ion-button color="light" (click)="editInvoice(inv)">

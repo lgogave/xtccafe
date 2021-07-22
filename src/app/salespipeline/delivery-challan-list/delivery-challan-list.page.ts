@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, ElementRef, EventEmitter, NgZone, OnInit, Output, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AlertController, Gesture, GestureController, IonCard, IonItemSliding, IonList, ModalController, NavController } from '@ionic/angular';
+import { AlertController, Gesture, GestureController, IonCard, IonItemSliding, IonList, ModalController, NavController, ToastController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import { MastBranch } from 'src/app/models/division.model';
 import { DivisionService } from 'src/app/services/division.service';
@@ -17,6 +17,7 @@ import { SlowBuffer } from 'buffer';
 import * as converter from 'number-to-words';
 import { InvoiceModalComponent } from '../invoice-modal/invoice-modal.component';
 import { DatePipe } from '@angular/common';
+import { element } from 'protractor';
 pdfMake.vfs=pdfFonts.pdfMake.vfs;
 
 
@@ -30,6 +31,7 @@ export class DeliveryChallanListPage implements OnInit {
   @Output() press = new EventEmitter();
   @ViewChildren(IonCard, { read: ElementRef }) cards: QueryList<ElementRef>;
   dcDetail: DCDetailModel[];
+  filterdcDetail:DCDetailModel[];
   isLoading = false;
   longPressActive:Boolean=true;
   isInit:number=0;
@@ -37,6 +39,8 @@ export class DeliveryChallanListPage implements OnInit {
   clientId:string=null;
   pdfObj = null;
   invoiceMonth:InvoiceMonth[]=[];
+  dcCount:number=0;
+  @ViewChild('searchElement') searchElement;
   constructor(
     private salesService: SalespipelineService,
     private route: ActivatedRoute,
@@ -50,7 +54,8 @@ export class DeliveryChallanListPage implements OnInit {
     private fileOpener: FileOpener,
     private alertCtrl: AlertController,
     private modalCtrl:ModalController,
-    private datePipe:DatePipe
+    private datePipe:DatePipe,
+    private toastController: ToastController,
 
   ) {}
 
@@ -132,12 +137,52 @@ export class DeliveryChallanListPage implements OnInit {
   async doRefresh(event) {
     this.isLoading = true;
     this.dcDetail = await this.salesService.getDeliveryChallans(this.clientId);
+    this.filterdcDetail=await this.applyFilter();
+    this.dcCount= this.filterdcDetail.length;
     this.invoiceMonth=await this.salesService.getInvoiceMonth();
     this.isLoading = false;
     if (event != null) {
       event.target.complete();
     }
   }
+
+  async applyFilter(){
+    let serchTerm = this.searchElement.value;
+    let filterdc: DCDetailModel[] = [];
+    this.dcDetail.forEach((dc) => {
+        if (serchTerm.toLowerCase() == 'pending') {
+        if (dc.isUsed == false && dc['isDelete'] != true) {
+          dc.isSelected = false;
+          filterdc.push(dc);
+        }
+      }
+        else if (serchTerm.toLowerCase() == 'deleted') {
+          if (dc['isDelete'] == true) {
+            dc.isSelected = false;
+            filterdc.push(dc);
+          }
+        }
+        else if (serchTerm.toLowerCase() == 'used') {
+          if (dc.isUsed == true) {
+            dc.isSelected = false;
+            filterdc.push(dc);
+          }
+        }
+        else if (dc.billName.toLowerCase().indexOf(serchTerm.toLowerCase()) > -1) {
+          dc.isSelected = false;
+          filterdc.push(dc);
+        }
+
+    });
+    if(filterdc.length<=0 && serchTerm==""){
+      this.dcDetail.forEach((dc) => {
+        dc.isSelected=false;
+      });
+      return this.dcDetail;
+    }
+    return filterdc;
+  }
+
   convertTimestampToDate(date: any) {
     return this.salesService.convertTimeStampToDate(date);
   }
@@ -153,15 +198,37 @@ export class DeliveryChallanListPage implements OnInit {
   }
 
  async generateInvoice(){
-   let result = this.dcDetail.filter((x) => x.isSelected == true);
+   let result = this.filterdcDetail.filter((x) => x.isSelected == true);
    let req: any=[];
+   let instcount:number=0;
    if (result.length > 0) {
+
+    for (let i = 0; i < result.length; i++) {
+      if(result[i]?.type=='1'){
+       instcount=instcount+1;
+      }
+    }
+      if(instcount!=result.length){
+        this.toastController
+          .create({
+            message:
+              'Can not club Installation Dc with Consumable DC for Invoicing.',
+            duration: 2000,
+            color: 'danger',
+          })
+          .then((tost) => {
+            tost.present();
+          });
+        return;
+        }
+
      req = JSON.parse(JSON.stringify(result[0]));
      for (let i = 1; i < result.length; i++) {
        result[i].materialDetails.forEach((element) => {
          req.materialDetails.push(Object.assign({},element));
        });
      }
+
      //this.createInvoice(req);
      const modal= await this.modalCtrl.create({
       component:InvoiceModalComponent,
@@ -179,7 +246,7 @@ export class DeliveryChallanListPage implements OnInit {
 
 
   navigateToDetail(req){
-    if(req.type!=undefined){
+    if(req.type!=undefined && req.type==1){
       this.router.navigate(['/','salespipeline','dcinstallation',req.salesId,req.locationId,req.id]);
     }
     else{
@@ -559,7 +626,10 @@ export class DeliveryChallanListPage implements OnInit {
 
   }
 
-
+  async onFilterUpdate(ev: any){
+    this.filterdcDetail= await this.applyFilter();
+    this.dcCount= this.filterdcDetail.length;
+  }
 
 
   getBase64Image(){

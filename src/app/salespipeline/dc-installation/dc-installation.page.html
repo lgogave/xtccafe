@@ -114,7 +114,7 @@
                 <ion-item>
                   <ion-label position="floating" class="label">Category
                   </ion-label>
-                  <ion-select placeholder="Select One"  interface="popover" formControlName="volumeType">
+                  <ion-select placeholder="Select One"  interface="popover" formControlName="machineCategory">
                     <ion-select-option *ngFor="let machine of machineCategory" [value]="machine">{{machine}}
                     </ion-select-option>
                     </ion-select>
@@ -131,22 +131,22 @@
                 <ion-item>
                   <ion-label position="floating" class="label">Machine Serial Number
                   </ion-label>
-                  <ion-input type="text" autocomplete autocorrect formControlName="machinesrno"></ion-input>
+                  <ion-input type="text" autocomplete autocorrect formControlName="machineSrNo"></ion-input>
                 </ion-item>
               </ion-col>
               <ion-col size="12">
                 <ion-item>
                   <ion-label position="floating" class="label">HSN Number
                   </ion-label>
-                  <ion-input type="text" autocomplete autocorrect formControlName="machinehsnNo"></ion-input>
+                  <ion-input type="text" autocomplete autocorrect formControlName="machinehsncode"></ion-input>
                 </ion-item>
               </ion-col>
 
               <ion-col size="12">
                 <ion-item>
-                  <ion-label position="floating" class="label">Rate (* applicable for SEZ)
+                  <ion-label position="floating" class="label">Installation Charges
                   </ion-label>
-                  <ion-input type="Number" autocomplete autocorrect formControlName="machinerate"></ion-input>
+                  <ion-input type="Number" autocomplete autocorrect formControlName="mchInstCharges"></ion-input>
                 </ion-item>
               </ion-col>
 

@@ -121,7 +121,7 @@ export class DcInstallationPage implements OnInit {
               updateOn: "blur",
               //validators: [Validators.required],
             }),
-            volumeType: new FormControl(element.machineCategory, {
+            machineCategory: new FormControl(element.machineCategory, {
               updateOn: "blur",
               //validators: [Validators.required],
             }),
@@ -129,15 +129,15 @@ export class DcInstallationPage implements OnInit {
               updateOn: "blur",
               //validators: [Validators.required],
             }),
-            machinesrno: new FormControl(element.machineSrNo, {
+            machineSrNo: new FormControl(element.machineSrNo, {
               updateOn: "blur",
               //validators: [Validators.required],
             }),
-            machinehsnNo: new FormControl(element.machinehsncode?element.machinehsncode:'', {
+            machinehsncode: new FormControl(element.machinehsncode?element.machinehsncode:'', {
               updateOn: "blur",
               //validators: [Validators.required],
             }),
-            machinerate: new FormControl(null, {
+            mchInstCharges: new FormControl(element.mchInstCharges, {
               updateOn: "blur",
               //validators: [Validators.required],
             })
@@ -159,7 +159,7 @@ export class DcInstallationPage implements OnInit {
               updateOn: "blur",
               //validators: [Validators.required],
             }),
-            volumeType: new FormControl(element['volumeType'], {
+            machineCategory: new FormControl(element.machineCategory, {
               updateOn: "blur",
               //validators: [Validators.required],
             }),
@@ -167,15 +167,15 @@ export class DcInstallationPage implements OnInit {
               updateOn: "blur",
               //validators: [Validators.required],
             }),
-            machinesrno: new FormControl(element.machineSrNo, {
+            machineSrNo: new FormControl(element.machineSrNo, {
               updateOn: "blur",
               //validators: [Validators.required],
             }),
-            machinehsnNo: new FormControl(element.machinehsncode?element.machinehsncode:'', {
+            machinehsncode: new FormControl(element.machinehsncode?element.machinehsncode:'', {
               updateOn: "blur",
               //validators: [Validators.required],
             }),
-            machinerate: new FormControl(null, {
+            mchInstCharges: new FormControl(element.mchInstCharges, {
               updateOn: "blur",
               //validators: [Validators.required],
             })
@@ -317,7 +317,7 @@ export class DcInstallationPage implements OnInit {
         fmbillingDetail.isUsed=this.dcDetail.isUsed;
         fmbillingDetail.id=this.dcId;
         let invoice:any=await this.salespiplineService.getInvoiceByDCId(this.dcDetail.id);
-        //this.updateInvoice(invoice,fmbillingDetail);
+        this.updateInvoice(invoice,fmbillingDetail);
         this.salespiplineService
         .addupdateDC(fmbillingDetail,true)
         .subscribe((res) => {
@@ -348,7 +348,7 @@ export class DcInstallationPage implements OnInit {
 
      let totamount:number=0; let tax:number=0;let amount:number=0;
       invoice.dc.forEach(dcelement => {
-        dcelement.materialDetails.forEach((material) => {
+        dcelement['machineDetails'].forEach((material) => {
           amount = amount + material.amount;
           tax = tax + material.tax;
           totamount = totamount + amount + tax;

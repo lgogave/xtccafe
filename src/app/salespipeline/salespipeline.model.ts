@@ -148,8 +148,9 @@ export class DCDetailModel {
     public materialAddhoc?:DCAddHocMaterial[],
     public userId?:string,
     public createdOn?:Date,
+    public type?:string,
     public isSelected:boolean=false,
-    public isUsed:boolean=false
+    public isUsed:boolean=false,
     ){}
 }
 

@@ -180,6 +180,16 @@ export class ClientBillingPage implements OnInit {
     if (fmbillingDetail.materialDetails.length == 0) {
       return;
     }
+
+    //delete Empty elements
+    let delData =fmbillingDetail.materialDetails.filter(item => item.item === null);
+    delData.forEach(element=>{
+      const index: number = fmbillingDetail.materialDetails.indexOf(element);
+      if (index !== -1) {
+        fmbillingDetail.materialDetails.splice(index, 1);
+      }
+    });
+
     this.salespiplineService
       .addupdateBillingDetail(fmbillingDetail,this.billingDetail!=null?true:false)
       .subscribe((res) => {

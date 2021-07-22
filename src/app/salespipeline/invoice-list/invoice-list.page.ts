@@ -70,6 +70,17 @@ export class InvoiceListPage implements OnInit {
       }
     this.createInvoice(req,invoice,invoice.taxType);
   }
+  installationInvoice(invoice){
+    let result = invoice.dc;
+    let req: any=[];
+      req = JSON.parse(JSON.stringify(result[0]));
+      for (let i = 1; i < result.length; i++) {
+        result[i].machineDetails.forEach((element) => {
+          req.machineDetails.push(Object.assign({},element));
+        });
+      }
+    this.createInstallInvoice(req,invoice,invoice.taxType);
+  }
 
   async rentalinvoice(invoice){
     let result = invoice.dc;
@@ -1318,6 +1329,1249 @@ export class InvoiceListPage implements OnInit {
       this.pdfObj.download();
     }
   }
+
+
+  async  createInstallInvoice(req,invoice,taxType){
+    let branch: MastBranch = await(
+      await this.divisionService.getBrancheByName(req['branch'])
+    )[0];
+    let demodata = {
+      logo: this.getBase64Image(),
+      authSignature:this.getAuthSignature(),
+      clientaddress: `Consignee (Ship to)\n${invoice['billName']}\n${invoice['billAddress']}`,
+      buyeraddress: `Buyer (Bill to)\n${invoice['installAt']}\n${invoice['installAddress']}`,
+      reqId: req['id'],
+      date: convertTimeStampToDate(invoice.createdOn),
+    };
+
+
+    let rowinx:number=8;
+    if(invoice.ponumber){
+      rowinx = 9;
+    }
+    console.log(rowinx);
+    let nbody:any= [];
+    nbody.push([
+      {
+        text: 'Tax Invoice',
+        fontSize: 16,
+        bold: true,
+        colSpan: 8,
+        alignment: 'center',
+        // margin: [0, 0, 0, 0],
+      },
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+    ]);
+
+    if(invoice.ponumber){
+    nbody.push([
+      {
+        text: '#'+invoice.ponumber,
+        fontSize: 10,
+        bold: true,
+        colSpan: 8,
+        alignment: 'center',
+        borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
+        // margin: [0, 0, 0, 0],
+      },
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+    ]);
+  }
+
+
+
+    nbody.push([
+      { image: demodata.logo, width: 75, height: 75, rowSpan: 3 },
+      {
+        colSpan: 3,
+        rowSpan: 3,
+        bold: true,
+        fontSize: 10,
+        text: `Dwija Foods Private Limited\n${branch.address}\n${
+          branch.gstno != '' ? 'GSTIN/UIN:' + branch.gstno : ''
+        }\n${branch.state != '' ? 'State:' + branch.state : ''} ${
+          branch.code != '' ? 'Code:' + branch.code : ''
+        }\n${branch.cin != '' ? 'CIN:' + branch.cin : ''}`,
+      },
+      '',
+      '',
+      {
+        colSpan: 2,
+        text: `Invoice No.:\n${invoice['srNo']}`,
+        fontSize: 8,
+      },
+      '',
+      {
+        colSpan: 2,
+        text: `Dated.:\n${this.datePipe.transform(new Date(demodata.date), 'dd-MMM-yy')}`,
+        fontSize: 8,
+      },
+      '',
+    ]);
+    nbody.push([
+      '',
+      '',
+      '',
+      '',
+      {
+        colSpan: 2,
+        text: `Delivery Note.:`,
+        fontSize: 8,
+      },
+      '',
+      {
+        colSpan: 2,
+        text: `Mode/Terms of Payment:\n30 Days`,
+        fontSize: 8,
+      },
+      '',
+    ]);
+    nbody.push([
+      '',
+      '',
+      '',
+      '',
+      {
+        colSpan: 2,
+        text: `Reference No. & Date.:`,
+        fontSize: 8,
+      },
+      '',
+      {
+        colSpan: 2,
+        text: `Other References.:`,
+        fontSize: 8,
+      },
+      '',
+    ]);
+    nbody.push([
+      {
+        colSpan: 4,
+        rowSpan: 3,
+        bold: true,
+        fontSize: 8,
+        text: demodata.clientaddress,
+      },
+      '',
+      '',
+      '',
+      {
+        colSpan: 2,
+        text: `Buyer's Order No..:`,
+        fontSize: 8,
+      },
+      '',
+      {
+        colSpan: 2,
+        text: `Dated.:`,
+        fontSize: 8,
+      },
+      '',
+    ]);
+    nbody.push([
+      '',
+      '',
+      '',
+      '',
+      {
+        colSpan: 2,
+        text: `Dispatch Doc No.:`,
+        fontSize: 8,
+      },
+      '',
+      {
+        colSpan: 2,
+        text: `Delivery Note Date:`,
+        fontSize: 8,
+      },
+      '',
+    ]);
+    nbody.push(
+      [
+        '',
+        '',
+        '',
+        '',
+        {
+          colSpan: 2,
+          text: `Dispatched through.:`,
+          fontSize: 8,
+        },
+        '',
+        {
+          colSpan: 2,
+          text: `Destination.:`,
+          fontSize: 8,
+        },
+        '',
+      ],
+    )
+    nbody.push(
+      [
+        {
+          colSpan: 4,
+          bold: true,
+          fontSize: 8,
+          text: demodata.buyeraddress,
+        },
+        '',
+        '',
+        '',
+        {
+          colSpan: 4,
+          text: `Terms of Delivery:`,
+          fontSize: 8,
+        },
+        '',
+        '',
+        '',
+      ]
+    )
+    nbody.push(
+      [
+        {
+          colSpan: 8,
+          style: 'tableExample',
+          // layout: 'headerLineOnly',
+          table: {
+            headerRows: 1,
+            widths: ['*', 150, '*', '*', '*', '*', '*', 75],
+            body: [
+              [
+                {
+                  fontSize: 8,
+                  text: 'Sl No.',
+                  borderColor: [
+                    '#000000',
+                    '#000000',
+                    '#000000',
+                    '#000000',
+                  ],
+                },
+                {
+                  fontSize: 8,
+                  text: 'Description of Machines.',
+                  borderColor: [
+                    '#000000',
+                    '#000000',
+                    '#000000',
+                    '#000000',
+                  ],
+                },
+                {
+                  fontSize: 8,
+                  text: 'HSN/SAC.',
+                  borderColor: [
+                    '#000000',
+                    '#000000',
+                    '#000000',
+                    '#000000',
+                  ],
+                },
+                {
+                  fontSize: 8,
+                  text: 'GST Rate.',
+                  borderColor: [
+                    '#000000',
+                    '#000000',
+                    '#000000',
+                    '#000000',
+                  ],
+                },
+                {
+                  fontSize: 8,
+                  text: 'Quantity.',
+                  borderColor: [
+                    '#000000',
+                    '#000000',
+                    '#000000',
+                    '#000000',
+                  ],
+                },
+                {
+                  fontSize: 8,
+                  text: 'Rate.',
+                  borderColor: [
+                    '#000000',
+                    '#000000',
+                    '#000000',
+                    '#000000',
+                  ],
+                },
+                {
+                  fontSize: 8,
+                  text: 'per.',
+                  borderColor: [
+                    '#000000',
+                    '#000000',
+                    '#000000',
+                    '#000000',
+                  ],
+                },
+                {
+                  fontSize: 8,
+                  text: 'Amount.',
+                  borderColor: [
+                    '#000000',
+                    '#000000',
+                    '#000000',
+                    '#000000',
+                  ],
+                },
+              ],
+            ],
+          },
+          layout1: {
+            hLineWidth: function (i, node) {
+              return i != 1 ? 0 : 1;
+            },
+            vLineWidth: function (i, node) {
+              return i === 0 || i === node.table.widths.length ? 0 : 1;
+            },
+            hLineColor: function (i, node) {
+              return i === 0 || i === node.table.body.length
+                ? 'black'
+                : 'gray';
+            },
+            vLineColor: function (i, node) {
+              return i === 0 || i === node.table.widths.length
+                ? 'black'
+                : 'gray';
+            },
+            // hLineStyle: function (i, node) { return {dash: { length: 10, space: 4 }}; },
+            // vLineStyle: function (i, node) { return {dash: { length: 10, space: 4 }}; },
+            // paddingLeft: function(i, node) { return 4; },
+            // paddingRight: function(i, node) { return 4; },
+            // paddingTop: function(i, node) { return 2; },
+            // paddingBottom: function(i, node) { return 2; },
+          },
+        },
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+      ],
+    );
+
+    var docDefinition = {
+      // pageSize: 'A4',
+      pageOrientation: 'portrait',
+      pageMargins: [10, 10, 10, 10],
+      content: [
+        {
+          style: 'tableExample',
+          color: '#444',
+          margin: [0, 0, 0, 0],
+          alignment: 'justify',
+          table: {
+            widths: [
+              'auto',
+              'auto',
+              'auto',
+              'auto',
+              'auto',
+              'auto',
+              'auto',
+              'auto',
+            ],
+            headerRows: 0,
+            // keepWithHeaderRows: 1,
+            body:nbody
+          },
+        },
+      ],
+    };
+
+    let amt = 0;
+    let tax = 0;
+    let totamt = 0;
+    let cgsttax=0;
+    let sgsttax=0;
+    let subtable = docDefinition.content[0].table.body[rowinx][0]['table'];
+    let mergemat = this.mergeMachines(req['machineDetails']);
+    mergemat.materials.forEach((m, index) => {
+      let mat = [];
+      let gst=Number(m['gst'].replace('%',''));
+      amt = amt + Number(m['amount'].toFixed(2));
+      tax = tax+ Number(m['tax'].toFixed(2));
+      cgsttax =cgsttax + Number(m['amount'].toFixed(2)) * ((gst/2) /100);
+      sgsttax =sgsttax + Number(m['amount'].toFixed(2))  * ((gst/2) /100);
+      mat.push(
+        {
+          text: index + 1,
+          fontSize: 8,
+          borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+        },
+        {
+          text: m['category'] + '-' + m['item'],
+          fontSize: 8,
+          borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+        },
+        {
+          text: m['hsnNo'],
+          fontSize: 8,
+          borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+        },
+        {
+          text: m['gst'],
+          fontSize: 8,
+          alignment: 'right',
+          borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+        },
+        {
+          text: m['qty'] + ' ' + m['uom'],
+          fontSize: 8,
+          borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+        },
+        {
+          text: m['rate'],
+          fontSize: 8,
+          alignment: 'right',
+          borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+        },
+        {
+          text: m['uom'],
+          fontSize: 8,
+          borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+        },
+        {
+          text: m['amount'].toFixed(2),
+          fontSize: 8,
+          alignment: 'right',
+          borderColor:
+            mergemat.materials.length - 1 == index
+              ? ['#000000', '#ffffff', '#000000', '#707070']
+              : ['#000000', '#ffffff', '#000000', '#ffffff'],
+        }
+      );
+      subtable.body.push(mat);
+    });
+    totamt = amt + tax;
+    //Total
+    subtable.body.push([
+      {
+        text: '',
+        borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+      },
+      {
+        text: '',
+        borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+      },
+      {
+        text: '',
+        borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+      },
+      {
+        text: '',
+        borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+      },
+      {
+        text: '',
+        borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+      },
+      {
+        text: '',
+        borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+      },
+      {
+        text: '',
+        borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+      },
+      {
+        text: amt.toFixed(2),
+        alignment: 'right',
+        fontSize: 8,
+        bold: true,
+        borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+      },
+    ]);
+    //Empty Row
+    subtable.body.push([
+      {
+        text: '',
+        borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+      },
+      {
+        text: '',
+        borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+      },
+      {
+        text: '',
+        borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+      },
+      {
+        text: '',
+        borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+      },
+      {
+        text: '',
+        borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+      },
+      {
+        text: '',
+        borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+      },
+      {
+        text: '',
+        borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+      },
+      {
+        text: '',
+        borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+      },
+    ]);
+    //IGST Payable
+    if(taxType=="IGST"){
+    subtable.body.push([
+      {
+        text: '',
+        borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+      },
+      {
+        text: 'IGST Payable',
+        fontSize: 8,
+        bold: true,
+        borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+      },
+      {
+        text: '',
+        borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+      },
+      {
+        text: '',
+        borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+      },
+      {
+        text: '',
+        borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+      },
+      {
+        text: '',
+        borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+      },
+      {
+        text: '',
+        borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+      },
+      {
+        text: tax.toFixed(2),
+        alignment: 'right',
+        fontSize: 8,
+        bold: true,
+        borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+      },
+    ]);
+  }
+  else if(taxType=="CGST/SGST"){
+    subtable.body.push([
+      {
+        text: '',
+        borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+      },
+      {
+        text: 'CGST Payable',
+        fontSize: 8,
+        bold: true,
+        borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+      },
+      {
+        text: '',
+        borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+      },
+      {
+        text: '',
+        borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+      },
+      {
+        text: '',
+        borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+      },
+      {
+        text: '',
+        borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+      },
+      {
+        text: '',
+        borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+      },
+      {
+        text: cgsttax.toFixed(2),
+        alignment: 'right',
+        fontSize: 8,
+        bold: true,
+        borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+      },
+    ]);
+    subtable.body.push([
+      {
+        text: '',
+        borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+      },
+      {
+        text: 'SGST Payable',
+        fontSize: 8,
+        bold: true,
+        borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+      },
+      {
+        text: '',
+        borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+      },
+      {
+        text: '',
+        borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+      },
+      {
+        text: '',
+        borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+      },
+      {
+        text: '',
+        borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+      },
+      {
+        text: '',
+        borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+      },
+      {
+        text: sgsttax.toFixed(2),
+        alignment: 'right',
+        fontSize: 8,
+        bold: true,
+        borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+      },
+    ]);
+  }
+
+    let totrows =subtable.body.length > 10 ? 1 : 23-subtable.body.length;
+    for (let i = 0; i <= totrows; i++) {
+      subtable.body.push([
+        {
+          text: '',
+          borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+        },
+        {
+          text: '',
+          borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+        },
+        {
+          text: '',
+          borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+        },
+        {
+          text: '',
+          borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+        },
+        {
+          text: '',
+          borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+        },
+        {
+          text: '',
+          borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+        },
+        {
+          text: '',
+          borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+        },
+        {
+          text: '',
+          borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+        },
+      ]);
+    }
+    //Total Payable
+    subtable.body.push([
+      '',
+      'Total',
+      '',
+      '',
+      '',
+      '',
+      '',
+      {
+        text: '₹ ' + (amt + tax).toFixed(2),
+        fontSize: 12,
+        bold: true,
+        alignment: 'right',
+      },
+    ]);
+
+    let table: any = docDefinition.content[0].table;
+    table.body.push([
+      {
+        text: 'Amount Chargeable (in words)',
+        colSpan: 7,
+        fontSize: 8,
+        borderColor: ['#000000', '#ffffff', '#ffffff', '#ffffff'],
+      },
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      {
+        text: 'E. & O.E',
+        fontSize: 8,
+        borderColor: ['#ffffff', '#000000', '#000000', '#ffffff'],
+      } as unknown,
+    ]);
+    table.body.push([
+      {
+        text: 'INR ' + converter.toWords(totamt).toUpperCase() + ' ONLY',
+        colSpan: 8,
+        bold: true,
+        fontSize: 8,
+        borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
+      } as unknown,
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+    ]);
+
+    //Inset tax table later
+    let taxtable: any =[];
+    if(taxType=="IGST"){
+    taxtable = [
+      {
+        colSpan: 8,
+        style: 'tableExample',
+        table: {
+          headerRows: 1,
+          widths: [150, '*', '*', '*', '*'],
+          body: [
+            [
+              {
+                fontSize: 8,
+                text: 'HSN/SAC.',
+                alignment: 'center',
+                borderColor: ['#000000', '#000000', '#000000', '#000000'],
+              },
+              {
+                fontSize: 8,
+                text: 'Taxable Value',
+                alignment: 'center',
+                borderColor: ['#000000', '#000000', '#000000', '#000000'],
+              },
+              {
+                fontSize: 8,
+                text: 'Taxable Integrated Tax',
+                alignment: 'center',
+                colSpan: 2,
+                borderColor: ['#000000', '#000000', '#000000', '#000000'],
+              },
+              '',
+              {
+                fontSize: 8,
+                text: 'Total Tax Amount',
+                alignment: 'center',
+                borderColor: ['#000000', '#000000', '#000000', '#000000'],
+              },
+            ],
+            [
+              {
+                fontSize: 8,
+                text: '',
+                borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
+              },
+              {
+                fontSize: 8,
+                text: '',
+                borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
+              },
+              {
+                fontSize: 8,
+                text: 'Rate',
+                alignment: 'center',
+                borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
+              },
+              {
+                fontSize: 8,
+                text: 'Amount',
+                alignment: 'center',
+                borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
+              },
+              {
+                fontSize: 8,
+                text: '',
+                borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
+              },
+            ],
+          ],
+        },
+      },
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+    ];
+    table.body.push(taxtable);
+    if (mergemat.hsn.length > 0) {
+      let tothsn = new DCMaterial();
+      tothsn.hsnNo = 'Total';
+      tothsn.amount = amt;
+      tothsn.tax = tax;
+      tothsn.totamount = amt + tax;
+      mergemat.hsn.push(tothsn);
+    }
+
+    for (let i = 0; i < mergemat.hsn.length; i++) {
+      let nbold: boolean = false;
+      if (i == mergemat.hsn.length - 1) {
+        nbold = true;
+      }
+      taxtable[0].table.body.push([
+        {
+          fontSize: 8,
+          text: mergemat.hsn[i].hsnNo,
+          borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
+          bold: nbold,
+        },
+        {
+          fontSize: 8,
+          text: mergemat.hsn[i].amount.toFixed(2),
+          borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
+          alignment: 'right',
+          bold: nbold,
+        },
+        {
+          fontSize: 8,
+          text: mergemat.hsn[i].gst,
+          borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
+          alignment: 'right',
+          bold: nbold,
+        },
+        {
+          fontSize: 8,
+          text: mergemat.hsn[i].tax.toFixed(2),
+          borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
+          alignment: 'right',
+          bold: nbold,
+        },
+        {
+          fontSize: 8,
+          text: mergemat.hsn[i].tax.toFixed(2),
+          borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
+          alignment: 'right',
+          bold: nbold,
+        },
+      ]);
+    }
+
+  }
+  else if(taxType=="CGST/SGST"){
+    taxtable = [
+      {
+        colSpan: 8,
+        style: 'tableExample',
+        table: {
+          headerRows: 1,
+          widths: [150, '*', '*', '*', '*','*','*'],
+          body: [
+            [
+              {
+                fontSize: 8,
+                text: 'HSN/SAC.',
+                alignment: 'center',
+                borderColor: ['#000000', '#000000', '#000000', '#000000'],
+              },
+              {
+                fontSize: 8,
+                text: 'Taxable Value',
+                alignment: 'center',
+                borderColor: ['#000000', '#000000', '#000000', '#000000'],
+              },
+              {
+                fontSize: 8,
+                text: 'Central Tax',
+                alignment: 'center',
+                colSpan: 2,
+                borderColor: ['#000000', '#000000', '#000000', '#000000'],
+              },
+              '',
+              {
+                fontSize: 8,
+                text: 'State Tax',
+                alignment: 'center',
+                colSpan: 2,
+                borderColor: ['#000000', '#000000', '#000000', '#000000'],
+              },
+              '',
+              {
+                fontSize: 8,
+                text: 'Total Tax Amount',
+                alignment: 'center',
+                borderColor: ['#000000', '#000000', '#000000', '#000000'],
+              },
+            ],
+            [
+              {
+                fontSize: 8,
+                text: '',
+                borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
+              },
+              {
+                fontSize: 8,
+                text: '',
+                borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
+              },
+              {
+                fontSize: 8,
+                text: 'Rate',
+                alignment: 'center',
+                borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
+              },
+              {
+                fontSize: 8,
+                text: 'Amount',
+                alignment: 'center',
+                borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
+              },
+              {
+                fontSize: 8,
+                text: 'Rate',
+                alignment: 'center',
+                borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
+              },
+              {
+                fontSize: 8,
+                text: 'Amount',
+                alignment: 'center',
+                borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
+              },
+              {
+                fontSize: 8,
+                text: '',
+                borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
+              },
+            ],
+          ],
+        },
+      },
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+    ];
+    table.body.push(taxtable);
+    if (mergemat.hsn.length > 0) {
+      let tothsn = new DCMaterial();
+      tothsn.hsnNo = 'Total';
+      tothsn.amount = amt;
+      tothsn.tax = tax;
+      tothsn.totamount = amt + tax;
+      mergemat.hsn.push(tothsn);
+    }
+    for (let i = 0; i < mergemat.hsn.length; i++) {
+      let ngst=mergemat.hsn[i].gst?mergemat.hsn[i].gst.replace('%',''):'';
+
+
+      let nbold: boolean = false;
+      if (i == mergemat.hsn.length - 1) {
+        nbold = true;
+      }
+      taxtable[0].table.body.push([
+        {
+          fontSize: 8,
+          text: mergemat.hsn[i].hsnNo,
+          borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
+          bold: nbold,
+        },
+        {
+          fontSize: 8,
+          text: mergemat.hsn[i].amount.toFixed(2),
+          borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
+          alignment: 'right',
+          bold: nbold,
+        },
+        {
+          fontSize: 8,
+          text: ngst!=''? (Number(ngst)/2).toFixed(2):'',
+          borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
+          alignment: 'right',
+          bold: nbold,
+        },
+        {
+          fontSize: 8,
+          text: ngst!=''? (mergemat.hsn[i].amount * Number(ngst)/2/100).toFixed(2):cgsttax.toFixed(2),
+          borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
+          alignment: 'right',
+          bold: nbold,
+        },
+        {
+          fontSize: 8,
+          text: ngst!=''?(Number(ngst)/2).toFixed(2):'',
+          borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
+          alignment: 'right',
+          bold: nbold,
+        },
+        {
+          fontSize: 8,
+          text: ngst!=''? (mergemat.hsn[i].amount * Number(ngst)/2/100).toFixed(2):sgsttax.toFixed(2),
+          borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
+          alignment: 'right',
+          bold: nbold,
+        },
+        {
+          fontSize: 8,
+          text: mergemat.hsn[i].tax.toFixed(2),
+          borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
+          alignment: 'right',
+          bold: nbold,
+        },
+      ]);
+    }
+  }
+
+
+    table.body.push([
+      {
+        text: 'Tax Amount (in words) :',
+        fontSize: 10,
+        borderColor: ['#000000', '#ffffff', '#ffffff', '#ffffff'],
+      } as unknown,
+      {
+        text: 'INR ' + converter.toWords(tax).toUpperCase() + ' ONLY',
+        colSpan: 7,
+        fontSize: 10,
+        bold: true,
+        borderColor: ['#ffffff', '#ffffff', '#000000', '#ffffff'],
+      },
+      '',
+      '',
+      '',
+      '',
+      '',
+    ]);
+
+    table.body.push([
+      {
+        text: '',
+        fontSize: 10,
+        colSpan: 3,
+        borderColor: ['#000000', '#ffffff', '#ffffff', '#ffffff'],
+      },
+      '',
+      '',
+      {
+        text: 'Companys Bank Details:',
+        fontSize: 10,
+        colSpan: 5,
+        borderColor: ['#ffffff', '#ffffff', '#000000', '#ffffff'],
+      } as unknown,
+      '',
+      '',
+      '',
+      '',
+    ]);
+    table.body.push([
+      { text: '', colSpan: 3 },
+      '',
+      '',
+      {
+        text: 'Bank Name:',
+        fontSize: 10,
+        colSpan: 3,
+        borderColor: ['#ffffff', '#ffffff', '#ffffff', '#ffffff'],
+      } as unknown,
+      '',
+      '',
+      {
+        text: invoice.bank.name,
+        fontSize: 10,
+        colSpan: 2,
+        bold: true,
+        borderColor: ['#ffffff', '#ffffff', '#000000', '#ffffff'],
+      },
+      '',
+    ]);
+    table.body.push([
+      {
+        text: '',
+        colSpan: 3,
+        borderColor: ['#000000', '#ffffff', '#ffffff', '#ffffff'],
+      },
+      '',
+      '',
+      {
+        text: 'A/c No.',
+        fontSize: 10,
+        colSpan: 3,
+        borderColor: ['#ffffff', '#ffffff', '#ffffff', '#ffffff'],
+      },
+      '',
+      '',
+      {
+        text: invoice.bank.accno,
+        fontSize: 10,
+        colSpan: 2,
+        bold: true,
+        borderColor: ['#ffffff', '#ffffff', '#000000', '#ffffff'],
+      } as unknown,
+      '',
+    ]);
+
+    table.body.push([
+
+      {
+        text: 'Company PAN:',
+        fontSize: 10,
+        borderColor: ['#000000', '#ffffff', '#ffffff', '#ffffff'],
+      } as unknown,
+      {
+        text: branch.pan,
+        fontSize: 10,
+        colSpan: 2,
+        borderColor: ['#000000', '#ffffff', '#ffffff', '#ffffff'],
+      },
+      '',
+      {
+        text: 'Branch & IFS Code:',
+        fontSize: 10,
+        colSpan: 3,
+        borderColor: ['#ffffff', '#ffffff', '#ffffff', '#000000'],
+      },
+      '',
+      '',
+      {
+        text: `${invoice.bank.branch} & ${invoice.bank.ifsc}`,
+        fontSize: 10,
+        colSpan: 2,
+        borderColor: ['#ffffff', '#ffffff', '#000000', '#000000'],
+      },
+      '',
+    ]);
+    table.body.push([
+      {
+        text: 'Declaration',
+        fontSize: 10,
+        colSpan: 3,
+        bold: true,
+        borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+      },
+      '',
+      '',
+      {
+        text: 'for Dwija Foods Private Limited',
+        fontSize: 10,
+        colSpan: 5,
+        alignment: 'right',
+        bold: true,
+        borderColor: ['#000000', '#000000', '#000000', '#ffffff'],
+      } as unknown,
+      '',
+      '',
+      '',
+      '',
+    ]);
+    table.body.push([
+      {
+        text: 'We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.',
+        fontSize: 7,
+        colSpan: 3,
+        borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+      } as unknown,
+      '',
+      '',
+      {
+        text: '',
+        colSpan: 4,
+        borderColor: ['#000000', '#ffffff', '#ffffff', '#ffffff'],
+      },
+      '',
+      '',
+      '',
+      { image: demodata.authSignature, width: 100, height: 50, borderColor: ['#ffffff', '#ffffff', '#000000', '#ffffff']},
+    ]);
+    table.body.push([
+      {
+        text: '',
+        colSpan: 3,
+        borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
+      },
+      '',
+      '',
+      {
+        text: 'Authorised Signatory',
+        fontSize: 8,
+        alignment: 'right',
+        colSpan: 5,
+        borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
+      } as unknown,
+      '',
+      '',
+      '',
+      '',
+    ]);
+
+    table.body.push([
+      {
+        text: 'FSSAI Regn. No. 11520009000262',
+        fontSize: 7,
+        alignment: 'center',
+        colSpan: 8,
+        borderColor: ['#ffffff', '#ffffff', '#ffffff', '#ffffff'],
+      } as unknown,
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+    ]);
+
+    this.pdfObj = pdfMake.createPdf(docDefinition);
+    if (this.plt.is('cordova')) {
+      this.pdfObj.getBuffer((buffer) => {
+        var utf8 = new Uint8Array(buffer);
+        var binaryArray = utf8.buffer;
+        var blob = new Blob([binaryArray], { type: 'application/pdf' });
+        this.file
+          .writeFile(this.file.dataDirectory, `${req['id']}.pdf`, blob, {
+            replace: true,
+          })
+          .then((fileEntry) => {
+            this.fileOpener
+              .open(
+                this.file.dataDirectory + `${req['id']}.pdf`,
+                'application/pdf'
+              )
+              .then(() => console.log('File is opened'))
+              .catch((e) => console.log('Error opening file', e));
+          });
+      });
+    } else {
+      this.pdfObj.download();
+    }
+  }
+
   updateReceiptBook(receipt:ReceiptBook){
     this.salespiplineService.addupdateReceiptBook(receipt,receipt.id==null?false:true).subscribe()
   }
@@ -2623,6 +3877,56 @@ export class InvoiceListPage implements OnInit {
   return data;
   }
 
+  mergeMachines(machines:any):any{
+    var data={
+      materials:[],
+      hsn:[]
+    }
+    machines.forEach(machine => {
+    let entry=data.materials.filter(m=>m.item==machine.machineName && m.category==machine.machineCategory && m.hsnNo==machine.machinehsncode);
+    if(entry.length>0){
+      entry[0].qty=entry[0].qty+Number(machine.machineCount);
+      entry[0].amount=entry[0].amount+ + Number(machine.machineCount)*Number(machine.mchInstCharges);
+      entry[0].tax=entry[0].tax+ Number(machine.machineCount)*Number(machine.mchInstCharges)*0.18;
+      entry[0].totamount=entry[0].totamount+entry[0].amount+ entry[0].tax;
+    }
+    else{
+      var mch:any=[];
+      mch.category=machine.machineName;
+      mch.item=machine.machineCategory;
+      mch.hsnNo=machine.machinehsncode;
+      mch.gst="18%",
+      mch.uom="mch",
+      mch.qty=Number(machine.machineCount),
+      mch.rate=Number(machine.mchInstCharges),
+      mch.qty=Number(machine.machineCount);
+      mch.amount= Number(machine.machineCount)*Number(machine.mchInstCharges);
+      mch.tax= Number(machine.machineCount)*Number(machine.mchInstCharges)*0.18;
+      mch.totamount=mch.amount+ mch.tax;
+      data.materials.push(Object.assign({},mch));
+    }
+    let entryhsn=data.hsn.filter(m=>m.hsnNo==machine.machinehsncode);
+    if(entryhsn.length>0){
+      entry[0].amount=entry[0].amount+ + Number(machine.machineCount)*Number(machine.mchInstCharges);
+      entry[0].tax=entry[0].tax+ Number(machine.machineCount)*Number(machine.mchInstCharges)*0.18;
+      entry[0].totamount=entry[0].totamount+entry[0].amount+ entry[0].tax;
+    }
+    else{
+      var mch:any=[];
+      mch.category=machine.machineName;
+      mch.item=machine.machineCategory;
+      mch.hsnNo=machine.machinehsncode;
+      mch.gst="18%",
+      mch.uom="machine",
+      mch.amount= Number(machine.machineCount)*Number(machine.mchInstCharges);
+      mch.tax= Number(machine.machineCount)*Number(machine.mchInstCharges)*0.18;
+      mch.totamount=mch.amount+ mch.tax;
+      data.hsn.push(Object.assign({},mch));
+    }
+  });
+  return data;
+  }
+
 editInvoice(req){
   this.router.navigate(['/salespipeline/editinvoice/'+req.id]);
 }
@@ -2708,6 +4012,8 @@ async applyFilter(){
   }
   return filterinvoices;
 }
+
+
 
 
   getBase64Image(){
