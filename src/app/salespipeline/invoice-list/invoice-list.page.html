@@ -55,7 +55,7 @@
                <h6><b>ID: </b>{{inv.srNo}}</h6>
               <div [style.visibility]="inv.machines==null ? 'hidden' : 'visible'">
                 <ion-button color="warning" (click)="consumableInvoice(inv)">Consumables</ion-button>
-                <ion-button color="warning" (click)="rentalinvoice(inv)">Rental</ion-button>
+                <!-- <ion-button color="warning" (click)="rentalinvoice(inv)">Rental</ion-button> -->
               </div>
               <div [style.visibility]="inv.machines!=null ? 'hidden' : 'visible'">
                 <ion-button color="warning" (click)="installationInvoice(inv)">Installation</ion-button>

@@ -90,6 +90,10 @@ export class AddSalesPage implements OnInit {
     machineCount: new FormControl(null, {
       updateOn: 'blur',
     }),
+    branch: new FormControl(null, {
+      updateOn: 'blur',
+    }),
+
   });
 }
 buildMachineDetailForm(){
@@ -137,6 +141,9 @@ buildMachineDetailForm(){
       updateOn: 'blur',
     }),
     mchSecDeposite: new FormControl(null, {
+      updateOn: 'blur',
+    }),
+    pulloutDate: new FormControl(null, {
       updateOn: 'blur',
     }),
   });
@@ -288,7 +295,9 @@ private AddClientSalesPipeLine(loadingEl: HTMLIonLoadingElement){
             machine.mchInstCharges,
             machine.mchSecDeposite,
             false,
-            machine.machinehsncode
+            machine.machinehsncode,
+            machine.pulloutDate
+
           )
         );
       }
@@ -302,7 +311,8 @@ private AddClientSalesPipeLine(loadingEl: HTMLIonLoadingElement){
         machines.map((obj)=> {return Object.assign({}, obj)}),
         location.billingAmount,
         location.machineCount,
-        GetNewId()
+        GetNewId(),
+        location.branch
         ))
     }
     let clientSalesPipeline: ClientSalesPipeline = new ClientSalesPipeline(

@@ -1,0 +1,63 @@
+{
+  "hosting": {
+    "public": "www",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ],
+    "headers": [
+      {
+        "source": "**/*",
+        "headers": [
+          {
+            "key": "cache-control",
+            "value": "no-cache"
+          }
+        ]
+      },
+      {
+        "source": "static/**",
+        "headers": [
+          {
+            "key": "cache-control",
+            "value": "no-cache"
+          }
+        ]
+      },
+      {
+        "source": "**/*.@(css|js)",
+        "headers": [
+          {
+            "key": "cache-control",
+            "value": "no-cache"
+          }
+        ]
+      },
+      {
+        "source": "sw.js",
+        "headers": [
+          {
+            "key": "cache-control",
+            "value": "no-cache"
+          }
+        ]
+      },
+      {
+        "source": "page-data/**",
+        "headers": [
+          {
+            "key": "cache-control",
+            "value": "no-cache"
+          }
+        ]
+      }
+    ]
+  }
+}

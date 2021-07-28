@@ -579,8 +579,8 @@ export class SalespipelineService {
       }),
       switchMap(() => {
         invoice.userId = fetchedUserId;
-        invoice.createdOn = new Date();
         if(!isUpdate){
+          invoice.createdOn = new Date();
           invoice.id=GetNewId();
           return this.firebaseService
           .collection('invoice')
@@ -609,8 +609,8 @@ export class SalespipelineService {
       }),
       switchMap(() => {
         invoice.userId = fetchedUserId;
-        invoice.createdOn = new Date();
         if(!isUpdate){
+
           invoice.id=GetNewId();
           return this.firebaseService
           .collection('rental-invoice')
@@ -752,6 +752,24 @@ export class SalespipelineService {
         return dcdetail;
   }
 
+  async getSalesPipline(): Promise<ClientSalesPipeline[]> {
+    let snaps= await this.firebaseService
+    .collection('client-sales-pipeline', (ref) =>
+      ref.orderBy('client','asc'))
+    .snapshotChanges()
+    .pipe(first())
+    .toPromise();
+    let rows:ClientSalesPipeline[];
+    rows=snaps.map((entry) => {
+        var sl = <ClientSalesPipeline>{
+          ...(entry.payload.doc.data() as {}),
+        };
+        sl.id = entry.payload.doc.id;
+        return sl;
+      });
+      return rows;
+    }
+
   async getSalesPiplineById(salesId:string): Promise<ClientSalesPipeline> {
         let snaps = await this.firebaseService
         .collection('client-sales-pipeline').doc(salesId).get().toPromise();
@@ -760,7 +778,7 @@ export class SalespipelineService {
         };
         result.id = snaps.id;
       return result;
-  }
+      }
 
   async getInvoices(locId:string): Promise<Invoice[]> {
     let snaps:any;
@@ -873,10 +891,18 @@ export class SalespipelineService {
 
     async getRentalInvoice(clientId:string,locId:string,displyMonth:string): Promise<RentalInvoice[]> {
       let snaps:any;
-      if(clientId==null){
+       if(locId==null && displyMonth!=null){
         snaps= await this.firebaseService
         .collection('rental-invoice', (ref) =>
-          ref.orderBy('createdOn','desc'))
+        ref.where('displaymonth','==',displyMonth))
+        .snapshotChanges()
+        .pipe(first())
+        .toPromise();
+      }
+      else if(clientId==null){
+        snaps= await this.firebaseService
+        .collection('rental-invoice', (ref) =>
+         ref.orderBy('createdOn','desc'))
         .snapshotChanges()
         .pipe(first())
         .toPromise();

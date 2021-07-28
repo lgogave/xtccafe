@@ -81,13 +81,12 @@ export class DeliveryChallanPage implements OnInit {
         });
       });
     }
-
     initializeForm() {
       this.form = new FormGroup({
         billName: new FormControl(this.billingDetail!=null?this.billingDetail.billName:this.clientSales.client.name, { updateOn: 'blur',validators: [Validators.required] }),
-        billAddress: new FormControl(this.billingDetail!=null?this.billingDetail.billAddress:this.clientLocation.address, { updateOn: 'blur' }),
-        location: new FormControl(this.billingDetail!=null?this.billingDetail.location:this.clientLocation.address, { updateOn: 'blur',validators: [Validators.required] }),
-        address: new FormControl(this.billingDetail!=null?this.billingDetail.installAddress:this.clientLocation.address, { updateOn: 'blur',validators: [Validators.required] }),
+        billAddress: new FormControl(this.clientLocation.address, { updateOn: 'blur' }),
+        location: new FormControl(this.clientLocation.installAt, { updateOn: 'blur',validators: [Validators.required] }),
+        address: new FormControl(this.clientLocation.installAddress, { updateOn: 'blur',validators: [Validators.required] }),
         pincode: new FormControl(this.billingDetail!=null?this.billingDetail.pincode:null, { updateOn: 'blur',validators: [Validators.required] }),
         branch: new FormControl(null, { updateOn: 'blur',validators: [Validators.required] }),
         date: new FormControl(null, { updateOn: 'blur',validators: [Validators.required] }),
@@ -156,7 +155,7 @@ export class DeliveryChallanPage implements OnInit {
           updateOn: "blur",
           //validators: [Validators.required],
         }),
-        qty: new FormControl(this.dcDetail!=null?materialRate.qty:null, {
+        qty: new FormControl(materialRate!=null?materialRate.qty:null, {
           updateOn: "blur",
           //validators: [Validators.required],
         }),

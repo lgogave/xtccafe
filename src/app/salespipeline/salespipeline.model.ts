@@ -95,7 +95,8 @@ export class Location {
     public machines?:Machine[],
     public billingAmount?: number,
     public machineCount?: number,
-    public id?: string
+    public id?: string,
+    public branch?: string,
   ) {}
 }
 export class BillingDetail {
@@ -164,6 +165,7 @@ export class DCDetail {
     public billName?:string,
     public billAddress?:string,
     public location?:string,
+    public installAt?:string,
     public address?:string,
     public pincode?:string,
     public branch?:string,
@@ -189,6 +191,7 @@ export class InstallDCDetail {
     public billName?:string,
     public billAddress?:string,
     public location?:string,
+    public installAt?:string,
     public address?:string,
     public pincode?:string,
     public branch?:string,
@@ -240,6 +243,7 @@ export class Machine {
       public mchSecDeposite?: number,
       public isInstChargesConsider?: boolean,
       public machinehsncode?: boolean,
+      public pulloutDate?: Date,
   ) {}
 }
 
@@ -285,6 +289,7 @@ export class RentalInvoice{
   constructor(
     public id?:string,
     public srNo?:string,
+    public bank?:InvoiceBank,
     public branch?:string,
     public month?:Date,
     public status?:string,
@@ -300,7 +305,11 @@ export class RentalInvoice{
     public mchinstCharges?:number,
     public consumableCap?:number,
     public userId?:string,
-    public createdOn?:Date){}
+    public createdOn?:Date,
+    public billName?:string,
+    public billAddress?:string,
+    public installAt?:string,
+    public installAddress?:string){}
   }
 
 export class ReceiptBook{

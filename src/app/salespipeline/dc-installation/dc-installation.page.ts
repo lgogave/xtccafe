@@ -84,9 +84,9 @@ export class DcInstallationPage implements OnInit {
     initializeForm() {
       this.form = new FormGroup({
         billName: new FormControl(this.billingDetail!=null?this.billingDetail.billName:this.clientSales.client.name, { updateOn: 'blur',validators: [Validators.required] }),
-        billAddress: new FormControl(this.billingDetail!=null?this.billingDetail.billAddress:this.clientLocation.address, { updateOn: 'blur' }),
-        location: new FormControl(this.billingDetail!=null?this.billingDetail.location:this.clientLocation.address, { updateOn: 'blur',validators: [Validators.required] }),
-        address: new FormControl(this.billingDetail!=null?this.billingDetail.installAddress:this.clientLocation.address, { updateOn: 'blur',validators: [Validators.required] }),
+        billAddress: new FormControl(this.clientLocation.address, { updateOn: 'blur' }),
+        location: new FormControl(this.clientLocation.installAt, { updateOn: 'blur',validators: [Validators.required] }),
+        address: new FormControl(this.clientLocation.installAddress, { updateOn: 'blur',validators: [Validators.required] }),
         pincode: new FormControl(this.billingDetail!=null?this.billingDetail.pincode:null, { updateOn: 'blur',validators: [Validators.required] }),
         branch: new FormControl(null, { updateOn: 'blur',validators: [Validators.required] }),
         date: new FormControl(null, { updateOn: 'blur',validators: [Validators.required] }),
@@ -196,7 +196,7 @@ export class DcInstallationPage implements OnInit {
           updateOn: "blur",
           //validators: [Validators.required],
         }),
-        volumeType: new FormControl(null, {
+        machineCategory: new FormControl(null, {
           updateOn: "blur",
           //validators: [Validators.required],
         }),
@@ -204,15 +204,15 @@ export class DcInstallationPage implements OnInit {
           updateOn: "blur",
           //validators: [Validators.required],
         }),
-        machinesrno: new FormControl(null, {
+        machineSrNo: new FormControl(null, {
           updateOn: "blur",
           //validators: [Validators.required],
         }),
-        machinehsnNo: new FormControl(null, {
+        machinehsncode: new FormControl(null, {
           updateOn: "blur",
           //validators: [Validators.required],
         }),
-        machinerate: new FormControl(null, {
+        mchInstCharges: new FormControl(null, {
           updateOn: "blur",
           //validators: [Validators.required],
         })
@@ -240,12 +240,12 @@ export class DcInstallationPage implements OnInit {
     onMachineChange(event,element){
       if (!event.target.value) return;
       let ref=this.machineDetail.filter(item=>item.name==event.target.value)[0].name;
-      element.controls['volumeType'].reset();
+      element.controls['machineCategory'].reset();
       this.machineCategory=[];
       this.machineCategory=this.machineDetail.filter(item=>item.ref==ref && item.group==2).sort(
         (a,b)=>a.srno-b.srno).map(item=>item.name);
         if(ref=="FM" || ref=="Mtl(kg/mth)"){
-          element.controls['volumeType'].patchValue("Not Applicable",{emitEvent: false})
+          element.controls['machineCategory'].patchValue("Not Applicable",{emitEvent: false})
         }
     }
     async  padLeadingZeros(num, size) {
@@ -260,6 +260,9 @@ export class DcInstallationPage implements OnInit {
       if (!this.form.valid) {
         return;
       }
+
+
+
     if(this.dcId!=null)
     this.dcDetail = await this.salespiplineService.getDCDetail(this.dcId,1);
     let fmbillingDetail = <InstallDCDetail>this.form.value;

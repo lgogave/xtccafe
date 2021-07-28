@@ -6,7 +6,7 @@ import { combineLatest, Subscription } from 'rxjs';
 import { GetNewId } from 'src/app/utilities/dataconverters';
 import { Client } from '../../clients/client.model';
 import { ClientService } from '../../clients/client.service';
-import { ClientStatus, MachineDetail } from '../../models/division.model';
+import { ClientStatus, MachineDetail, MastBranch } from '../../models/division.model';
 import { DivisionService } from '../../services/division.service';
 import { ClientSalesPipeline, Location, Machine, SalesPipeline } from '../salespipeline.model';
 import { SalespipelineService, } from '../salespipeline.service';
@@ -34,6 +34,7 @@ export class EditSalesPage implements OnInit {
   machineType:string[]
   machineCategory:string[]
   lastComment:string;
+  branches:MastBranch[];
   private salesPipeSub: Subscription;
 
   get locations() {
@@ -74,6 +75,9 @@ export class EditSalesPage implements OnInit {
       installAddress: new FormControl(location!=null?location.installAddress:null, {
         updateOn: 'blur',
       }),
+      branch: new FormControl(location!=null?location.branch:null, {
+        updateOn: 'blur',
+      }),
       currentStatus: new FormControl(location!=null?location.currentStatus:null, {
         updateOn: 'blur',
         validators: [Validators.required],
@@ -86,6 +90,7 @@ export class EditSalesPage implements OnInit {
         updateOn: 'blur',
         validators: [Validators.required],
       }),
+
       amount: new FormControl(location!=null?location.amount:null, {
         updateOn: 'blur',
       }),
@@ -145,6 +150,9 @@ export class EditSalesPage implements OnInit {
         updateOn: 'blur',
       }),
       mchSecDeposite: new FormControl(machine!=null?machine.mchSecDeposite:null, {
+        updateOn: 'blur',
+      }),
+      pulloutDate: new FormControl(machine!=null?machine.pulloutDate:null, {
         updateOn: 'blur',
       }),
     });
@@ -289,9 +297,16 @@ this.isLoading=false;
 }
 
 
-  ionViewWillEnter() {
+ async  ionViewWillEnter() {
+    await this.loadBranches();
     this.clientService.fetchClients().subscribe(() => {});
     this.salesPipelineService.getClientSalesPipeline(this.saleId);
+
+  }
+
+  async loadBranches(){
+    this.branches=await this.divisionService.getBranches();
+    return true;
   }
   async onUpdateSalespipeline(redirection:boolean=true) {
     if (!this.form.valid) {
@@ -360,7 +375,8 @@ this.isLoading=false;
             machine.mchInstCharges,
             machine.mchSecDeposite,
             machine.isInstChargesConsider,
-            machine.machinehsncode
+            machine.machinehsncode,
+            machine.pulloutDate
           )
         );
       }
@@ -378,7 +394,8 @@ this.isLoading=false;
           }),
           location.billingAmount,
           location.machineCount,
-          location.id
+          location.id,
+          location.branch
         )
       );
     }

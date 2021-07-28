@@ -49,36 +49,63 @@ export class EditInvoicePage implements OnInit {
       return;
     }
 
+    let mchDetail=await this.getMachineDetails(this.invoice.dc[0].salesId,this.invoice.dc[0].locationId);
     let rentInv= await this.salesService.getRentalInvoice(this.invoice.clientId,this.invoice.clientLocationId,this.invoice.displaymonth);
     let invoiceModel = <InvoiceModel>this.form.value;
-
     let rentInvoice:RentalInvoice=null;
     if(rentInv.length>0){
       rentInvoice=rentInv[0];
-      rentInvoice.mchRent=invoiceModel.rent;
+      rentInvoice.mchRent=mchDetail.mchRent;
+      rentInvoice.mchdeposite=mchDetail.mchdeposite;
+      rentInvoice.mchinstCharges=mchDetail.mchinstCharges;
+      rentInvoice.consumableCap=mchDetail.consumableCap;
+      rentInvoice.machines=mchDetail.machineDetail;
     }
-
-    forkJoin([ this.salesService
-      .addupdateInvoice({id:this.invoice.id,
-        ponumber:invoiceModel.ponumber,
-        mchRent:invoiceModel.rent,
-        billName:invoiceModel.billName,
-        billAddress:invoiceModel.billAddress,
-        installAt:invoiceModel.installAt,
-        installAddress:invoiceModel.installAddress,
-      },true),  this.salesService
-      .addupdateRentalInvoice(rentInvoice,true)]).subscribe((res) => {
-        this.toastController
-        .create({
-          message: 'Data updated',
-          duration: 2000,
-          color: 'success',
-        })
-        .then((tost) => {
-          tost.present();
-          this.router.navigate(['/salespipeline/invoicelist/'+this.invoice.clientLocationId]);
+    if(rentInvoice!=null){
+      forkJoin([this.salesService
+        .addupdateInvoice({id:this.invoice.id,
+          ponumber:invoiceModel.ponumber,
+          mchRent:invoiceModel.rent,
+          billName:invoiceModel.billName,
+          billAddress:invoiceModel.billAddress,
+          installAt:invoiceModel.installAt,
+          installAddress:invoiceModel.installAddress,
+        },true),  this.salesService
+        .addupdateRentalInvoice(rentInvoice,true)]).subscribe((res) => {
+          this.toastController
+          .create({
+            message: 'Data updated',
+            duration: 2000,
+            color: 'success',
+          })
+          .then((tost) => {
+            tost.present();
+            this.router.navigate(['/salespipeline/invoicelist/'+this.invoice.clientLocationId]);
+          });
         });
-      });
+    }else{
+      this.salesService
+        .addupdateInvoice({id:this.invoice.id,
+          ponumber:invoiceModel.ponumber,
+          mchRent:invoiceModel.rent,
+          billName:invoiceModel.billName,
+          billAddress:invoiceModel.billAddress,
+          installAt:invoiceModel.installAt,
+          installAddress:invoiceModel.installAddress,
+        },true).subscribe((res) => {
+          this.toastController
+          .create({
+            message: 'Data updated',
+            duration: 2000,
+            color: 'success',
+          })
+          .then((tost) => {
+            tost.present();
+            this.router.navigate(['/salespipeline/invoicelist/'+this.invoice.clientLocationId]);
+          });
+        });
+      }
+
     // this.salesService
     // .addupdateInvoice({id:this.invoice.id,
     //   ponumber:invoiceModel.ponumber,
@@ -93,6 +120,36 @@ export class EditInvoicePage implements OnInit {
     // });
 
   }
+
+  async getMachineDetails(salesId,locationId) {
+    let mchDetail = await this.salesService.getSalesPiplineById(
+      salesId
+    );
+    let loc = mchDetail.locations.filter((x) => x.id == locationId);
+    if (loc.length > 0) {
+      let rental: number = 0;
+      let deposite: number = 0;
+      let instCharges: number = 0;
+      let consumableCap: number = 0;
+      loc[0].machines.forEach((element) => {
+        rental = Number(rental) + Number(element.mchRent);
+        deposite = Number(deposite) + Number(element.mchSecDeposite);
+        (instCharges = Number(instCharges) + Number(element.mchInstCharges)),
+          (consumableCap =
+            Number(consumableCap) + Number(element.consumableCap));
+      });
+      let machineData = {
+        mchRent: rental,
+        mchdeposite: deposite,
+        mchinstCharges: instCharges,
+        consumableCap: consumableCap,
+        machineDetail: loc[0].machines,
+      };
+      return machineData;
+    }
+    return null;
+  }
+
   initializeUpdateForm(){
     this.form = new FormGroup({
       ponumber : new FormControl(this.invoice.ponumber, { updateOn: 'blur' }),

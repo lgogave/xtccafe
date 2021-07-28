@@ -141,6 +141,10 @@ const routes: Routes = [
     path: 'dcinstallation/:salesId/:locId/:dcId',
     loadChildren: () => import('./dc-installation/dc-installation.module').then( m => m.DcInstallationPageModule)
   },
+  {
+    path: 'rentalinvoices',
+    loadChildren: () => import('./rental-invoices/rental-invoices.module').then( m => m.RentalInvoicesPageModule)
+  },
 ];
 
 @NgModule({

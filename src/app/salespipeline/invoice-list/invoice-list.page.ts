@@ -96,8 +96,8 @@ export class InvoiceListPage implements OnInit {
     let demodata = {
       logo: this.getBase64Image(),
       authSignature:this.getAuthSignature(),
-      clientaddress: `Consignee (Ship to)\n${invoice['billName']}\n${invoice['billAddress']}`,
-      buyeraddress: `Buyer (Bill to)\n${invoice['installAt']}\n${invoice['installAddress']}`,
+      clientaddress: `Consignee (Ship to)\n${invoice['installAt']}\n${invoice['installAddress']}`,
+      buyeraddress: `Buyer (Bill to)\n${invoice['billName']}\n${invoice['billAddress']}`,
       reqId: req['id'],
       date: convertTimeStampToDate(invoice.createdOn),
     };
@@ -895,7 +895,6 @@ export class InvoiceListPage implements OnInit {
       tothsn.totamount = amt + tax;
       mergemat.hsn.push(tothsn);
     }
-
     for (let i = 0; i < mergemat.hsn.length; i++) {
       let nbold: boolean = false;
       if (i == mergemat.hsn.length - 1) {
@@ -938,7 +937,6 @@ export class InvoiceListPage implements OnInit {
         },
       ]);
     }
-
   }
   else if(taxType=="CGST/SGST"){
     taxtable = [
@@ -1338,8 +1336,8 @@ export class InvoiceListPage implements OnInit {
     let demodata = {
       logo: this.getBase64Image(),
       authSignature:this.getAuthSignature(),
-      clientaddress: `Consignee (Ship to)\n${invoice['billName']}\n${invoice['billAddress']}`,
-      buyeraddress: `Buyer (Bill to)\n${invoice['installAt']}\n${invoice['installAddress']}`,
+      clientaddress: `Consignee (Ship to)\n${invoice['installAt']}\n${invoice['installAddress']}`,
+      buyeraddress: `Buyer (Bill to)\n${invoice['billName']}\n${invoice['billAddress']}`,
       reqId: req['id'],
       date: convertTimeStampToDate(invoice.createdOn),
     };
@@ -2587,7 +2585,7 @@ export class InvoiceListPage implements OnInit {
     )[0];
 
   let rentInv= await this.salespiplineService.getRentalInvoice(invoice.clientId,invoice.clientLocationId,invoice.displaymonth);
-   let rentSrNo:string="";
+  let rentSrNo:string="";
    if(rentInv.length>0){
     rentSrNo=rentInv[0].srNo;
    }
@@ -2625,6 +2623,12 @@ export class InvoiceListPage implements OnInit {
     rentinvoice.consumableCap=invoice.consumableCap;
     rentinvoice.machines=invoice.machines;
     rentinvoice.status="Created";
+    rentinvoice.bank=invoice.bank;
+    rentinvoice.billName=invoice.billName;
+    rentinvoice.billAddress=invoice.billAddress;
+    rentinvoice.installAt=invoice.installAt;
+    rentinvoice.installAddress=invoice.installAddress;
+
     let counter:number=0;
     this.salespiplineService.addupdateRentalInvoice(rentinvoice,false)
     .subscribe((res) => {
@@ -2635,8 +2639,8 @@ export class InvoiceListPage implements OnInit {
    let demodata = {
       logo: this.getBase64Image(),
       authSignature:this.getAuthSignature(),
-      clientaddress: `Consignee (Ship to)\n${invoice['billName']}\n${invoice['billAddress']}`,
-      buyeraddress: `Buyer (Bill to)\n${invoice['installAt']}\n${invoice['installAddress']}`,
+      clientaddress: `Consignee (Ship to)\n${invoice['installAt']}\n${invoice['installAddress']}`,
+      buyeraddress: `Buyer (Bill to)\n${invoice['billName']}\n${invoice['billAddress']}`,
       reqId: req['id'],
       date: convertTimeStampToDate(invoice.createdOn),
     };
@@ -2849,7 +2853,7 @@ export class InvoiceListPage implements OnInit {
                         },
                         {
                           fontSize: 8,
-                          text: 'Description of Goods.',
+                          text: 'Description of Machine.',
                           borderColor: [
                             '#000000',
                             '#000000',
@@ -2963,70 +2967,78 @@ export class InvoiceListPage implements OnInit {
     let totamt = 0;
     let cgsttax=0;
     let sgsttax=0;
-
+    console.log(rentInv[0].machines);
     let subtable = docDefinition.content[0].table.body[8][0]['table'];
-    //let mergemat = this.mergeMaterials(req['materialDetails']);
-    //mergemat.materials.forEach((m, index) => {
+    let mergemat = this.mergeMachines(rentInv[0].machines,true);
+    console.log(mergemat);
+    mergemat.materials.forEach((m, index) => {
       let mat = [];
-      amt = amt + Number(invoice.mchRent);
-      tax = tax + amt*Number(0.18);
-      cgsttax = Number(amt) * (0.09);
-      sgsttax = Number(amt) * (0.09);
+      let gst=Number(m['gst'].replace('%',''));
+      amt = amt + Number(m['amount'].toFixed(2));
+      tax = tax+ Number(m['tax'].toFixed(2));
+      cgsttax =cgsttax + Number(m['amount'].toFixed(2)) * ((gst/2) /100);
+      sgsttax =sgsttax + Number(m['amount'].toFixed(2))  * ((gst/2) /100);
       mat.push(
         {
-          text: 1,
-          fontSize: 10,
+          text: index + 1,
+          fontSize: 8,
           borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
         },
         {
-          text: `Machine Rental\n Rental for ${invoice.displaymonth}`,
-          fontSize: 10,
+          text: m['category'] + '-' + m['item'],
+          fontSize: 8,
           borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
         },
         {
-          text: 9973,
-          fontSize: 10,
+          text: m['hsnNo'],
+          fontSize: 8,
           borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
         },
         {
-          text: '18 %',
-          fontSize: 10,
+          text: m['gst'],
+          fontSize: 8,
           alignment: 'right',
           borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
         },
         {
-          text: invoice.machines.length,
-          fontSize: 10,
+          text: m['qty'] + ' ' + m['uom'],
+          fontSize: 8,
           borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
         },
         {
-          text: invoice.mchRent,
-          fontSize: 10,
+          text: m['rate'],
+          fontSize: 8,
           alignment: 'right',
           borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
         },
         {
-          text:'Mth',
-          fontSize: 10,
+          text: m['uom'],
+          fontSize: 8,
           borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
         },
         {
-          text: Number(invoice.mchRent).toFixed(2),
-          fontSize: 10,
+          text: m['amount'].toFixed(2),
+          fontSize: 8,
           alignment: 'right',
-          borderColor: ['#000000', '#ffffff', '#000000', '#000000']
+          borderColor:
+            mergemat.materials.length - 1 == index
+              ? ['#000000', '#ffffff', '#000000', '#707070']
+              : ['#000000', '#ffffff', '#000000', '#ffffff'],
         }
       );
       subtable.body.push(mat);
+    });
     totamt = amt + tax;
     //Total
     subtable.body.push([
       {
-        text: '',
+        text:'',
         borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
       },
       {
-        text: '',
+        text: `Rental for ${invoice.displaymonth}`,
+        fontSize: 10,
+        bold: true,
         borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
       },
       {
@@ -3314,7 +3326,7 @@ export class InvoiceListPage implements OnInit {
     ]);
 
     //Inset tax table later
-    let taxtable: any
+    let taxtable: any =[];
     if(taxType=="IGST"){
       taxtable = [
         {
@@ -3393,21 +3405,14 @@ export class InvoiceListPage implements OnInit {
         '',
       ];
       table.body.push(taxtable);
-      let mergemat = { hsn: [] };
-      let tothsn = new DCMaterial();
-      tothsn.hsnNo = '9973';
-      tothsn.amount = amt;
-      tothsn.tax = tax;
-      tothsn.totamount = amt + tax;
-      mergemat.hsn.push(tothsn);
-
-      tothsn = new DCMaterial();
-      tothsn.hsnNo = 'Total';
-      tothsn.amount = amt;
-      tothsn.tax = tax;
-      tothsn.totamount = amt + tax;
-      mergemat.hsn.push(tothsn);
-
+      if (mergemat.hsn.length > 0) {
+        let tothsn = new DCMaterial();
+        tothsn.hsnNo = 'Total';
+        tothsn.amount = amt;
+        tothsn.tax = tax;
+        tothsn.totamount = amt + tax;
+        mergemat.hsn.push(tothsn);
+      }
       for (let i = 0; i < mergemat.hsn.length; i++) {
         let nbold: boolean = false;
         if (i == mergemat.hsn.length - 1) {
@@ -3450,7 +3455,8 @@ export class InvoiceListPage implements OnInit {
           },
         ]);
       }
-    }else if(taxType=="CGST/SGST"){
+    }
+    else if(taxType=="CGST/SGST"){
       taxtable = [
         {
           colSpan: 8,
@@ -3548,23 +3554,18 @@ export class InvoiceListPage implements OnInit {
         '',
       ];
       table.body.push(taxtable);
-      let mergemat = { hsn: [] };
-      let tothsn = new DCMaterial();
-      tothsn.hsnNo = '9973';
-      tothsn.amount = amt;
-      tothsn.tax = tax;
-      tothsn.gst='18%';
-      tothsn.totamount = amt + tax;
-      mergemat.hsn.push(tothsn);
-
-      tothsn = new DCMaterial();
-      tothsn.hsnNo = 'Total';
-      tothsn.amount = amt;
-      tothsn.tax = tax;
-      tothsn.totamount = amt + tax;
-      mergemat.hsn.push(tothsn);
-
+      if (mergemat.hsn.length > 0) {
+        let tothsn = new DCMaterial();
+        tothsn.hsnNo = 'Total';
+        tothsn.amount = amt;
+        tothsn.tax = tax;
+        tothsn.totamount = amt + tax;
+        mergemat.hsn.push(tothsn);
+      }
       for (let i = 0; i < mergemat.hsn.length; i++) {
+        let ngst=mergemat.hsn[i].gst?mergemat.hsn[i].gst.replace('%',''):'';
+
+
         let nbold: boolean = false;
         if (i == mergemat.hsn.length - 1) {
           nbold = true;
@@ -3585,28 +3586,28 @@ export class InvoiceListPage implements OnInit {
           },
           {
             fontSize: 8,
-            text: i==0?'9%':mergemat.hsn[i].gst,
+            text: ngst!=''? (Number(ngst)/2).toFixed(2):'',
             borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
             alignment: 'right',
             bold: nbold,
           },
           {
             fontSize: 8,
-            text:i==0?(mergemat.hsn[i].amount*0.09).toFixed(2):cgsttax.toFixed(2),
+            text: ngst!=''? (mergemat.hsn[i].amount * Number(ngst)/2/100).toFixed(2):cgsttax.toFixed(2),
             borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
             alignment: 'right',
             bold: nbold,
           },
           {
             fontSize: 8,
-            text: i==0?'9%':mergemat.hsn[i].gst,
+            text: ngst!=''?(Number(ngst)/2).toFixed(2):'',
             borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
             alignment: 'right',
             bold: nbold,
           },
           {
             fontSize: 8,
-            text:i==0?(mergemat.hsn[i].amount*0.09).toFixed(2):sgsttax.toFixed(2),
+            text: ngst!=''? (mergemat.hsn[i].amount * Number(ngst)/2/100).toFixed(2):sgsttax.toFixed(2),
             borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
             alignment: 'right',
             bold: nbold,
@@ -3621,6 +3622,7 @@ export class InvoiceListPage implements OnInit {
         ]);
       }
     }
+
 
 
 
@@ -3877,7 +3879,7 @@ export class InvoiceListPage implements OnInit {
   return data;
   }
 
-  mergeMachines(machines:any):any{
+  mergeMachines(machines:any,isrent:boolean=false):any{
     var data={
       materials:[],
       hsn:[]
@@ -3886,8 +3888,8 @@ export class InvoiceListPage implements OnInit {
     let entry=data.materials.filter(m=>m.item==machine.machineName && m.category==machine.machineCategory && m.hsnNo==machine.machinehsncode);
     if(entry.length>0){
       entry[0].qty=entry[0].qty+Number(machine.machineCount);
-      entry[0].amount=entry[0].amount+ + Number(machine.machineCount)*Number(machine.mchInstCharges);
-      entry[0].tax=entry[0].tax+ Number(machine.machineCount)*Number(machine.mchInstCharges)*0.18;
+      entry[0].amount=entry[0].amount+ + Number(machine.machineCount)*Number(isrent?machine.mchRent:machine.mchInstCharges);
+      entry[0].tax=entry[0].tax+ Number(machine.machineCount)*Number(isrent?machine.mchRent:machine.mchInstCharges)*0.18;
       entry[0].totamount=entry[0].totamount+entry[0].amount+ entry[0].tax;
     }
     else{
@@ -3898,17 +3900,17 @@ export class InvoiceListPage implements OnInit {
       mch.gst="18%",
       mch.uom="mch",
       mch.qty=Number(machine.machineCount),
-      mch.rate=Number(machine.mchInstCharges),
+      mch.rate=Number(isrent?machine.mchRent:machine.mchInstCharges),
       mch.qty=Number(machine.machineCount);
-      mch.amount= Number(machine.machineCount)*Number(machine.mchInstCharges);
-      mch.tax= Number(machine.machineCount)*Number(machine.mchInstCharges)*0.18;
+      mch.amount= Number(machine.machineCount)*Number(isrent?machine.mchRent:machine.mchInstCharges);
+      mch.tax= Number(machine.machineCount)*Number(isrent?machine.mchRent:machine.mchInstCharges)*0.18;
       mch.totamount=mch.amount+ mch.tax;
       data.materials.push(Object.assign({},mch));
     }
     let entryhsn=data.hsn.filter(m=>m.hsnNo==machine.machinehsncode);
     if(entryhsn.length>0){
-      entry[0].amount=entry[0].amount+ + Number(machine.machineCount)*Number(machine.mchInstCharges);
-      entry[0].tax=entry[0].tax+ Number(machine.machineCount)*Number(machine.mchInstCharges)*0.18;
+      entry[0].amount=entry[0].amount+ + Number(machine.machineCount)*Number(isrent?machine.mchRent:machine.mchInstCharges);
+      entry[0].tax=entry[0].tax+ Number(machine.machineCount)*Number(isrent?machine.mchRent:machine.mchInstCharges)*0.18;
       entry[0].totamount=entry[0].totamount+entry[0].amount+ entry[0].tax;
     }
     else{
@@ -3918,8 +3920,8 @@ export class InvoiceListPage implements OnInit {
       mch.hsnNo=machine.machinehsncode;
       mch.gst="18%",
       mch.uom="machine",
-      mch.amount= Number(machine.machineCount)*Number(machine.mchInstCharges);
-      mch.tax= Number(machine.machineCount)*Number(machine.mchInstCharges)*0.18;
+      mch.amount= Number(machine.machineCount)*Number(isrent?machine.mchRent:machine.mchInstCharges);
+      mch.tax= Number(machine.machineCount)*Number(isrent?machine.mchRent:machine.mchInstCharges)*0.18;
       mch.totamount=mch.amount+ mch.tax;
       data.hsn.push(Object.assign({},mch));
     }

@@ -208,7 +208,9 @@ export class DeliveryChallanListPage implements OnInit {
        instcount=instcount+1;
       }
     }
-      if(instcount!=result.length){
+    console.log(result.length);
+    console.log(instcount);
+      if(instcount>0 && instcount!=result.length){
         this.toastController
           .create({
             message:
@@ -259,6 +261,7 @@ export class DeliveryChallanListPage implements OnInit {
 
 
   async nonsezChallan(req){
+console.log(req);
     let branch:MastBranch=await (await this.divisionService.getBrancheByName(req['branch']))[0];
     let demodata = {
       logo: this.getBase64Image(),
@@ -336,10 +339,10 @@ export class DeliveryChallanListPage implements OnInit {
         let mat = [];
         mat.push(
           index + 1,
-          m['machineName'] + '-' + m['machineType'] + ' [srno:'+m['machinesrno']+']',
+          m['machineName'] + '-' + m['machineType'] + ' [srno:'+m['machineSrNo']+']',
           m['machineCount'],
           'Nos',
-          m['machinehsnNo'],
+          m['machinehsncode'],
         );
         docDefinition.content[0].table.body.push(mat);
       });

@@ -72,10 +72,10 @@ export class ClientBillingPage implements OnInit {
   initializeForm() {
     this.form = new FormGroup({
       billName: new FormControl(this.billingDetail!=null?this.billingDetail.billName:this.clientSales.client.name, { updateOn: 'blur',validators: [Validators.required] }),
-      billAddress: new FormControl(this.billingDetail!=null?this.billingDetail.billAddress:this.clientLocation.address, { updateOn: 'blur',validators: [Validators.required] }),
-      location: new FormControl(this.billingDetail!=null?this.billingDetail.location:this.clientLocation.city, { updateOn: 'blur',validators: [Validators.required] }),
-      installAt: new FormControl(this.billingDetail!=null?this.billingDetail.installAt:this.clientLocation.installAt, { updateOn: 'blur',validators: [Validators.required] }),
-      installAddress: new FormControl(this.billingDetail!=null?this.billingDetail.installAddress:this.clientLocation.installAddress, { updateOn: 'blur',validators: [Validators.required] }),
+      billAddress: new FormControl(this.clientLocation.address, { updateOn: 'blur',validators: [Validators.required] }),
+      location: new FormControl(this.clientLocation.city, { updateOn: 'blur',validators: [Validators.required] }),
+      installAt: new FormControl(this.clientLocation.installAt, { updateOn: 'blur',validators: [Validators.required] }),
+      installAddress: new FormControl(this.clientLocation.installAddress, { updateOn: 'blur',validators: [Validators.required] }),
       gstno: new FormControl(this.billingDetail!=null?this.billingDetail.gstno:this.clientSales.client.gstNumber, { updateOn: 'blur',validators: [Validators.required] }),
       taxType: new FormControl(this.billingDetail!=null?this.billingDetail.taxType:null, { updateOn: 'blur',validators: [Validators.required] }),
       materialDetails:this.billingDetail!=null?this.buildMaterialDetail(this.billingDetail):new FormArray([this.createMaterialDetail()]),
