@@ -6,7 +6,7 @@ import { combineLatest, Subscription } from 'rxjs';
 import { GetNewId } from 'src/app/utilities/dataconverters';
 import { Client } from '../../clients/client.model';
 import { ClientService } from '../../clients/client.service';
-import { ClientStatus, MachineDetail, MastBranch } from '../../models/division.model';
+import { ClientStatus, MachineDetail, MastAccOwner, MastBranch } from '../../models/division.model';
 import { DivisionService } from '../../services/division.service';
 import { ClientSalesPipeline, Location, Machine, SalesPipeline } from '../salespipeline.model';
 import { SalespipelineService, } from '../salespipeline.service';
@@ -35,6 +35,7 @@ export class EditSalesPage implements OnInit {
   machineCategory:string[]
   lastComment:string;
   branches:MastBranch[];
+  accowners:MastAccOwner[];
   private salesPipeSub: Subscription;
 
   get locations() {
@@ -65,6 +66,10 @@ export class EditSalesPage implements OnInit {
         updateOn: 'blur',
         validators: [Validators.required],
       }),
+      accowner:new FormControl(location!=null?location.accowner:null, {
+        updateOn: "blur",
+        validators: [Validators.required],
+      }),
       address: new FormControl(location!=null?location.address:null, {
         updateOn: 'blur',
         validators: [Validators.required],
@@ -77,6 +82,7 @@ export class EditSalesPage implements OnInit {
       }),
       branch: new FormControl(location!=null?location.branch:null, {
         updateOn: 'blur',
+         validators: [Validators.required],
       }),
       currentStatus: new FormControl(location!=null?location.currentStatus:null, {
         updateOn: 'blur',
@@ -170,138 +176,140 @@ export class EditSalesPage implements OnInit {
     private divisionService:DivisionService,
   ) {}
   async ngOnInit() {
+    this.isLoading = true;
     this.route.paramMap.subscribe((paramMap) => {
       if (!paramMap.has('salesId')) {
         this.navCtrl.navigateBack('/salespipeline');
       }
       this.saleId = paramMap.get('salesId');
-      this.isLoading = true;
-      this.loadSalesPipeline(this.saleId);
     });
-
-
-
-
   }
-loadSalesPipeline(saleId){
-this.salesPipeSub=combineLatest([
-  this.salesPipelineService.getClientSalesPipeline(saleId),
-  this.clientService.getClientList(),
-  this.divisionService.getClientStatusList(),
-  this.divisionService.getMachineDetailList()
-]).subscribe((res)=>{
-this.salesPipeline=res[0];
-this.clients=res[1];
-this.clientsStatus=res[2];
-this.machineDetail=res[3];
-this.machines=this.machineDetail.filter(item=>item.group==0).sort((a,b)=>a.srno-b.srno).map(item=>item.name);
-this.machineType=this.machineDetail.filter(item=>item.group==1).sort((a,b)=>a.srno-b.srno).map(item=>item.name);
-this.machineCategory=this.machineDetail.filter(item=>item.group==2).sort((a,b)=>a.srno-b.srno).map(item=>item.name);
+    loadSalesPipeline(saleId){
+    this.salesPipeSub=combineLatest([
+      this.salesPipelineService.getClientSalesPipeline(saleId),
+      this.clientService.getClientList(),
+      this.divisionService.getClientStatusList(),
+      this.divisionService.getMachineDetailList()
+    ]).subscribe((res)=>{
+    this.salesPipeline=res[0];
+    this.clients=res[1];
+    this.clientsStatus=res[2];
+    this.machineDetail=res[3];
+    this.machines=this.machineDetail.filter(item=>item.group==0).sort((a,b)=>a.srno-b.srno).map(item=>item.name);
+    this.machineType=this.machineDetail.filter(item=>item.group==1).sort((a,b)=>a.srno-b.srno).map(item=>item.name);
+    this.machineCategory=this.machineDetail.filter(item=>item.group==2).sort((a,b)=>a.srno-b.srno).map(item=>item.name);
 
-this.lastComment=res[0].comment;
-
-
-this.clientId=this.salesPipeline.clientId;
-if(this.salesPipeline.group!=null){
-  this.loadedClients=this.clients.filter(item=> item.group===this.salesPipeline.group);
-}
-else {
-  this.loadedClients=this.clients;
-}
-this.clientGroup = this.clients
-  .map((item) => item.group)
-  .filter((value, index, self) => {
-    if (value != null) return self.indexOf(value) === index;
-  });
-
-let locationArray=new FormArray([]);
-this.salesPipeline.locations.forEach((item,i)=>{
-  let location=this.salesPipeline.locations[i];
-  let machineArray=new FormArray([]);
-  location.machines.forEach((item,j)=>{
-    let machine=location.machines[j];
-    machineArray.push(this.buildMachineDetailForm(machine))
-  })
-  locationArray.push(this.buildDataEntryForm(location,machineArray))
-})
+    this.lastComment=res[0].comment;
 
 
-this.form = new FormGroup({
-  dataEntry: locationArray,
-  group: new FormControl(this.salesPipeline.group, {
-    updateOn: 'blur',
-  }),
-  client: new FormControl(this.salesPipeline.clientId, {
-    updateOn: 'blur',
-    validators: [Validators.required],
-  }),
-  comments: new FormControl(this.salesPipeline.comment, {
-    updateOn: 'blur',
-    validators: [Validators.required, Validators.maxLength(180)],
-  }),
-  amount: new FormControl(this.salesPipeline.amount, {
-    updateOn: 'blur',
-  }),
-  billingAmount: new FormControl(this.salesPipeline.billingAmount, {
-    updateOn: 'blur',
-  }),
-  machineCount: new FormControl(this.salesPipeline.machineCount, {
-    updateOn: 'blur',
-  }),
-});
+    this.clientId=this.salesPipeline.clientId;
+    if(this.salesPipeline.group!=null){
+      this.loadedClients=this.clients.filter(item=> item.group===this.salesPipeline.group);
+    }
+    else {
+      this.loadedClients=this.clients;
+    }
+    this.clientGroup = this.clients
+      .map((item) => item.group)
+      .filter((value, index, self) => {
+        if (value != null) return self.indexOf(value) === index;
+      });
 
-this.form.valueChanges.subscribe(val=>{
-  if(val.client == null)
-  return;
-  let clientamount:number=0;
-  let clientbillamt:number=0;
-  let clientmachinecount=0;
-  this.form.get('dataEntry')['controls'].forEach((location,i) => {
-    let locamount:number=0;
-    let locmachinecount=0;
-    let locbillamt:number=0;
-    this.form.get('dataEntry')['controls'][i].get('machineDetails')['controls'].forEach((machine,j) => {
-      let rate:number=this.form.get('dataEntry')['controls'][i].get('machineDetails')['controls'][j].get('rate').value;
-      let mccount:number=this.form.get('dataEntry')['controls'][i].get('machineDetails')['controls'][j].get('machineCount').value;
-      let conflevel:number=this.form.get('dataEntry')['controls'][i].get('machineDetails')['controls'][j].get('conflevel').value;
-      let amt=rate*Math.round(mccount*conflevel/100);
+    let locationArray=new FormArray([]);
+    this.salesPipeline.locations.forEach((item,i)=>{
+      let location=this.salesPipeline.locations[i];
+      let machineArray=new FormArray([]);
+      location.machines.forEach((item,j)=>{
+        let machine=location.machines[j];
+        machineArray.push(this.buildMachineDetailForm(machine))
+      })
+      locationArray.push(this.buildDataEntryForm(location,machineArray))
+    })
 
-      let closureDate=new Date(this.form.get('dataEntry')['controls'][i].get('closureDate').value);
-      let closureamt=this.financialYearCalculation(closureDate,amt);
 
-      locamount=locamount+amt;
-      clientamount=clientamount+amt;
-      locbillamt=locbillamt+closureamt;
-      clientbillamt=clientbillamt+closureamt;
-      locmachinecount=locmachinecount+mccount;
-      clientmachinecount=clientmachinecount+mccount;
-
-      this.form.get('dataEntry')['controls'][i].get('machineDetails')['controls'][j].get('amount').patchValue(amt,{emitEvent: false});
-      this.form.get('dataEntry')['controls'][i].get('machineDetails')['controls'][j].get('billingAmount').patchValue(closureamt,{emitEvent: false});
-
+    this.form = new FormGroup({
+      dataEntry: locationArray,
+      group: new FormControl(this.salesPipeline.group, {
+        updateOn: 'blur',
+      }),
+      client: new FormControl(this.salesPipeline.clientId, {
+        updateOn: 'blur',
+        validators: [Validators.required],
+      }),
+      comments: new FormControl(this.salesPipeline.comment, {
+        updateOn: 'blur',
+        validators: [Validators.required, Validators.maxLength(180)],
+      }),
+      amount: new FormControl(this.salesPipeline.amount, {
+        updateOn: 'blur',
+      }),
+      billingAmount: new FormControl(this.salesPipeline.billingAmount, {
+        updateOn: 'blur',
+      }),
+      machineCount: new FormControl(this.salesPipeline.machineCount, {
+        updateOn: 'blur',
+      }),
     });
 
-    this.form.get('dataEntry')['controls'][i].get('amount').patchValue(locamount,{emitEvent: false});
-    this.form.get('dataEntry')['controls'][i].get('billingAmount').patchValue(locbillamt,{emitEvent: false});
-    this.form.get('dataEntry')['controls'][i].get('machineCount').patchValue(locmachinecount,{emitEvent: false});
+    this.form.valueChanges.subscribe(val=>{
+      if(val.client == null)
+      return;
+      let clientamount:number=0;
+      let clientbillamt:number=0;
+      let clientmachinecount=0;
+      this.form.get('dataEntry')['controls'].forEach((location,i) => {
+        let locamount:number=0;
+        let locmachinecount=0;
+        let locbillamt:number=0;
+        this.form.get('dataEntry')['controls'][i].get('machineDetails')['controls'].forEach((machine,j) => {
+          let rate:number=this.form.get('dataEntry')['controls'][i].get('machineDetails')['controls'][j].get('rate').value;
+          let mccount:number=this.form.get('dataEntry')['controls'][i].get('machineDetails')['controls'][j].get('machineCount').value;
+          let conflevel:number=this.form.get('dataEntry')['controls'][i].get('machineDetails')['controls'][j].get('conflevel').value;
+          let amt=rate*Math.round(mccount*conflevel/100);
+
+          let closureDate=new Date(this.form.get('dataEntry')['controls'][i].get('closureDate').value);
+          let closureamt=this.financialYearCalculation(closureDate,amt);
+
+          locamount=locamount+amt;
+          clientamount=clientamount+amt;
+          locbillamt=locbillamt+closureamt;
+          clientbillamt=clientbillamt+closureamt;
+          locmachinecount=locmachinecount+mccount;
+          clientmachinecount=clientmachinecount+mccount;
+
+          this.form.get('dataEntry')['controls'][i].get('machineDetails')['controls'][j].get('amount').patchValue(amt,{emitEvent: false});
+          this.form.get('dataEntry')['controls'][i].get('machineDetails')['controls'][j].get('billingAmount').patchValue(closureamt,{emitEvent: false});
+
+        });
+
+        this.form.get('dataEntry')['controls'][i].get('amount').patchValue(locamount,{emitEvent: false});
+        this.form.get('dataEntry')['controls'][i].get('billingAmount').patchValue(locbillamt,{emitEvent: false});
+        this.form.get('dataEntry')['controls'][i].get('machineCount').patchValue(locmachinecount,{emitEvent: false});
 
 
-  });
-  this.form.get('amount').patchValue(clientamount,{emitEvent: false});
-  this.form.get('billingAmount').patchValue(clientbillamt,{emitEvent: false});
-  this.form.get('machineCount').patchValue(clientmachinecount,{emitEvent: false});
-})
+      });
+      this.form.get('amount').patchValue(clientamount,{emitEvent: false});
+      this.form.get('billingAmount').patchValue(clientbillamt,{emitEvent: false});
+      this.form.get('machineCount').patchValue(clientmachinecount,{emitEvent: false});
+    })
 
-this.isLoading=false;
-})
-}
+    this.isLoading=false;
+    })
+    }
 
 
  async  ionViewWillEnter() {
     await this.loadBranches();
+    await this.loadAccOwners();
+    this.loadSalesPipeline(this.saleId);
     this.clientService.fetchClients().subscribe(() => {});
     this.salesPipelineService.getClientSalesPipeline(this.saleId);
 
+  }
+
+  async loadAccOwners(){
+    this.accowners=await this.divisionService.getAccOwners();
+    return true;
   }
 
   async loadBranches(){
@@ -395,7 +403,8 @@ this.isLoading=false;
           location.billingAmount,
           location.machineCount,
           location.id,
-          location.branch
+          location.branch,
+          location.accowner
         )
       );
     }

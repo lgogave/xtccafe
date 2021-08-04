@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DCMaterial, Invoice, ReceiptBook, RentalInvoice } from '../salespipeline.model';
 import { SalespipelineService } from '../salespipeline.service';
-import {Platform} from '@ionic/angular'
+import {AlertController, Platform, ToastController} from '@ionic/angular'
 import { File } from '@ionic-native/file/ngx';
 import { FileOpener } from '@ionic-native/file-opener/ngx';
 import pdfMake from 'pdfmake/build/pdfmake';
@@ -41,6 +41,8 @@ export class InvoiceListPage implements OnInit {
     private divisionService:DivisionService,
     private datePipe:DatePipe,
     private router: Router,
+    private toastController: ToastController,
+    private alertCtrl:AlertController
     ) { }
 
  async ngOnInit() {
@@ -79,6 +81,7 @@ export class InvoiceListPage implements OnInit {
           req.machineDetails.push(Object.assign({},element));
         });
       }
+
     this.createInstallInvoice(req,invoice,invoice.taxType);
   }
 
@@ -90,14 +93,26 @@ export class InvoiceListPage implements OnInit {
   }
 
   async  createInvoice(req,invoice,taxType){
+
     let branch: MastBranch = await(
       await this.divisionService.getBrancheByName(req['branch'])
     )[0];
+
+    let billingDetail=await this.salespiplineService.getBillingDetail(req['salesId'],req['locationId']);
+    let mgstNo:string='';
+    let instNo:string='';
+    if (billingDetail) {
+      mgstNo=billingDetail['gstno'];
+      if(invoice['billAddress'].indexOf('GST') <= -1)
+      instNo = 'GST No:' + billingDetail['gstno'];
+    } else {
+      instNo='';
+    }
     let demodata = {
       logo: this.getBase64Image(),
       authSignature:this.getAuthSignature(),
-      clientaddress: `Consignee (Ship to)\n${invoice['installAt']}\n${invoice['installAddress']}`,
-      buyeraddress: `Buyer (Bill to)\n${invoice['billName']}\n${invoice['billAddress']}`,
+      clientaddress: `Consignee (Ship to)\n${invoice['installAt']}\n${invoice['installAddress']}\nGST No:${mgstNo}`,
+      buyeraddress: `Buyer (Bill to)\n${invoice['billName']}\n${invoice['billAddress']}\n${instNo}`,
       reqId: req['id'],
       date: convertTimeStampToDate(invoice.createdOn),
     };
@@ -594,7 +609,7 @@ export class InvoiceListPage implements OnInit {
       },
     ]);
     //IGST Payable
-    if(taxType=="IGST"){
+    if(taxType.trim()=="IGST"){
     subtable.body.push([
       {
         text: '',
@@ -809,7 +824,7 @@ export class InvoiceListPage implements OnInit {
 
     //Inset tax table later
     let taxtable: any =[];
-    if(taxType=="IGST"){
+    if(taxType.trim()=="IGST"){
     taxtable = [
       {
         colSpan: 8,
@@ -1333,11 +1348,19 @@ export class InvoiceListPage implements OnInit {
     let branch: MastBranch = await(
       await this.divisionService.getBrancheByName(req['branch'])
     )[0];
+
+    let billingDetail=await this.salespiplineService.getBillingDetail(req['salesId'],req['locationId']);
+    let mgstNo:string='';
+    if(billingDetail)
+   {
+    mgstNo=billingDetail['gstno'];
+   }
+
     let demodata = {
       logo: this.getBase64Image(),
       authSignature:this.getAuthSignature(),
-      clientaddress: `Consignee (Ship to)\n${invoice['installAt']}\n${invoice['installAddress']}`,
-      buyeraddress: `Buyer (Bill to)\n${invoice['billName']}\n${invoice['billAddress']}`,
+      clientaddress: `Consignee (Ship to)\n${invoice['installAt']}\n${invoice['installAddress']}\nGST No:${mgstNo}`,
+      buyeraddress: `Buyer (Bill to)\n${invoice['billName']}\n${invoice['billAddress']}\nGST No:${mgstNo}`,
       reqId: req['id'],
       date: convertTimeStampToDate(invoice.createdOn),
     };
@@ -1716,7 +1739,7 @@ export class InvoiceListPage implements OnInit {
           borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
         },
         {
-          text: m['category'] + '-' + m['item'],
+          text: m['category'],
           fontSize: 8,
           borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
         },
@@ -1834,7 +1857,7 @@ export class InvoiceListPage implements OnInit {
       },
     ]);
     //IGST Payable
-    if(taxType=="IGST"){
+    if(taxType.trim()=="IGST"){
     subtable.body.push([
       {
         text: '',
@@ -2049,7 +2072,7 @@ export class InvoiceListPage implements OnInit {
 
     //Inset tax table later
     let taxtable: any =[];
-    if(taxType=="IGST"){
+    if(taxType.trim()=="IGST"){
     taxtable = [
       {
         colSpan: 8,
@@ -3105,7 +3128,7 @@ export class InvoiceListPage implements OnInit {
       },
     ]);
     //IGST Payable
-    if(taxType=="IGST"){
+    if(taxType.trim()=="IGST"){
     subtable.body.push([
       {
         text: '',
@@ -3327,7 +3350,7 @@ export class InvoiceListPage implements OnInit {
 
     //Inset tax table later
     let taxtable: any =[];
-    if(taxType=="IGST"){
+    if(taxType.trim()=="IGST"){
       taxtable = [
         {
           colSpan: 8,
@@ -3909,9 +3932,9 @@ export class InvoiceListPage implements OnInit {
     }
     let entryhsn=data.hsn.filter(m=>m.hsnNo==machine.machinehsncode);
     if(entryhsn.length>0){
-      entry[0].amount=entry[0].amount+ + Number(machine.machineCount)*Number(isrent?machine.mchRent:machine.mchInstCharges);
-      entry[0].tax=entry[0].tax+ Number(machine.machineCount)*Number(isrent?machine.mchRent:machine.mchInstCharges)*0.18;
-      entry[0].totamount=entry[0].totamount+entry[0].amount+ entry[0].tax;
+      entryhsn[0].amount=entryhsn[0].amount+ + Number(machine.machineCount)*Number(isrent?machine.mchRent:machine.mchInstCharges);
+      entryhsn[0].tax=entryhsn[0].tax+ Number(machine.machineCount)*Number(isrent?machine.mchRent:machine.mchInstCharges)*0.18;
+      entryhsn[0].totamount=entryhsn[0].totamount+entryhsn[0].amount+ entryhsn[0].tax;
     }
     else{
       var mch:any=[];
@@ -3932,6 +3955,50 @@ export class InvoiceListPage implements OnInit {
 editInvoice(req){
   this.router.navigate(['/salespipeline/editinvoice/'+req.id]);
 }
+deleteInvoice(req){
+  this.alertCtrl.create({
+    header: 'Delete Invoice!',
+    message:
+      '<strong>Are you sure you want delete this invoice?</strong>',
+    buttons: [
+      {
+        text: 'Cancel',
+        role: 'cancel',
+        handler: () => {
+        },
+      },
+      {
+        text: 'Okay',
+        handler:async () => {
+
+        },
+      },
+    ],
+  }).then((alertEl) => {
+    alertEl.present();
+  });
+
+
+}
+updateDC(invoice: Invoice) {
+  invoice.dcIds.forEach((element) => {
+    this.salespiplineService
+      .addupdateDC({ isUsed: false, id: element }, true)
+      .subscribe((res) => {
+        this.toastController
+          .create({
+            message: 'Invoice deleted',
+            duration: 2000,
+            color: 'success',
+          })
+          .then((tost) => {
+           this.doRefresh(null);
+          });
+      });
+  });
+}
+
+
 async doRefresh(event) {
   this.isLoading=true;
   if(this.locId!=null){
@@ -3995,11 +4062,14 @@ async onFilterUpdate(ev: any) {
   this.invoiceCount= this.filterinvoicelist.length;
 }
 async applyFilter(){
-
   let serchTerm = this.searchElement.value;
   let filterinvoices: Invoice[] = [];
   this.invoicelist.forEach((inv) => {
-    if(inv.clientName.toLowerCase().indexOf(serchTerm.toLowerCase())> -1 ||
+    if(serchTerm.toLowerCase()=="machine" && inv.srNo.indexOf("/Machine")>-1){
+      inv['isChecked']=false;
+      filterinvoices.push(inv);
+    }
+    else if(inv.clientName.toLowerCase().indexOf(serchTerm.toLowerCase())> -1 ||
     inv.displaymonth.toLowerCase().indexOf(serchTerm.toLowerCase()) > -1
     ) {
       inv['isChecked']=false;

@@ -5,7 +5,7 @@ import { LoadingController, ToastController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import { Client } from 'src/app/clients/client.model';
 import { ClientService } from 'src/app/clients/client.service';
-import { ClientStatus, MachineDetail } from 'src/app/models/division.model';
+import { ClientStatus, MachineDetail, MastAccOwner, MastBranch } from 'src/app/models/division.model';
 import { DivisionService } from 'src/app/services/division.service';
 import { GetNewId } from 'src/app/utilities/dataconverters';
 import { ClientSalesPipeline, Location, Machine, SalesPipeline } from '../salespipeline.model';
@@ -29,6 +29,9 @@ export class AddSalesPage implements OnInit {
   machines:string[]
   machineType:string[]
   machineCategory:string[]
+  branches:MastBranch[];
+  accowners:MastAccOwner[];
+
 
 
 
@@ -60,6 +63,10 @@ export class AddSalesPage implements OnInit {
   return new FormGroup({
     machineDetails: new FormArray([this.buildMachineDetailForm()]),
     city: new FormControl(null, {
+      updateOn: "blur",
+      validators: [Validators.required],
+    }),
+    accowner: new FormControl(null, {
       updateOn: "blur",
       validators: [Validators.required],
     }),
@@ -229,7 +236,9 @@ buildMachineDetailForm(){
       this.machineType=this.machineDetail.filter(item=>item.group==1).sort((a,b)=>a.srno-b.srno).map(item=>item.name);
 
     }
-  ionViewWillEnter(){
+  async ionViewWillEnter(){
+    await this.loadBranches();
+    await this.loadAccOwners();
     // this.clientService.fetchClients().subscribe(() => {
     // });
   }
@@ -312,7 +321,8 @@ private AddClientSalesPipeLine(loadingEl: HTMLIonLoadingElement){
         location.billingAmount,
         location.machineCount,
         GetNewId(),
-        location.branch
+        location.branch,
+        location.accowner
         ))
     }
     let clientSalesPipeline: ClientSalesPipeline = new ClientSalesPipeline(
@@ -409,5 +419,15 @@ this.machineCategory=this.machineDetail.filter(item=>item.ref==ref && item.group
   }
 }
 
+async loadAccOwners(){
+  this.accowners=await this.divisionService.getAccOwners();
+  return true;
+}
+
+
+async loadBranches(){
+  this.branches=await this.divisionService.getBranches();
+  return true;
+}
 
 }

@@ -150,7 +150,20 @@ export class DeliveryChallanListPage implements OnInit {
     let serchTerm = this.searchElement.value;
     let filterdc: DCDetailModel[] = [];
     this.dcDetail.forEach((dc) => {
-        if (serchTerm.toLowerCase() == 'pending') {
+
+      if (serchTerm.toLowerCase() == 'pending machine') {
+        if (dc.isUsed == false && dc.srNo.indexOf("/Machine")>-1 && dc['isDelete'] != true) {
+          dc.isSelected = false;
+          filterdc.push(dc);
+        }
+      }
+      else if (serchTerm.toLowerCase() == 'pending con') {
+        if (dc.isUsed == false && dc.srNo.indexOf("/CON")>-1 && dc['isDelete'] != true) {
+          dc.isSelected = false;
+          filterdc.push(dc);
+        }
+      }
+        else if (serchTerm.toLowerCase() == 'pending') {
         if (dc.isUsed == false && dc['isDelete'] != true) {
           dc.isSelected = false;
           filterdc.push(dc);
@@ -261,11 +274,11 @@ export class DeliveryChallanListPage implements OnInit {
 
 
   async nonsezChallan(req){
-console.log(req);
+
     let branch:MastBranch=await (await this.divisionService.getBrancheByName(req['branch']))[0];
     let demodata = {
       logo: this.getBase64Image(),
-      clientaddress: `Consignee\n${req['billName']}\n${req['address']}`,
+      clientaddress: `Consignee\n${req['location']}\n${req['address']}`,
       reqId: req['id'],
       srno: req['srNo'],
       dcdate: req['date'],

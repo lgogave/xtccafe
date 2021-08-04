@@ -45,8 +45,6 @@
             <div style="width: 10%;">
               <ion-checkbox style="margin-top:-40px!important;" (ionChange)="chkInvoiceChange($event,inv)" [(ngModel)]="inv.isChecked"></ion-checkbox>
             </div>
-
-
             <div style="width: 90%;">
               <ion-label style="margin-top:20px!important;"> {{inv.clientName}}</ion-label>
                <h6><b>Location: </b>{{inv.clientLocation}}</h6>
@@ -65,11 +63,10 @@
               <ion-icon  color="primary" name="create" slot="icon-only"></ion-icon>
             </ion-button>
             <ion-button color="light">
-              <ion-icon  color="primary" name="trash" slot="icon-only"></ion-icon>
+              <ion-icon  color="primary" name="trash" slot="icon-only" ></ion-icon>
             </ion-button>
           </div>
-              </div>
-
+        </div>
           </ion-item>
             </ion-card>
             </ion-col>

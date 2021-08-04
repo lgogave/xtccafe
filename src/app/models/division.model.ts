@@ -59,6 +59,14 @@ export class MastBranch{
   ){}
 }
 
+export class MastAccOwner{
+  constructor(
+    public id:string,
+    public name:string,
+    public isActive:boolean,
+  ){}
+}
+
 
 
 

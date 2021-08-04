@@ -568,7 +568,7 @@ export class SalespipelineService {
       take(1)
     );
   }
-  addupdateInvoice(invoice: Invoice,isUpdate:boolean=false) {
+  addupdateInvoice(invoice: Invoice,isUpdate:boolean=false,isDelete=false) {
     let fetchedUserId: string;
     return this.authService.userId.pipe(
       map((userId) => {
@@ -579,7 +579,14 @@ export class SalespipelineService {
       }),
       switchMap(() => {
         invoice.userId = fetchedUserId;
-        if(!isUpdate){
+        if(isDelete){
+          invoice.isDeleted=true;
+          return this.firebaseService
+          .collection('invoice').doc(invoice.id)
+          .update(Object.assign({}, invoice));
+        }
+        else if(!isUpdate){
+          invoice.isDeleted=false;
           invoice.createdOn = new Date();
           invoice.id=GetNewId();
           return this.firebaseService
@@ -587,6 +594,7 @@ export class SalespipelineService {
           .add(Object.assign({}, invoice));
         }
         else{
+          invoice.isDeleted=false;
           return this.firebaseService
           .collection('invoice').doc(invoice.id)
           .update(Object.assign({}, invoice));
@@ -598,7 +606,7 @@ export class SalespipelineService {
       take(1)
     );
   }
-  addupdateRentalInvoice(invoice: RentalInvoice,isUpdate:boolean=false) {
+  addupdateRentalInvoice(invoice: RentalInvoice,isUpdate:boolean=false,isDelete=false) {
     let fetchedUserId: string;
     return this.authService.userId.pipe(
       map((userId) => {
@@ -609,14 +617,21 @@ export class SalespipelineService {
       }),
       switchMap(() => {
         invoice.userId = fetchedUserId;
-        if(!isUpdate){
-
+        if(isDelete){
+          invoice.isDeleted=true;
+          return this.firebaseService
+          .collection('rental-invoice').doc(invoice.id)
+          .update(Object.assign({}, invoice));
+        }
+        else if(!isUpdate){
+          invoice.isDeleted=false;
           invoice.id=GetNewId();
           return this.firebaseService
           .collection('rental-invoice')
           .add(Object.assign({}, invoice));
         }
         else{
+          invoice.isDeleted=false;
           return this.firebaseService
           .collection('rental-invoice').doc(invoice.id)
           .update(Object.assign({}, invoice));
@@ -785,7 +800,7 @@ export class SalespipelineService {
     if(locId==null){
       snaps= await this.firebaseService
       .collection('invoice', (ref) =>
-        ref.orderBy('createdOn','desc'))
+      ref.where('isDeleted','==',false).orderBy('createdOn','desc'))
       .snapshotChanges()
       .pipe(first())
       .toPromise();
@@ -794,7 +809,8 @@ export class SalespipelineService {
     {
       snaps= await this.firebaseService
       .collection('invoice', (ref) =>
-      ref.where('clientLocationId','==',locId)
+      ref.where('isDeleted','==',false)
+      .where('clientLocationId','==',locId)
       )
       .snapshotChanges()
       .pipe(first())
@@ -894,7 +910,8 @@ export class SalespipelineService {
        if(locId==null && displyMonth!=null){
         snaps= await this.firebaseService
         .collection('rental-invoice', (ref) =>
-        ref.where('displaymonth','==',displyMonth))
+        ref.where('isDeleted','==',false)
+        .where('displaymonth','==',displyMonth))
         .snapshotChanges()
         .pipe(first())
         .toPromise();
@@ -902,7 +919,7 @@ export class SalespipelineService {
       else if(clientId==null){
         snaps= await this.firebaseService
         .collection('rental-invoice', (ref) =>
-         ref.orderBy('createdOn','desc'))
+        ref.where('isDeleted','==',false).orderBy('createdOn','desc'))
         .snapshotChanges()
         .pipe(first())
         .toPromise();
@@ -913,7 +930,9 @@ export class SalespipelineService {
         .collection('rental-invoice', (ref) =>
         ref.where('clientId','==',clientId)
         .where('clientLocationId','==',locId)
-        .where('displaymonth','==',displyMonth))
+        .where('displaymonth','==',displyMonth)
+        .where('isDeleted','==',false)
+        )
         .snapshotChanges()
         .pipe(first())
         .toPromise();

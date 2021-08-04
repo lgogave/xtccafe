@@ -97,6 +97,7 @@ export class Location {
     public machineCount?: number,
     public id?: string,
     public branch?: string,
+    public accowner?: string,
   ) {}
 }
 export class BillingDetail {
@@ -282,6 +283,7 @@ constructor(
   public billAddress?:string,
   public installAt?:string,
   public installAddress?:string,
+  public isDeleted?:boolean,
 ){}
 }
 
@@ -309,7 +311,11 @@ export class RentalInvoice{
     public billName?:string,
     public billAddress?:string,
     public installAt?:string,
-    public installAddress?:string){}
+    public installAddress?:string,
+    public isDeleted?:boolean
+    ){}
+
+
   }
 
 export class ReceiptBook{
