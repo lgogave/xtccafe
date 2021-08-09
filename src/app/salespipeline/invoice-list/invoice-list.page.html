@@ -7,6 +7,9 @@
       <ion-back-button defaultHref="/salespipeline">
       </ion-back-button>
       <ion-title>Invoice List</ion-title>
+      <ion-button  (click)="downloadXL()">
+        <ion-icon name="download-outline" slot="icon-only"></ion-icon>
+      </ion-button>
       <ion-button (click)="invoiceSelect()">
         <ion-icon name="contract-outline" slot="icon-only"></ion-icon>
       </ion-button>
@@ -51,7 +54,8 @@
                <h6><b>Month: </b><ion-icon name="time-outline" size="small"></ion-icon><a style="color: #000"> {{inv.displaymonth}}</a></h6>
                <h6><b>Amount: </b><a style="color: #000"> {{inv.amount+inv.tax| currency:"INR":"symbol"}}</a></h6>
                <h6><b>ID: </b>{{inv.srNo}}</h6>
-              <div [style.visibility]="inv.machines==null ? 'hidden' : 'visible'">
+               <h6><b>Status: </b><a style="color: #000"> {{inv.status=="Creted"}}</a></h6>
+               <div [style.visibility]="inv.machines==null ? 'hidden' : 'visible'">
                 <ion-button color="warning" (click)="consumableInvoice(inv)">Consumables</ion-button>
                 <!-- <ion-button color="warning" (click)="rentalinvoice(inv)">Rental</ion-button> -->
               </div>

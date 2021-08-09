@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
@@ -15,6 +15,9 @@ import { EditInvoicePage } from './edit-invoice.page';
     IonicModule,
     EditInvoicePageRoutingModule
   ],
-  declarations: [EditInvoicePage]
+  declarations: [EditInvoicePage],
+  providers: [
+    DatePipe
+  ],
 })
 export class EditInvoicePageModule {}

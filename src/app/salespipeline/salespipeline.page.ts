@@ -1,11 +1,15 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
-import { AlertController, IonItemSliding, IonSegment, LoadingController } from '@ionic/angular';
+import { AlertController, IonItemSliding, IonSegment, LoadingController, ToastController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
 import { UserService } from '../services/user.service';
 import { ClientSales, ClientSalesPipeline } from './salespipeline.model';
 import { SalespipelineService } from './salespipeline.service';
-
+import {Platform} from '@ionic/angular'
+import { File } from '@ionic-native/file/ngx';
+import * as XLSX from 'xlsx';
+import * as FileSaver from 'file-saver';
+import { ReportService } from '../services/report.service';
 @Component({
   selector: 'app-salespipeline',
   templateUrl: './salespipeline.page.html',
@@ -25,7 +29,11 @@ export class SalespipelinePage implements OnInit, OnDestroy {
     private salespipelineService: SalespipelineService,
     private loadingCtrl: LoadingController,
     private alertCtrl: AlertController,
-    private userService:UserService
+    private userService:UserService,
+    private reportService:ReportService,
+    private toastController: ToastController,
+    private plt: Platform,
+    private file: File,
   ) {}
 
   ngOnInit() {
@@ -179,6 +187,47 @@ export class SalespipelinePage implements OnInit, OnDestroy {
   search($event){
     this.relevantClientSales=this.applyFilter(this.segmentButton.value);
   }
+  async downloadXL(){
+    var arr=await this.reportService.downloadSalesPipeline();
+     var ws=XLSX.utils.json_to_sheet(arr);
+     var wb={Sheets:{'data':ws},SheetNames:['data']};
+     var buffer=XLSX.write(wb,{bookType:'xlsx',type:'array'});
+     var fileType='application/vnd.openxmlformat-officedocument.spreadsheetml.sheet';
+     var fileExtention='.xlsx';
+     var filename=Date.now().toString();
+     var data:Blob=new Blob([buffer],{type:fileType});
+     if (this.plt.is('cordova')) {
+     this.file
+           .writeFile(this.file.externalRootDirectory, `${filename}${fileExtention}`, data, {
+             replace: true,
+           })
+           .then((fileEntry) => {
+             this.toastController
+             .create({
+               message:
+                 'File Saved.',
+               duration: 2000,
+               color: 'Success',
+             })
+             .then((tost) => {
+               tost.present();
+             });
+           });
+         }
+         else{
+           FileSaver.saveAs(data, `${filename}${fileExtention}`);
+           this.toastController
+           .create({
+             message:
+               'File Saved.',
+             duration: 2000,
+             color: 'Success',
+           })
+           .then((tost) => {
+             tost.present();
+           });
+         }
+   }
 
 
 }

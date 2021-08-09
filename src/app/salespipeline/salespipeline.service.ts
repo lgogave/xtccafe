@@ -587,7 +587,6 @@ export class SalespipelineService {
         }
         else if(!isUpdate){
           invoice.isDeleted=false;
-          invoice.createdOn = new Date();
           invoice.id=GetNewId();
           return this.firebaseService
           .collection('invoice')

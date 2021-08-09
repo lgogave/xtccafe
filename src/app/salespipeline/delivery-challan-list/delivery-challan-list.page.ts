@@ -6,7 +6,8 @@ import { MastBranch } from 'src/app/models/division.model';
 import { DivisionService } from 'src/app/services/division.service';
 import { convertTimestampToDate } from '../../utilities/dataconverters';
 import { DCDetail, DCDetailModel, DCMaterial, InvoiceMonth } from '../salespipeline.model';
-
+import * as XLSX from 'xlsx';
+import * as FileSaver from 'file-saver';
 import { SalespipelineService } from '../salespipeline.service';
 import {Platform} from '@ionic/angular'
 import { File } from '@ionic-native/file/ngx';
@@ -18,6 +19,7 @@ import * as converter from 'number-to-words';
 import { InvoiceModalComponent } from '../invoice-modal/invoice-modal.component';
 import { DatePipe } from '@angular/common';
 import { element } from 'protractor';
+import { ReportService } from 'src/app/services/report.service';
 pdfMake.vfs=pdfFonts.pdfMake.vfs;
 
 
@@ -56,6 +58,7 @@ export class DeliveryChallanListPage implements OnInit {
     private modalCtrl:ModalController,
     private datePipe:DatePipe,
     private toastController: ToastController,
+    private reportService:ReportService
 
   ) {}
 
@@ -271,7 +274,49 @@ export class DeliveryChallanListPage implements OnInit {
   viewPdf(req){
     this.nonsezChallan(req);
   }
+  async downloadXL(){
+   var arr=await this.reportService.downloadDC();
+    var ws=XLSX.utils.json_to_sheet(arr);
+    var wb={Sheets:{'data':ws},SheetNames:['data']};
+    var buffer=XLSX.write(wb,{bookType:'xlsx',type:'array'});
+    var fileType='application/vnd.openxmlformat-officedocument.spreadsheetml.sheet';
+    var fileExtention='.xlsx';
+    var filename=Date.now().toString();
+    var data:Blob=new Blob([buffer],{type:fileType});
+    if (this.plt.is('cordova')) {
+    this.file
+          .writeFile(this.file.externalRootDirectory, `${filename}${fileExtention}`, data, {
+            replace: true,
+          })
+          .then((fileEntry) => {
+            this.toastController
+            .create({
+              message:
+                'File Saved.',
+              duration: 2000,
+              color: 'Success',
+            })
+            .then((tost) => {
+              tost.present();
+            });
+          });
+        }
+        else{
+          FileSaver.saveAs(data, `${filename}${fileExtention}`);
+          this.toastController
+          .create({
+            message:
+              'File Saved.',
+            duration: 2000,
+            color: 'Success',
+          })
+          .then((tost) => {
+            tost.present();
+          });
+        }
 
+
+  }
 
   async nonsezChallan(req){
 

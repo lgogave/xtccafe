@@ -13,6 +13,11 @@ import { MastBranch } from 'src/app/models/division.model';
 import { DivisionService } from 'src/app/services/division.service';
 import { DatePipe } from '@angular/common';
 import { convertToDateTime, convertTimeStampToDate } from 'src/app/utilities/dataconverters';
+import * as XLSX from 'xlsx';
+import * as FileSaver from 'file-saver';
+import { ReportService } from 'src/app/services/report.service';
+
+
 pdfMake.vfs=pdfFonts.pdfMake.vfs;
 
 
@@ -42,7 +47,8 @@ export class InvoiceListPage implements OnInit {
     private datePipe:DatePipe,
     private router: Router,
     private toastController: ToastController,
-    private alertCtrl:AlertController
+    private alertCtrl:AlertController,
+    private reportService:ReportService,
     ) { }
 
  async ngOnInit() {
@@ -4084,7 +4090,47 @@ async applyFilter(){
   }
   return filterinvoices;
 }
-
+async downloadXL(){
+  var arr=await this.reportService.downloadInvoices();
+   var ws=XLSX.utils.json_to_sheet(arr);
+   var wb={Sheets:{'data':ws},SheetNames:['data']};
+   var buffer=XLSX.write(wb,{bookType:'xlsx',type:'array'});
+   var fileType='application/vnd.openxmlformat-officedocument.spreadsheetml.sheet';
+   var fileExtention='.xlsx';
+   var filename=Date.now().toString();
+   var data:Blob=new Blob([buffer],{type:fileType});
+   if (this.plt.is('cordova')) {
+   this.file
+         .writeFile(this.file.externalRootDirectory, `${filename}${fileExtention}`, data, {
+           replace: true,
+         })
+         .then((fileEntry) => {
+           this.toastController
+           .create({
+             message:
+               'File Saved.',
+             duration: 2000,
+             color: 'Success',
+           })
+           .then((tost) => {
+             tost.present();
+           });
+         });
+       }
+       else{
+         FileSaver.saveAs(data, `${filename}${fileExtention}`);
+         this.toastController
+         .create({
+           message:
+             'File Saved.',
+           duration: 2000,
+           color: 'Success',
+         })
+         .then((tost) => {
+           tost.present();
+         });
+       }
+}
 
 
 

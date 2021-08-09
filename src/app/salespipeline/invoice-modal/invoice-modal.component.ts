@@ -8,6 +8,7 @@ import { DivisionService } from 'src/app/services/division.service';
 import { FormControl, Validators } from '@angular/forms';
 import { SalespipelineService } from '../salespipeline.service';
 import { MastBranch } from 'src/app/models/division.model';
+import { Console } from 'console';
 @Component({
   selector: 'app-invoice-modal',
   templateUrl: './invoice-modal.component.html',
@@ -17,6 +18,7 @@ export class InvoiceModalComponent {
   @Input() dclist: DCDetailModel[];
   @Input() months: InvoiceMonth[];
   _invoiceMonth = new FormControl('', Validators.required);
+  _invoiceDate = new FormControl(new Date().toISOString(), Validators.required);
   _ponumber = new FormControl('', Validators.required);
   billingDetail: BillingDetail;
   salesDetail: ClientSalesPipeline;
@@ -44,9 +46,7 @@ export class InvoiceModalComponent {
         });
       return;
     }
-
     let result = this.dclist;
-
     if (result[0]?.type == '1') {
       this.createInstalltionInvoice(result[0]);
       return;
@@ -148,6 +148,7 @@ export class InvoiceModalComponent {
     }
     let srNo = await this.padLeadingZeros(receiptBook.srnumber, 6);
     let invoice = new Invoice();
+    invoice.createdOn=new Date(this._invoiceDate.value);
     invoice.srNo = `${receiptBook.category}/${receiptBook.type}/${branch.initials}/${receiptBook.year}/${srNo}`;
     invoice.month = imonth.month;
     invoice.ponumber = ponumber;
@@ -187,6 +188,8 @@ export class InvoiceModalComponent {
     invoice.billAddress = this.billingDetail.billAddress;
     invoice.installAt = this.billingDetail.installAt;
     invoice.installAddress = this.billingDetail.installAddress;
+    invoice.recAmount=0;
+    invoice.modifiedOn=new Date();
     let counter: number = 0;
     this.salespiplineService
       .addupdateInvoice(invoice, false)

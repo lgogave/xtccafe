@@ -1,8 +1,10 @@
+import { DatePipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LoadingController, NavController, ToastController } from '@ionic/angular';
 import { forkJoin } from 'rxjs/internal/observable/forkJoin';
+import { convertTimeStampToDate, convertTimestampToDate, convertToDateTime } from 'src/app/utilities/dataconverters';
 import { Invoice, InvoiceModel, InvoiceMonth, RentalInvoice } from '../salespipeline.model';
 import { SalespipelineService } from '../salespipeline.service';
 
@@ -21,7 +23,8 @@ export class EditInvoicePage implements OnInit {
     private navCtrl: NavController,
     private salesService: SalespipelineService,
     private toastController: ToastController,
-    private router: Router) {
+    private router: Router,
+    private datePipe:DatePipe) {
 
   }
   async doRefresh(event) {
@@ -48,7 +51,6 @@ export class EditInvoicePage implements OnInit {
     if (!this.form.valid) {
       return;
     }
-
     let mchDetail=await this.getMachineDetails(this.invoice.dc[0].salesId,this.invoice.dc[0].locationId);
     let rentInv= await this.salesService.getRentalInvoice(this.invoice.clientId,this.invoice.clientLocationId,this.invoice.displaymonth);
     let invoiceModel = <InvoiceModel>this.form.value;
@@ -61,29 +63,30 @@ export class EditInvoicePage implements OnInit {
       rentInvoice.consumableCap=mchDetail.consumableCap;
       rentInvoice.machines=mchDetail.machineDetail;
     }
-    if(rentInvoice!=null){
-      forkJoin([this.salesService
-        .addupdateInvoice({id:this.invoice.id,
-          ponumber:invoiceModel.ponumber,
-          mchRent:invoiceModel.rent,
-          billName:invoiceModel.billName,
-          billAddress:invoiceModel.billAddress,
-          installAt:invoiceModel.installAt,
-          installAddress:invoiceModel.installAddress,
-        },true),  this.salesService
-        .addupdateRentalInvoice(rentInvoice,true)]).subscribe((res) => {
-          this.toastController
-          .create({
-            message: 'Data updated',
-            duration: 2000,
-            color: 'success',
-          })
-          .then((tost) => {
-            tost.present();
-            this.router.navigate(['/salespipeline/invoicelist/'+this.invoice.clientLocationId]);
-          });
-        });
-    }else{
+    // if(rentInvoice!=null){
+    //   forkJoin([this.salesService
+    //     .addupdateInvoice({id:this.invoice.id,
+    //       ponumber:invoiceModel.ponumber,
+    //       mchRent:invoiceModel.rent,
+    //       billName:invoiceModel.billName,
+    //       billAddress:invoiceModel.billAddress,
+    //       installAt:invoiceModel.installAt,
+    //       installAddress:invoiceModel.installAddress,
+    //       createdOn:new Date(invoiceModel.createdOn)
+    //     },true),  this.salesService
+    //     .addupdateRentalInvoice(rentInvoice,true)]).subscribe((res) => {
+    //       this.toastController
+    //       .create({
+    //         message: 'Data updated',
+    //         duration: 2000,
+    //         color: 'success',
+    //       })
+    //       .then((tost) => {
+    //         tost.present();
+    //         this.router.navigate(['/salespipeline/invoicelist/'+this.invoice.clientLocationId]);
+    //       });
+    //     });
+    // }else{
       this.salesService
         .addupdateInvoice({id:this.invoice.id,
           ponumber:invoiceModel.ponumber,
@@ -92,6 +95,11 @@ export class EditInvoicePage implements OnInit {
           billAddress:invoiceModel.billAddress,
           installAt:invoiceModel.installAt,
           installAddress:invoiceModel.installAddress,
+          status:invoiceModel.status,
+          recAmount:invoiceModel.recAmount,
+          modifiedOn:new Date(),
+          createdOn:new Date(invoiceModel.createdOn),
+          displaymonth:this.datePipe.transform(new Date(invoiceModel.createdOn), 'MMM-yyyy')
         },true).subscribe((res) => {
           this.toastController
           .create({
@@ -104,7 +112,7 @@ export class EditInvoicePage implements OnInit {
             this.router.navigate(['/salespipeline/invoicelist/'+this.invoice.clientLocationId]);
           });
         });
-      }
+      //}
 
     // this.salesService
     // .addupdateInvoice({id:this.invoice.id,
@@ -151,14 +159,18 @@ export class EditInvoicePage implements OnInit {
   }
 
   initializeUpdateForm(){
+
     this.form = new FormGroup({
       ponumber : new FormControl(this.invoice.ponumber, { updateOn: 'blur' }),
+      createdOn:new FormControl(convertTimeStampToDate(this.invoice.createdOn).toISOString(), { updateOn: 'blur' }),
       month:new FormControl(this.invoice.displaymonth, { updateOn: 'blur',validators: [Validators.required] }),
       rent:new FormControl(this.invoice.mchRent, { updateOn: 'blur' }),
       billName:new FormControl(this.invoice.billName, { updateOn: 'blur' }),
       billAddress:new FormControl(this.invoice.billAddress, { updateOn: 'blur' }),
       installAt:new FormControl(this.invoice.installAt, { updateOn: 'blur' }),
-      installAddress:new FormControl(this.invoice.installAddress, { updateOn: 'blur' })
+      installAddress:new FormControl(this.invoice.installAddress, { updateOn: 'blur' }),
+      status:new FormControl(this.invoice.status, { updateOn: 'blur' }),
+      recAmount:new FormControl(this.invoice.recAmount, { updateOn: 'blur' }),
     });
   }
 

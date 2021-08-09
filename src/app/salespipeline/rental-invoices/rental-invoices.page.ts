@@ -14,6 +14,10 @@ import pdfFonts from 'pdfmake/build/vfs_fonts';
 import { SlowBuffer } from 'buffer';
 import * as converter from 'number-to-words';
 import { ActivatedRoute, Router } from '@angular/router';
+import * as XLSX from 'xlsx';
+import * as FileSaver from 'file-saver';
+import { ReportService } from 'src/app/services/report.service';
+
 pdfMake.vfs=pdfFonts.pdfMake.vfs;
 
 @Component({
@@ -28,6 +32,8 @@ export class RentalInvoicesPage implements OnInit {
   rentInvoices:RentalInvoice[]=[];
   filterinvoicelist:RentalInvoice[];
   _invoiceMonth:any ;
+  _invoiceDate:any;
+
   isLoading:boolean=true;
   billingDetail: BillingDetail;
   pdfObj=null;
@@ -42,15 +48,18 @@ export class RentalInvoicesPage implements OnInit {
     private plt: Platform,
     private file: File,
     private fileOpener: FileOpener,  private router: Router,
-    private toastController: ToastController) { }
+    private toastController: ToastController,
+    private reportService:ReportService) { }
 
   ngOnInit() {
   }
   async ionViewWillEnter() {
+
     this.isLoading=true;
     await this.loadMonths();
     this.isLoading=false;
-   this._invoiceMonth = new FormControl(this.invoiceMonth[0].id, Validators.required)
+
+   this._invoiceMonth = new FormControl(this.invoiceMonth[0].id, Validators.required);
     await this.doRefresh(this.invoiceMonth[0].displaymonth);
   }
 async onChangeMonth(event){
@@ -98,19 +107,26 @@ async loadMonths(){
    client.locations.forEach(location => {
     location["invExist"]=false;
     location["rentalInvoice"]=[];
-
+    location["invoiceDate"]= new Date();
     let rentinv= this.rentInvoices.filter(x=>x.clientId==client.clientId && x.clientLocationId==location.id)
    if(rentinv.length>0){
-
     location["invExist"]=true;
     location["rentalInvoice"]=rentinv;
    }
    this.filtersales=this.sales;
-
+   if(location["invExist"]){
+    location["invoiceDate"] =new FormControl(convertTimeStampToDate(location["rentalInvoice"][0].createdOn).toISOString(), Validators.required);
+  }
+  else{
+    location["invoiceDate"]= new FormControl(new Date().toISOString(), Validators.required);
+  }
    //this.invoiceCount= this.filterinvoicelist.length;
   });
   });
  }
+getInvoiceDate(loc){
+
+}
 
  async generateInvoice(rentInvoice:RentalInvoice[]){
   let rentInv= await this.salesService.getRentalInvoice(rentInvoice[0].clientId,rentInvoice[0].clientLocationId,rentInvoice[0].displaymonth);
@@ -529,7 +545,7 @@ async loadMonths(){
       borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
     },
     {
-      text: `Rental for ${invoice.displaymonth}`,
+      text: `Rental for ${this.datePipe.transform(new Date(demodata.date), 'MMM-yyyy')}`,
       fontSize: 10,
       bold: true,
       borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
@@ -1416,7 +1432,8 @@ else if(taxType=="CGST/SGST"){
     rentinvoice.billAddress=this.billingDetail.billAddress;
     rentinvoice.installAt=this.billingDetail.installAt;
     rentinvoice.installAddress=this.billingDetail.installAddress;
-    rentinvoice.createdOn = new Date();
+    rentinvoice.createdOn = new Date(location['invoiceDate'].value);
+    rentinvoice.displaymonth=this.datePipe.transform(rentinvoice.createdOn, 'MMM-yyyy');
     rentalInvoice.push(rentinvoice);
     location['invExist']=true;
     let counter:number=0;
@@ -1426,12 +1443,15 @@ else if(taxType=="CGST/SGST"){
 
     });
 }
-async  updateInvoice (invoice:RentalInvoice[],saleId:string){
+async  updateInvoice (invoice:RentalInvoice[],saleId:string,loc:any){
+
   invoice= await this.salesService.getRentalInvoice(invoice[0].clientId,invoice[0].clientLocationId,invoice [0].displaymonth);
   let rentInvoice=invoice[0];
   let branch:MastBranch= await(await this.divisionService.getBrancheByName(rentInvoice.branch))[0];
   let mchDetail=await this.getMachineDetails(saleId,rentInvoice.clientLocationId);
   this.billingDetail = await this.salesService.getMastRateByLocation(rentInvoice.clientLocationId);
+    rentInvoice.createdOn=new Date(loc['invoiceDate'].value);
+    rentInvoice.displaymonth=this.datePipe.transform(rentInvoice.createdOn, 'MMM-yyyy');
     rentInvoice.srNo=rentInvoice.srNo;
     rentInvoice.branch=branch.name;
     rentInvoice.billName=this.billingDetail.billName;
@@ -1630,6 +1650,52 @@ async clientSelect(){
       element['isChecked']=true;
       });
   }
+}
+
+async downloadXL(){
+  let displayMonth = this.invoiceMonth.filter(
+    (x) => x.id == this._invoiceMonth.value
+  )[0].displaymonth;
+
+  var arr=await this.reportService.downloadRentalInvoices(displayMonth);
+   var ws=XLSX.utils.json_to_sheet(arr);
+   var wb={Sheets:{'data':ws},SheetNames:['data']};
+   var buffer=XLSX.write(wb,{bookType:'xlsx',type:'array'});
+   var fileType='application/vnd.openxmlformat-officedocument.spreadsheetml.sheet';
+   var fileExtention='.xlsx';
+   var filename=Date.now().toString();
+   var data:Blob=new Blob([buffer],{type:fileType});
+   if (this.plt.is('cordova')) {
+   this.file
+         .writeFile(this.file.externalRootDirectory, `${filename}${fileExtention}`, data, {
+           replace: true,
+         })
+         .then((fileEntry) => {
+           this.toastController
+           .create({
+             message:
+               'File Saved.',
+             duration: 2000,
+             color: 'Success',
+           })
+           .then((tost) => {
+             tost.present();
+           });
+         });
+       }
+       else{
+         FileSaver.saveAs(data, `${filename}${fileExtention}`);
+         this.toastController
+         .create({
+           message:
+             'File Saved.',
+           duration: 2000,
+           color: 'Success',
+         })
+         .then((tost) => {
+           tost.present();
+         });
+       }
 }
 
 getBase64Image(){

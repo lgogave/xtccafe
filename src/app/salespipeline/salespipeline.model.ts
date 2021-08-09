@@ -284,6 +284,8 @@ constructor(
   public installAt?:string,
   public installAddress?:string,
   public isDeleted?:boolean,
+  public recAmount?:Number,
+  public modifiedOn?:Date,
 ){}
 }
 
@@ -350,6 +352,9 @@ export class InvoiceModel{
     public billAddress?:string,
     public installAt?:string,
     public installAddress?:string,
+    public createdOn?:Date,
+    public status?:string,
+    public recAmount?:number,
   ){}
 }
 
