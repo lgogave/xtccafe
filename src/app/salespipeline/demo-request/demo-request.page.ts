@@ -3,7 +3,7 @@ import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LoadingController, NavController, ToastController } from '@ionic/angular';
 import { DemoRequest } from '../../models/demo-request.model';
-import { MachineDetail, MastBranch, MastInstallKit, MastStock } from 'src/app/models/division.model';
+import { MachineDetail, MastBranch, MastInstallKit, MastMachine, MastStock } from 'src/app/models/division.model';
 import { DemoRequestService } from 'src/app/services/demo-request.service';
 import { ClientSales, ReceiptBook } from '../salespipeline.model';
 import { SalespipelineService } from '../salespipeline.service';
@@ -22,6 +22,7 @@ export class DemoRequestPage implements OnInit {
   isLoading:boolean=true;
   clientSales:ClientSales;
   machineDetail:MachineDetail[];
+  machinehsncodes:MastMachine[];
   machines:string[];
   machineType:string[];
   machineCategory:string[]
@@ -270,11 +271,11 @@ export class DemoRequestPage implements OnInit {
     matdetails.removeAt(index);
   }
   async loadMachineDetails(){
+   this.machinehsncodes=await this.divisionService.getMachineHSNCodes();
     this.machineDetail=await this.divisionService.getMachineDetailList();
     this.machines=this.machineDetail.filter(item=>item.group==0).sort((a,b)=>a.srno-b.srno).map(item=>item.name);
     this.machineType=this.machineDetail.filter(item=>item.group==1).sort((a,b)=>a.srno-b.srno).map(item=>item.name);
     this.machineCategory=this.machineDetail.filter(item=>item.group==2).sort((a,b)=>a.srno-b.srno).map(item=>item.name);
-
     return true;
   }
   async loadStockDetails(){
@@ -302,6 +303,13 @@ export class DemoRequestPage implements OnInit {
       (a,b)=>a.srno-b.srno).map(item=>item.name);
       if(ref=="FM" || ref=="Mtl(kg/mth)"){
         element.controls['volumeType'].patchValue("Not Applicable",{emitEvent: false})
+      }
+      let hsncodes=this.machinehsncodes.filter(x=>x.name==ref);
+      if(hsncodes?.length>0){
+        element.controls['machinehsnNo'].patchValue(hsncodes[0].hsncode,{emitEvent: false})
+      }
+      else{
+        element.controls['machinehsnNo'].patchValue(null,{emitEvent: false})
       }
   }
   onMaterialChange(event,element){

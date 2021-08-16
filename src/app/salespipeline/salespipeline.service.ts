@@ -570,6 +570,7 @@ export class SalespipelineService {
   }
   addupdateInvoice(invoice: Invoice,isUpdate:boolean=false,isDelete=false) {
     let fetchedUserId: string;
+
     return this.authService.userId.pipe(
       map((userId) => {
         if (!userId) {
@@ -586,6 +587,7 @@ export class SalespipelineService {
           .update(Object.assign({}, invoice));
         }
         else if(!isUpdate){
+          invoice.tranCharges=0;
           invoice.isDeleted=false;
           invoice.id=GetNewId();
           return this.firebaseService
@@ -691,6 +693,24 @@ export class SalespipelineService {
         });
     return billingRate.length>0?billingRate[0]:null;
   }
+
+  async getRateDetail(): Promise<BillingDetail[]> {
+    let snaps= await this.firebaseService
+    .collection('billing-detail')
+    .snapshotChanges()
+    .pipe(first())
+    .toPromise();
+    let rows:BillingDetail[];
+    rows=snaps.map((entry) => {
+        var sl = <BillingDetail>{
+          ...(entry.payload.doc.data() as {}),
+        };
+        sl.id = entry.payload.doc.id;
+        return sl;
+      });
+      return rows;
+    }
+
   async getMastRateByLocation(locationId:string): Promise<any> {
     let snaps = await this.firebaseService
       .collection('billing-detail', (ref) =>

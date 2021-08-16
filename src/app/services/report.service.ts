@@ -3,11 +3,12 @@ import { AngularFirestore } from '@angular/fire/firestore';
 import 'firebase/firestore';
 import { first } from 'rxjs/operators';
 import { ClientSalesPipeline, DCDetail, Invoice, RentalInvoice } from '../salespipeline/salespipeline.model';
+import { SalespipelineService } from '../salespipeline/salespipeline.service';
 @Injectable({
   providedIn: 'root'
 })
 export class ReportService {
-  constructor(private firebaseService: AngularFirestore) { }
+  constructor(private firebaseService: AngularFirestore,private salesService:SalespipelineService) { }
 
   async downloadDC(){
     var collection="delivery-challan";
@@ -85,6 +86,7 @@ export class ReportService {
   }
 
   async downloadInvoices(){
+    let billDetail=await this.salesService.getRateDetail();
     var collection="invoice";
     let snaps = await this.firebaseService.collection(collection).snapshotChanges().pipe(first()).toPromise();
     let tempDoc:Invoice[];
@@ -103,6 +105,12 @@ export class ReportService {
     tempDoc.forEach(function(element,index){
   if (element?.isDeleted == false) {
     var invDate = new Date(element.createdOn['seconds'] * 1000);
+    var mast= billDetail.filter(x=>x.locationId==element.clientLocationId);
+    let gst='';
+    if(mast.length>0){
+      gst=mast[0].gstno;
+    }
+
     var data = {
       id: element.srNo,
       type:
@@ -112,6 +120,7 @@ export class ReportService {
       deliverybranch: element.branch,
       installAt: element.installAt,
       installAddress: element.installAddress,
+
       date:
         invDate.getDate() +
         ' ' +
@@ -120,6 +129,7 @@ export class ReportService {
         invDate.getFullYear(),
       month: element.displaymonth,
       taxType: element.taxType,
+      gst:gst,
       amount:element.amount.toString(),
       tax:element.tax.toString(),
       Total:(element.tax+element.amount).toString(),
@@ -131,6 +141,7 @@ export class ReportService {
 }
 
 async downloadRentalInvoices(month:string){
+  let billDetail=await this.salesService.getRateDetail();
   var collection="rental-invoice";
   let snaps = await this.firebaseService.collection(collection).snapshotChanges().pipe(first()).toPromise();
   let tempDoc:RentalInvoice[];
@@ -149,6 +160,11 @@ var monthNames = [ "January", "February", "March", "April", "May", "June",
   tempDoc.forEach(function(element,index){
 if (element?.isDeleted == false && element.displaymonth==month) {
   var invDate = new Date(element.createdOn['seconds'] * 1000);
+  var mast= billDetail.filter(x=>x.locationId==element.clientLocationId);
+  let gst='';
+  if(mast.length>0){
+    gst=mast[0].gstno;
+  }
   var data={
     id:element.srNo,
     type:'Rental',
@@ -160,6 +176,7 @@ if (element?.isDeleted == false && element.displaymonth==month) {
     date: invDate.getDate() + ' ' + monthNames[invDate.getMonth()] + ' ' + invDate.getFullYear(),
     month:element.displaymonth,
     taxType:element.taxType,
+    gst:gst,
     amount:(element.mchRent).toString(),
     tax:(element.mchRent*0.18).toString(),
     Total:(element.mchRent+(element.mchRent*0.18)).toString(),

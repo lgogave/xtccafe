@@ -286,6 +286,7 @@ constructor(
   public isDeleted?:boolean,
   public recAmount?:Number,
   public modifiedOn?:Date,
+  public tranCharges?:Number,
 ){}
 }
 
@@ -355,6 +356,7 @@ export class InvoiceModel{
     public createdOn?:Date,
     public status?:string,
     public recAmount?:number,
+    public tranCharges?:number,
   ){}
 }
 

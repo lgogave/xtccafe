@@ -24,6 +24,14 @@ export class MachineDetail{
   ){}
 }
 
+export class MastMachine{
+  constructor(
+    public id:string,
+    public name:string,
+    public hsncode:string
+  ){}
+}
+
 export class MastStock{
   constructor(
     public id:string,

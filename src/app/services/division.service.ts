@@ -5,7 +5,7 @@ import { first, map, switchMap, take, tap } from 'rxjs/operators';
 import { AuthService } from '../auth/auth.service';
 import { AngularFirestore } from '@angular/fire/firestore';
 import 'firebase/firestore';
-import { Division,ClientStatus, MachineDetail, MastStock, MastInstallKit, MastBranch, MastAccOwner } from '../models/division.model';
+import { Division,ClientStatus, MachineDetail, MastStock, MastInstallKit, MastBranch, MastAccOwner, MastMachine } from '../models/division.model';
 import { BillingDetail, InvoiceBank } from '../salespipeline/salespipeline.model';
 
 @Injectable({
@@ -67,6 +67,12 @@ export class DivisionService {
     .collection('machine-detail')
       .valueChanges().pipe(first()).toPromise();
     return clientList as MachineDetail[];
+  }
+  async getMachineHSNCodes(): Promise<any> {
+    const machines = await this.firebaseService
+    .collection('mast-machine')
+      .valueChanges().pipe(first()).toPromise();
+    return machines as MastMachine[];
   }
   async getStock(): Promise<any> {
     const result = await this.firebaseService

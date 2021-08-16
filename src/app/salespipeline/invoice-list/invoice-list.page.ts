@@ -737,6 +737,53 @@ export class InvoiceListPage implements OnInit {
     ]);
   }
 
+  let tranCharges=0;
+  if(invoice['tranCharges']!=null&&Number(invoice['tranCharges'])>0){
+    tranCharges=Number(invoice['tranCharges']);
+    amt=amt+tranCharges;
+    totamt = totamt+tranCharges;
+    subtable.body.push([
+      {
+        text: '',
+        borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+      },
+      {
+        text: 'Transport Charges',
+        fontSize: 8,
+        bold: true,
+        borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+      },
+      {
+        text: '',
+        borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+      },
+      {
+        text: '',
+        borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+      },
+      {
+        text: '',
+        borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+      },
+      {
+        text: '',
+        borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+      },
+      {
+        text: '',
+        borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+      },
+      {
+        text: tranCharges.toFixed(2),
+        alignment: 'right',
+        fontSize: 8,
+        bold: true,
+        borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+      },
+    ]);
+  }
+
+
     let totrows =subtable.body.length > 10 ? 1 : 23-subtable.body.length;
     for (let i = 0; i <= totrows; i++) {
       subtable.body.push([
@@ -1977,6 +2024,52 @@ export class InvoiceListPage implements OnInit {
       },
       {
         text: sgsttax.toFixed(2),
+        alignment: 'right',
+        fontSize: 8,
+        bold: true,
+        borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+      },
+    ]);
+  }
+
+  let tranCharges=0;
+  if(invoice['tranCharges']!=null&&Number(invoice['tranCharges'])>0){
+    tranCharges=Number(invoice['tranCharges']);
+    amt=amt+tranCharges;
+    totamt = totamt+tranCharges;
+    subtable.body.push([
+      {
+        text: '',
+        borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+      },
+      {
+        text: 'Transport Charges',
+        fontSize: 8,
+        bold: true,
+        borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+      },
+      {
+        text: '',
+        borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+      },
+      {
+        text: '',
+        borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+      },
+      {
+        text: '',
+        borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+      },
+      {
+        text: '',
+        borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+      },
+      {
+        text: '',
+        borderColor: ['#000000', '#ffffff', '#000000', '#ffffff'],
+      },
+      {
+        text: tranCharges.toFixed(2),
         alignment: 'right',
         fontSize: 8,
         bold: true,

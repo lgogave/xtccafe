@@ -97,6 +97,7 @@ export class EditInvoicePage implements OnInit {
           installAddress:invoiceModel.installAddress,
           status:invoiceModel.status,
           recAmount:invoiceModel.recAmount,
+          tranCharges:invoiceModel.tranCharges,
           modifiedOn:new Date(),
           createdOn:new Date(invoiceModel.createdOn),
           displaymonth:this.datePipe.transform(new Date(invoiceModel.createdOn), 'MMM-yyyy')
@@ -171,6 +172,8 @@ export class EditInvoicePage implements OnInit {
       installAddress:new FormControl(this.invoice.installAddress, { updateOn: 'blur' }),
       status:new FormControl(this.invoice.status, { updateOn: 'blur' }),
       recAmount:new FormControl(this.invoice.recAmount, { updateOn: 'blur' }),
+      tranCharges:new FormControl(this.invoice.tranCharges==null?0:this.invoice.tranCharges, { updateOn: 'blur' }),
+
     });
   }
 
