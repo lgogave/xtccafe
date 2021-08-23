@@ -98,7 +98,12 @@ export class InvoiceListPage implements OnInit {
     await this.createRetalInvoice(req,invoice,invoice.taxType);
   }
 
-  async  createInvoice(req,invoice,taxType){
+  async  createInvoice(req,invoice:Invoice,taxType){
+
+    let invdc=[];
+    invoice.dc.forEach(element => {
+      invdc.push(element.srNo);
+    });
 
     let branch: MastBranch = await(
       await this.divisionService.getBrancheByName(req['branch'])
@@ -266,7 +271,7 @@ export class InvoiceListPage implements OnInit {
       '',
       {
         colSpan: 2,
-        text: `Dispatch Doc No.:`,
+        text: `Dispatch Doc No.:${invdc.toString()}`,
         fontSize: 8,
       },
       '',
@@ -2713,8 +2718,8 @@ export class InvoiceListPage implements OnInit {
    }
    else{
     let receiptBook=new ReceiptBook();
-    receiptBook.category="INV";
-    receiptBook.type="REN";
+    receiptBook.category="I";
+    receiptBook.type="R";
     receiptBook.branch=branch.initials;
     receiptBook.year=new Date('01-'+invoice.displaymonth).getFullYear();
     let receiptNo=await this.salespiplineService.getlastReceiptNumber(receiptBook);
@@ -2727,7 +2732,7 @@ export class InvoiceListPage implements OnInit {
       receiptBook.id=null;
     }
 
-    let srNo=await this.padLeadingZeros(receiptBook.srnumber,6);
+    let srNo=await this.padLeadingZeros(receiptBook.srnumber,5);
     let rentinvoice = new RentalInvoice();
     rentinvoice.srNo=`${receiptBook.category}/${receiptBook.type}/${branch.initials}/${receiptBook.year}/${srNo}`;
     rentSrNo=rentinvoice.srNo;
@@ -4164,7 +4169,7 @@ async applyFilter(){
   let serchTerm = this.searchElement.value;
   let filterinvoices: Invoice[] = [];
   this.invoicelist.forEach((inv) => {
-    if(serchTerm.toLowerCase()=="machine" && inv.srNo.indexOf("/Machine")>-1){
+    if(serchTerm.toLowerCase()=="machine" && inv.srNo.indexOf("/M")>-1){
       inv['isChecked']=false;
       filterinvoices.push(inv);
     }

@@ -222,8 +222,8 @@ export class DemoRequestPage implements OnInit {
     demoRequest.salespipelineId=this.saleId;
     let branch=this.branches.filter(x=>x.name==demoRequest.satBranch)[0];
     let receiptBook=new ReceiptBook();
-    receiptBook.category="DDC";
-    receiptBook.type="CON";
+    receiptBook.category="DD";
+    receiptBook.type="C";
     receiptBook.branch=branch.initials;
     receiptBook.year = 2021;
     let receiptNo=await this.salespiplineService.getlastReceiptNumber(receiptBook);
@@ -235,7 +235,7 @@ export class DemoRequestPage implements OnInit {
       receiptBook.srnumber=1;
       receiptBook.id=null;
     }
-    let srNo=await this.padLeadingZeros(receiptBook.srnumber,6);
+    let srNo=await this.padLeadingZeros(receiptBook.srnumber,5);
     demoRequest.srNo=`${receiptBook.category}/${receiptBook.type}/${branch.initials}/${receiptBook.year}/${srNo}`;
 
 

@@ -132,8 +132,8 @@ export class InvoiceModalComponent {
     let imonth = this.months.filter((x) => x.id == this._invoiceMonth.value)[0];
     let ponumber = this._ponumber.value;
     let receiptBook = new ReceiptBook();
-    receiptBook.category = 'INV';
-    receiptBook.type = machines==null? 'Machine':'CON';
+    receiptBook.category = 'I';
+    receiptBook.type = machines==null? 'M':'C';
     receiptBook.branch = branch.initials;
     receiptBook.year = new Date('01-' + imonth.displaymonth).getFullYear();
     let receiptNo = await this.salespiplineService.getlastReceiptNumber(
@@ -146,7 +146,7 @@ export class InvoiceModalComponent {
       receiptBook.srnumber = 1;
       receiptBook.id = null;
     }
-    let srNo = await this.padLeadingZeros(receiptBook.srnumber, 6);
+    let srNo = await this.padLeadingZeros(receiptBook.srnumber, 5);
     let invoice = new Invoice();
     invoice.createdOn=new Date(this._invoiceDate.value);
     invoice.srNo = `${receiptBook.category}/${receiptBook.type}/${branch.initials}/${receiptBook.year}/${srNo}`;

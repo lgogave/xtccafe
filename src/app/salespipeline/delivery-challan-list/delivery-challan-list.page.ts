@@ -39,6 +39,7 @@ export class DeliveryChallanListPage implements OnInit {
   isInit:number=0;
   action:any;
   clientId:string=null;
+  locationId:string=null;
   pdfObj = null;
   invoiceMonth:InvoiceMonth[]=[];
   dcCount:number=0;
@@ -66,6 +67,9 @@ export class DeliveryChallanListPage implements OnInit {
     this.route.paramMap.subscribe(async (paramMap) => {
       if (paramMap.has('clientId')) {
         this.clientId = paramMap.get('clientId');
+      }
+      if (paramMap.has('locationId')) {
+        this.locationId = paramMap.get('locationId');
       }
       this.doRefresh(null);
       this.isInit = this.isInit + 1;
@@ -139,7 +143,7 @@ export class DeliveryChallanListPage implements OnInit {
 }
   async doRefresh(event) {
     this.isLoading = true;
-    this.dcDetail = await this.salesService.getDeliveryChallans(this.clientId);
+    this.dcDetail = await this.salesService.getDeliveryChallans(this.clientId,this.locationId);
     this.filterdcDetail=await this.applyFilter();
     this.dcCount= this.filterdcDetail.length;
     this.invoiceMonth=await this.salesService.getInvoiceMonth();
@@ -155,13 +159,13 @@ export class DeliveryChallanListPage implements OnInit {
     this.dcDetail.forEach((dc) => {
 
       if (serchTerm.toLowerCase() == 'pending machine') {
-        if (dc.isUsed == false && dc.srNo.indexOf("/Machine")>-1 && dc['isDelete'] != true) {
+        if (dc.isUsed == false && dc.srNo.indexOf("/M")>-1 && dc['isDelete'] != true) {
           dc.isSelected = false;
           filterdc.push(dc);
         }
       }
       else if (serchTerm.toLowerCase() == 'pending con') {
-        if (dc.isUsed == false && dc.srNo.indexOf("/CON")>-1 && dc['isDelete'] != true) {
+        if (dc.isUsed == false && dc.srNo.indexOf("/C")>-1 && dc['isDelete'] != true) {
           dc.isSelected = false;
           filterdc.push(dc);
         }

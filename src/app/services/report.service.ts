@@ -114,7 +114,7 @@ export class ReportService {
     var data = {
       id: element.srNo,
       type:
-        element.srNo.indexOf('/Machine') > -1 ? 'Installation' : 'Consumable',
+        element.srNo.indexOf('/M') > -1 ? 'Installation' : 'Consumable',
       billName: element.billName,
       billAddress: element.billAddress,
       deliverybranch: element.branch,

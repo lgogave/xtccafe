@@ -195,6 +195,24 @@ getInvoiceDate(loc){
               {},
               {},
             ],
+            // [
+            //   {
+            //     text: '#PUR24759661',
+            //     fontSize: 14,
+            //     bold: true,
+            //     colSpan: 8,
+            //     alignment: 'center',
+            //     borderColor: ['#000000', '#ffffff', '#000000', '#000000'],
+            //     // margin: [0, 0, 0, 0],
+            //   },
+            //   {},
+            //   {},
+            //   {},
+            //   {},
+            //   {},
+            //   {},
+            //   {},
+            // ],
             [
               { image: demodata.logo, width: 75, height: 75, rowSpan: 3 },
               {
@@ -1396,8 +1414,8 @@ else if(taxType=="CGST/SGST"){
   branch=branchs[0];
   let rentSrNo:string="";
     let receiptBook=new ReceiptBook();
-    receiptBook.category="INV";
-    receiptBook.type="REN";
+    receiptBook.category="I";
+    receiptBook.type="R";
     receiptBook.branch=branch.initials;
     receiptBook.year=new Date('01-'+displayMonth).getFullYear();
     let receiptNo=await this.salesService.getlastReceiptNumber(receiptBook);
@@ -1409,7 +1427,7 @@ else if(taxType=="CGST/SGST"){
       receiptBook.srnumber=1;
       receiptBook.id=null;
     }
-    let srNo=await this.padLeadingZeros(receiptBook.srnumber,6);
+    let srNo=await this.padLeadingZeros(receiptBook.srnumber,5);
     let rentinvoice = new RentalInvoice();
     rentinvoice.srNo=`${receiptBook.category}/${receiptBook.type}/${branch.initials}/${receiptBook.year}/${srNo}`;
     rentSrNo=rentinvoice.srNo;

@@ -153,6 +153,7 @@ export class DCDetailModel {
     public type?:string,
     public isSelected:boolean=false,
     public isUsed:boolean=false,
+    public site?:string,
     ){}
 }
 
@@ -177,7 +178,8 @@ export class DCDetail {
     public userId?:string,
     public createdOn?:Date,
     public isUsed?:boolean,
-    public isDelete?:boolean
+    public isDelete?:boolean,
+    public site?:string,
     ){}
 }
 
@@ -202,7 +204,8 @@ export class InstallDCDetail {
     public userId?:string,
     public createdOn?:Date,
     public isUsed?:boolean,
-    public isDelete?:boolean
+    public isDelete?:boolean,
+    public site?:string,
     ){}
 }
 

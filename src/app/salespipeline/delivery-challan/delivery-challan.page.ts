@@ -241,6 +241,7 @@ export class DeliveryChallanPage implements OnInit {
       fmbillingDetail.salesId=this.saleId;
       fmbillingDetail.clientId = this.clientSales.clientsale.clientId;
       fmbillingDetail.locationId = this.locationId;
+      fmbillingDetail.site=this.clientSales.clientsale.locations.filter(x=>x.id==this.locationId)[0].city;
       fmbillingDetail.isDelete =false;
       if(this.billingDetail!=null){
         fmbillingDetail.id=this.billingDetail.id;
@@ -257,8 +258,8 @@ export class DeliveryChallanPage implements OnInit {
       });
       if(this.dcDetail==null){
         let receiptBook = new ReceiptBook();
-        receiptBook.category = 'DC';
-        receiptBook.type = 'CON';
+        receiptBook.category = 'D';
+        receiptBook.type = 'C';
         receiptBook.branch = branch.initials;
         receiptBook.year = 2021;
         let receiptNo = await this.salespiplineService.getlastReceiptNumber(receiptBook);
@@ -269,7 +270,7 @@ export class DeliveryChallanPage implements OnInit {
           receiptBook.srnumber = 1;
           receiptBook.id = null;
         }
-        let srNo = await this.padLeadingZeros(receiptBook.srnumber, 6);
+        let srNo = await this.padLeadingZeros(receiptBook.srnumber, 5);
         fmbillingDetail.srNo = `${receiptBook.category}/${receiptBook.type}/${branch.initials}/${receiptBook.year}/${srNo}`;
         fmbillingDetail.isUsed = false;
         this.salespiplineService

@@ -269,6 +269,7 @@ export class DcInstallationPage implements OnInit {
     let branch=this.branches.filter(x=>x.name==fmbillingDetail.branch)[0];
       fmbillingDetail.salesId=this.saleId;
       fmbillingDetail.clientId = this.clientSales.clientsale.clientId;
+      fmbillingDetail.site=this.clientSales.clientsale.locations.filter(x=>x.id==this.locationId)[0].city;
       fmbillingDetail.locationId = this.locationId;
       fmbillingDetail.isDelete =false;
       if(this.billingDetail!=null){
@@ -279,8 +280,8 @@ export class DcInstallationPage implements OnInit {
       }
       if(this.dcDetail==null){
         let receiptBook = new ReceiptBook();
-        receiptBook.category = 'DC';
-        receiptBook.type = 'Machine';
+        receiptBook.category = 'D';
+        receiptBook.type = 'M';
         receiptBook.branch = branch.initials;
         receiptBook.year = 2021;
         let receiptNo = await this.salespiplineService.getlastReceiptNumber(receiptBook);
@@ -291,7 +292,7 @@ export class DcInstallationPage implements OnInit {
           receiptBook.srnumber = 1;
           receiptBook.id = null;
         }
-        let srNo = await this.padLeadingZeros(receiptBook.srnumber, 6);
+        let srNo = await this.padLeadingZeros(receiptBook.srnumber, 5);
         fmbillingDetail.srNo = `${receiptBook.category}/${receiptBook.type}/${branch.initials}/${receiptBook.year}/${srNo}`;
         fmbillingDetail.isUsed = false;
         fmbillingDetail.type=1;

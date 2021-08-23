@@ -754,12 +754,22 @@ export class SalespipelineService {
 
   }
 
-  async getDeliveryChallans(clientId:string): Promise<DCDetailModel[]> {
+  async getDeliveryChallans(clientId:string,locationId:string=null): Promise<DCDetailModel[]> {
     let snaps:any;
     if(clientId==null){
       snaps= await this.firebaseService
       .collection('delivery-challan', (ref) =>
         ref.orderBy('date','desc'))
+      .snapshotChanges()
+      .pipe(first())
+      .toPromise();
+    }
+    else if(locationId!=null)
+    {
+      snaps= await this.firebaseService
+      .collection('delivery-challan', (ref) =>
+      ref.where('clientId','==',clientId).where('locationId','==',locationId)
+      .orderBy('date','desc'))
       .snapshotChanges()
       .pipe(first())
       .toPromise();
