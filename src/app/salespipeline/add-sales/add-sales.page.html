@@ -84,10 +84,51 @@
             </ion-item>
         </ion-col>
         </ion-row>
+
+        <ion-row>
+          <ion-col size-sm="6" offset-sm="3">
+            <ion-item>
+              <ion-label position="floating" >Branch <span style="color: #FF6347;">*</span></ion-label>
+              <ion-select placeholder="Select One" interface="popover" formControlName="branchcity">
+                <ion-select-option *ngFor="let branch of branches" [value]="branch.name">{{branch.name}}
+                </ion-select-option>
+              </ion-select>
+            </ion-item>
+        </ion-col>
+        </ion-row>
+
         <ion-row *ngIf="!form.get('dataEntry')['controls'][i].get('city').valid && form.get('dataEntry')['controls'][i].get('city').touched">
           <ion-col size-sm="6" offset-sm="3">
             <p class="error-label">City should not be empty.</p>
           </ion-col>
+        </ion-row>
+
+
+        <ion-row>
+          <ion-col size-sm="3" offset-sm="3">
+            <ion-item>
+              <ion-label>Consumable Invoice Applicable</ion-label>
+              <ion-checkbox color="primary" slot="start" formControlName="isConsumable"></ion-checkbox>
+            </ion-item>
+        </ion-col>
+        </ion-row>
+
+        <ion-row>
+          <ion-col size-sm="3" offset-sm="3">
+            <ion-item>
+              <ion-label>Rental Invoice Applicable</ion-label>
+              <ion-checkbox color="primary" slot="start" formControlName="isRental"></ion-checkbox>
+            </ion-item>
+        </ion-col>
+        </ion-row>
+
+        <ion-row>
+          <ion-col size-sm="3" offset-sm="3">
+            <ion-item>
+              <ion-label  position="floating">Cap for Rental Invoice</ion-label>
+              <ion-input type="number" formControlName="renLimit"></ion-input>
+            </ion-item>
+        </ion-col>
         </ion-row>
 
 
@@ -358,7 +399,21 @@
                 ></ion-datetime>
               </ion-item>
             </ion-col>
-          </ion-row>
+              </ion-row>
+
+              <ion-row>
+                <ion-col size-sm="6" offset-sm="3">
+                  <ion-item>
+                    <ion-label position="floating" >Pullout Reason <span style="color: #FF6347;"></span></ion-label>
+                    <ion-select placeholder="Select One"  interface="popover" formControlName="pulloutreason">
+                      <ion-select-option value='none'>None</ion-select-option>
+                      <ion-select-option value='Return'>Return </ion-select-option>
+                          <ion-select-option value='Replacement'>Replacement</ion-select-option>
+                          <ion-select-option value='Ignore'>Ignore from pullout Month</ion-select-option>
+                        </ion-select>
+                  </ion-item>
+              </ion-col>
+              </ion-row>
 
 
             </div>

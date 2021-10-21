@@ -12,6 +12,7 @@ import {AngularFirestore, AngularFirestoreModule} from '@angular/fire/firestore'
 import {AngularFireStorageModule} from '@angular/fire/storage';
 import { FileOpener } from '@ionic-native/file-opener/ngx';
 import { File } from '@ionic-native/File/ngx';
+import { BLE } from '@ionic-native/ble/ngx';
 
 @NgModule({
   declarations: [AppComponent],
@@ -22,7 +23,7 @@ import { File } from '@ionic-native/File/ngx';
     AngularFirestoreModule,
     AngularFireStorageModule
   ],
-  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy },File,FileOpener],
+  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy },File,FileOpener,BLE],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

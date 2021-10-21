@@ -181,6 +181,14 @@
       <ion-row>
         <ion-col size-sm="6" offset-sm="3">
           <ion-item>
+            <h6  class="label">DC Date : </h6>
+            <h6>{{demoRequest.dateDC==null?getTimeStampDate(demoRequest.createdOn):getDate(demoRequest.dateDC)}}</h6>
+          </ion-item>
+      </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size-sm="6" offset-sm="3">
+          <ion-item>
             <h6  class="label">Date of Delivery : </h6>
             <h6>{{getDate(demoRequest.dateDelivery)}}</h6>
           </ion-item>

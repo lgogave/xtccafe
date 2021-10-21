@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
@@ -14,6 +14,9 @@ import { DemoRequestListPage } from './demo-request-list.page';
     FormsModule,
     IonicModule,
     DemoRequestListPageRoutingModule
+  ],
+  providers: [
+    DatePipe
   ],
   declarations: [DemoRequestListPage]
 })

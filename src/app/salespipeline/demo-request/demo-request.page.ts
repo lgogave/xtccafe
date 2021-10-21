@@ -88,6 +88,7 @@ export class DemoRequestPage implements OnInit {
       accInstallation: new FormControl(null, { updateOn: 'blur' }),
       accOther: new FormControl(null, { updateOn: 'blur' }),
       instDemo: new FormControl(null, { updateOn: 'blur' }),
+      dateDC: new FormControl(new Date().toISOString(), { updateOn: 'blur',validators: [Validators.required] }),
       dateDelivery: new FormControl(null, { updateOn: 'blur',validators: [Validators.required] }),
       dateDemo: new FormControl(null, { updateOn: 'blur',validators: [Validators.required] }),
       dateEndDemo: new FormControl(null, { updateOn: 'blur',validators: [Validators.required] }),

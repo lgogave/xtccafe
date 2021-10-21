@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { NavController, ToastController } from '@ionic/angular';
 import { MachineDetail, MastBranch, MastInstallKit, MastStock } from 'src/app/models/division.model';
 import { DivisionService } from 'src/app/services/division.service';
+import { convertTimeStampToDate } from 'src/app/utilities/dataconverters';
 import { DemoRequest } from '../../models/demo-request.model';
 import { DemoRequestService } from '../../services/demo-request.service';
 @Component({
@@ -107,6 +108,9 @@ export class EditDemoRequestPage implements OnInit {
       }),
       instDemo: new FormControl(this.demoRequest.instDemo, {
         updateOn: 'blur',
+      }),
+      dateDC: new FormControl(this.demoRequest.dateDC==null?convertTimeStampToDate(this.demoRequest.createdOn).toISOString():this.demoRequest.dateDC, {
+        updateOn: 'blur',validators: [Validators.required]
       }),
       dateDelivery: new FormControl(this.demoRequest.dateDelivery, {
         updateOn: 'blur',validators: [Validators.required]

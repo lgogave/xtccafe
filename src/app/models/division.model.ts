@@ -41,6 +41,7 @@ export class MastStock{
     public gst?:string,
     public category?:string,
     public rate?:string,
+    public cp?:string,
   ){}
 }
 export class MastInstallKit{
@@ -64,6 +65,14 @@ export class MastBranch{
     public branchifscode:string,
     public pan:string,
     public initials:string,
+  ){}
+}
+
+export class ClientExpetions{
+  constructor(
+    public id:string,
+    public clientId:string,
+    public reqsignature:boolean
   ){}
 }
 

@@ -66,6 +66,19 @@ export class AddSalesPage implements OnInit {
       updateOn: "blur",
       validators: [Validators.required],
     }),
+    branchcity: new FormControl(null, {
+      updateOn: "blur",
+      validators: [Validators.required],
+    }),
+    isConsumable: new FormControl(null, {
+      updateOn: "blur",
+    }),
+    isRental: new FormControl(null, {
+      updateOn: "blur",
+    }),
+    renLimit: new FormControl(null, {
+      updateOn: "blur",
+    }),
     accowner: new FormControl(null, {
       updateOn: "blur",
       validators: [Validators.required],
@@ -151,6 +164,9 @@ buildMachineDetailForm(){
       updateOn: 'blur',
     }),
     pulloutDate: new FormControl(null, {
+      updateOn: 'blur',
+    }),
+    pulloutreason: new FormControl(null, {
       updateOn: 'blur',
     }),
   });
@@ -305,8 +321,8 @@ private AddClientSalesPipeLine(loadingEl: HTMLIonLoadingElement){
             machine.mchSecDeposite,
             false,
             machine.machinehsncode,
-            machine.pulloutDate
-
+            machine.pulloutDate,
+            machine.pulloutreason
           )
         );
       }
@@ -322,7 +338,11 @@ private AddClientSalesPipeLine(loadingEl: HTMLIonLoadingElement){
         location.machineCount,
         GetNewId(),
         location.branch,
-        location.accowner
+        location.accowner,
+        location.branchcity,
+        location.isConsumable,
+        location.isRental,
+        location.renLimit
         ))
     }
     let clientSalesPipeline: ClientSalesPipeline = new ClientSalesPipeline(

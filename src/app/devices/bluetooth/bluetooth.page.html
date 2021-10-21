@@ -1,0 +1,111 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons>
+      <ion-button>
+        <ion-menu-button slot="start"></ion-menu-button>
+      </ion-button>
+      <ion-icon  color="primary" name="bluetooth" slot="start"></ion-icon>
+      <ion-title color="primary">Bluetooth</ion-title>
+      <ion-text>Disconnect</ion-text>
+      <ion-toggle slot="end" name="cherry" color="danger" (ionChange)="disconnect()" #connectElement [disabled]="!isConnected"></ion-toggle>
+    </ion-buttons>
+</ion-toolbar>
+</ion-header>
+<ion-content>
+  <ion-refresher slot="fixed" *ngIf="showSpinner === false" (ionRefresh)="refreshBluetooth($event)">
+    <ion-refresher-content refreshingText="{{ 'BLUETOOTH.SEARCHING' }}">
+    </ion-refresher-content>
+  </ion-refresher>
+  <ion-grid>
+    <ion-row>
+      <ion-col>
+        <div [hidden]="showSpinner === false" text-center>
+          <ion-spinner></ion-spinner> {{ "BLUETOOTH.SEARCHING" }}<br>
+        </div>
+        <ion-list  button (click)="checkConnection(device)" *ngFor="let device of devices">
+          <ion-item detail color="secondary" *ngIf="device.name">
+            <ion-label>{{ "BLUETOOTH.NAME"  }}: {{device.name}}</ion-label>
+          </ion-item>
+        </ion-list>
+      </ion-col>
+    </ion-row>
+
+<ion-row>
+  <ion-col>
+    <ion-item>
+      <ion-input type="text" [(ngModel)]="message" name="message" [disabled]="!isConnected"></ion-input>
+      <ion-button expand="block" type="button" [disabled]="!isConnected" (click)="sendMessage(message);" #sendElement>
+        <ion-icon name="arrow-forward-outline"></ion-icon>
+      </ion-button>
+    </ion-item>
+  </ion-col>
+</ion-row>
+
+<ion-row [hidden]="!isConnected">
+  <ion-col>
+    <ion-item>
+      <ion-label>Received Data:</ion-label>
+      <ion-textarea row="3" readonly>{{messagelog}}</ion-textarea>
+    </ion-item>
+  </ion-col>
+</ion-row>
+
+  <ion-row>
+    <ion-col>
+      <p *ngFor="let item of messages">{{ item }}</p>
+      <div [hidden]="devices.length > 0 || showSpinner == true || isConnected" text-center>
+        <p>{{ "BLUETOOTH.NOT_FOUND"  }}</p>
+      </div>
+    </ion-col>
+  </ion-row>
+  </ion-grid>
+
+
+
+
+
+
+  <ion-list lines="full" style="display: none;">
+    <ion-item button (click)="checkConnection(device)" *ngFor="let device of devices">
+      <ion-text>
+        <h3>{{ "BLUETOOTH.NAME"  }}: {{device.name}}</h3>
+        <p style="display: none;">{{ "BLUETOOTH.ID"  }}: {{device.id}}</p>
+        <p style="display: none;">{{ "BLUETOOTH.ADDRESS"  }}
+          <span [hidden]="device.address == undefined">mac</span>
+          <span [hidden]="device.uuid == undefined">uuid</span>
+          {{device.address}} {{device.uuid}}
+        </p>
+        <p style="display: none;">
+          <span [hidden]="device.class == undefined">Clase</span>
+          <span [hidden]="device.rssi == undefined">Rssi</span>
+          {{device.class}} {{device.rssi}}
+        </p>
+      </ion-text>
+    </ion-item>
+  </ion-list>
+
+  <form (ngSubmit)="sendMessage(message);" style="display: none;">
+    <ion-item>
+      <ion-input type="text" [(ngModel)]="message" name="message"></ion-input>
+    </ion-item>
+    <ion-row>
+      <ion-col>
+        <ion-button expand="block" color="dark" (click)="disconnect()" [disabled]="!isConnected">
+          {{ "DISCONNECT"  }}
+        </ion-button>
+      </ion-col>
+      <ion-col>
+        <ion-button expand="block" type="submit" [disabled]="!isConnected">
+          {{ "SEND"  }}
+        </ion-button>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+        <h1>Log</h1>
+        <h6>{{messagelog}}</h6>
+      </ion-col>
+    </ion-row>
+  </form>
+
+</ion-content>

@@ -3,8 +3,8 @@ import { ActivatedRoute } from '@angular/router';
 import { NavController } from '@ionic/angular';
 import { DemoRequest } from 'src/app/models/demo-request.model';
 import { DemoRequestService } from 'src/app/services/demo-request.service';
-import { convertTimestampToDate } from '../../utilities/dataconverters';
-
+import { convertTimeStampToDate, convertTimestampToDate } from '../../utilities/dataconverters';
+import { DatePipe } from '@angular/common';
 @Component({
   selector: 'app-demo-request-detail',
   templateUrl: './demo-request-detail.page.html',
@@ -14,8 +14,9 @@ export class DemoRequestDetailPage implements OnInit {
   demoRequest: DemoRequest;
   demoId: string;
   isLoading:boolean=false;
+
   constructor(
-    private demoRequestService: DemoRequestService,
+    private demoRequestService: DemoRequestService,  private datePipe:DatePipe,
     private route: ActivatedRoute,
     private navCtrl: NavController
   ) {}
@@ -39,5 +40,8 @@ export class DemoRequestDetailPage implements OnInit {
   }
   getDate(date:any){
     return convertTimestampToDate(date)
+  }
+  getTimeStampDate(date:any){
+    return this.datePipe.transform(new Date(convertTimeStampToDate(date)),'dd-MMM-yy');
   }
 }

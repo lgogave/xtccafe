@@ -19,6 +19,7 @@ export class DemoRequest{
     public accInstallation?:string[],
     public accOther?:string,
     public instDemo?:string,
+    public dateDC?:Date,
     public dateDelivery?:Date,
     public dateDemo?:Date,
     public dateEndDemo?:Date,
@@ -57,5 +58,7 @@ export class DemoRequestViewModel{
     public approverDate?:Date,
     public satSEZ?:string,
     public satBranch?:string,
+    public dateDelivery?:Date,
+
   ){}
 }

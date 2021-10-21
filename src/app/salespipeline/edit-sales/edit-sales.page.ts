@@ -66,6 +66,21 @@ export class EditSalesPage implements OnInit {
         updateOn: 'blur',
         validators: [Validators.required],
       }),
+      branchcity: new FormControl(location!=null?location.branchcity:null, {
+        updateOn: 'blur',
+        validators: [Validators.required],
+      }),
+      isConsumable: new FormControl(location!=null?location.isConsumable:null, {
+        updateOn: 'blur',
+
+      }),
+      isRental: new FormControl(location!=null?location.isRental:null, {
+        updateOn: 'blur',
+
+      }),
+      renLimit: new FormControl(location!=null?location.renLimit:null, {
+        updateOn: 'blur',
+      }),
       accowner:new FormControl(location!=null?location.accowner:null, {
         updateOn: "blur",
         validators: [Validators.required],
@@ -161,6 +176,10 @@ export class EditSalesPage implements OnInit {
       pulloutDate: new FormControl(machine!=null?machine.pulloutDate:null, {
         updateOn: 'blur',
       }),
+      pulloutreason: new FormControl(machine!=null?machine.pulloutreason:null, {
+        updateOn: 'blur',
+      }),
+
     });
   }
 
@@ -384,7 +403,8 @@ export class EditSalesPage implements OnInit {
             machine.mchSecDeposite,
             machine.isInstChargesConsider,
             machine.machinehsncode,
-            machine.pulloutDate
+            machine.pulloutDate,
+            machine.pulloutreason
           )
         );
       }
@@ -404,7 +424,11 @@ export class EditSalesPage implements OnInit {
           location.machineCount,
           location.id,
           location.branch,
-          location.accowner
+          location.accowner,
+          location.branchcity,
+          location.isConsumable,
+          location.isRental,
+          location.renLimit
         )
       );
     }

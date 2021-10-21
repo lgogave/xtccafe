@@ -48,6 +48,10 @@ const routes: Routes = [
     path: 'notificationdetail/:id',
     loadChildren: () => import('./notification-detail/notification-detail.module').then( m => m.NotificationDetailPageModule)
   },
+  {
+    path: 'devices/bluetooth',
+    loadChildren: () => import('./devices/bluetooth/bluetooth.module').then( m => m.BluetoothPageModule)
+  },
 
 ];
 

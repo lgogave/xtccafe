@@ -6,7 +6,7 @@ import { first } from 'rxjs/operators';
 import { AuthService } from 'src/app/auth/auth.service';
 import { DemoRequest, DemoRequestViewModel } from 'src/app/models/demo-request.model';
 import { DemoRequestService } from 'src/app/services/demo-request.service';
-import { convertTimestampToDate, convertToDateTime } from '../../utilities/dataconverters';
+import { convertTimeStampToDate, convertTimestampToDate, convertToDateTime } from '../../utilities/dataconverters';
 import {Platform} from '@ionic/angular'
 import { File } from '@ionic-native/file/ngx';
 import { FileOpener } from '@ionic-native/file-opener/ngx';
@@ -14,6 +14,7 @@ import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 import { DivisionService } from 'src/app/services/division.service';
 import { MastBranch } from 'src/app/models/division.model';
+import { DatePipe } from '@angular/common';
 pdfMake.vfs=pdfFonts.pdfMake.vfs;
 
 
@@ -38,7 +39,8 @@ export class DemoRequestListPage implements OnInit, OnDestroy {
     private plt: Platform,
     private file: File,
     private fileOpener: FileOpener,
-    private divisionService:DivisionService
+    private divisionService:DivisionService,
+    private datePipe:DatePipe,
   ) {}
   ngOnInit() {
     this.demoRequestsSub = this.demoRequestService.demoRequests.subscribe(
@@ -312,6 +314,7 @@ export class DemoRequestListPage implements OnInit, OnDestroy {
       reqId: req['id'],
       srNo: type==1? req['srNo'].replace('CON/','Machine/'):req['srNo'],
       authSignature:this.getAuthSignature(),
+      dateDelivery:req['dateDC']==null? convertTimeStampToDate(req['createdOn']):req['dateDC'],
     };
     var docDefinition:any = {
       content: [
@@ -348,7 +351,7 @@ export class DemoRequestListPage implements OnInit, OnDestroy {
                 '',
                 {
                   colSpan: 2,
-                  text: `Delivery Challan No:${demodata.srNo}\n Stock Transfer Date:-`,
+                  text: `Delivery Challan No:${demodata.srNo}\n Stock Transfer Date:-${this.datePipe.transform(new Date(demodata.dateDelivery), 'dd-MMM-yy')}`,
                 },
                 '',
               ],
@@ -482,6 +485,7 @@ export class DemoRequestListPage implements OnInit, OnDestroy {
       reqId: req['id'],
       srNo: type==1? req['srNo'].replace('CON/','Machine/'):req['srNo'],
       authSignature:this.getAuthSignature(),
+      dateDelivery:req['dateDC']==null? convertTimeStampToDate(req['createdOn']):req['dateDC'],
     };
     var docDefinition:any='';
     if(req.taxType=="CGST/SGST")
@@ -522,7 +526,7 @@ export class DemoRequestListPage implements OnInit, OnDestroy {
                   '',
                   {
                     colSpan: 4,
-                    text: `Delivery Challan No:${demodata.srNo}\n Stock Transfer Date:-`,
+                    text: `Delivery Challan No:${demodata.srNo}\n Stock Transfer Date:-${this.datePipe.transform(new Date(demodata.dateDelivery), 'dd-MMM-yy')}`,
                   },
                   '',
                   '',
@@ -751,7 +755,7 @@ export class DemoRequestListPage implements OnInit, OnDestroy {
 
                   {
                     colSpan: 4,
-                    text: `Delivery Challan No:${demodata.srNo}\n Stock Transfer Date:-`,
+                    text: `Delivery Challan No:${demodata.srNo}\n Stock Transfer Date:-${this.datePipe.transform(new Date(demodata.dateDelivery), 'dd-MMM-yy')}`,
                   },
                   '',
                   '',

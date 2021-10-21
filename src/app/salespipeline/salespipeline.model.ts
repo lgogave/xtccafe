@@ -98,6 +98,10 @@ export class Location {
     public id?: string,
     public branch?: string,
     public accowner?: string,
+    public branchcity?: string,
+    public isConsumable?: boolean,
+    public isRental?: boolean,
+    public renLimit?: Number,
   ) {}
 }
 export class BillingDetail {
@@ -248,6 +252,7 @@ export class Machine {
       public isInstChargesConsider?: boolean,
       public machinehsncode?: boolean,
       public pulloutDate?: Date,
+      public pulloutreason?:string
   ) {}
 }
 
@@ -318,7 +323,8 @@ export class RentalInvoice{
     public billAddress?:string,
     public installAt?:string,
     public installAddress?:string,
-    public isDeleted?:boolean
+    public isDeleted?:boolean,
+    public poNumber?:string,
     ){}
 
 
