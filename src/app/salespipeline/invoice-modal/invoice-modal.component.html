@@ -7,17 +7,17 @@
       </ion-toolbar>
       <ion-item>
         <ion-label position="floating" >Invoice Date <span style="color: #FF6347;">*</span></ion-label>
-        <ion-datetime
+        <ion-datetime disabled
         [formControl]="_invoiceDate"
         display-format="MMM DD YYYY"
         picker-format="YY MMM DD"
         ></ion-datetime>
       </ion-item>
-      <ion-item>
-        <ion-select placeholder="Select Invoice Month"  interface="popover" [formControl]="_invoiceMonth">
+     <ion-item>
+        <!-- <ion-select placeholder="Select Invoice Month"  interface="popover" [formControl]="_invoiceMonth">
           <ion-select-option *ngFor="let m of months" [value]="m.id">{{m.displaymonth}}
           </ion-select-option>
-        </ion-select>
+        </ion-select> -->
         <ion-button color="success" style="margin-left: 10px;" (click)="generateInvoice()" >Create</ion-button>
       </ion-item>
           <ion-item>

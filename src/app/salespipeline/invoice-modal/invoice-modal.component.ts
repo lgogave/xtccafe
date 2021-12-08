@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ModalController, NavController, ToastController } from '@ionic/angular';
-import { BillingDetail, ClientSalesPipeline, DCDetailModel, DCMaterial, Invoice, InvoiceMonth, ReceiptBook } from '../salespipeline.model';
+import { BillingDetail, ClientSalesPipeline, DCDetailModel, DCMaterial, GSTReceiptBook, Invoice, InvoiceMonth, ReceiptBook } from '../salespipeline.model';
 import {Platform} from '@ionic/angular'
 import { File } from '@ionic-native/file/ngx';
 import { FileOpener } from '@ionic-native/file-opener/ngx';
@@ -9,6 +9,7 @@ import { FormControl, Validators } from '@angular/forms';
 import { SalespipelineService } from '../salespipeline.service';
 import { MastBranch } from 'src/app/models/division.model';
 import { Console } from 'console';
+import { ConvertDateToMMMYYYY, getActiveYear } from 'src/app/utilities/dataconverters';
 @Component({
   selector: 'app-invoice-modal',
   templateUrl: './invoice-modal.component.html',
@@ -17,7 +18,7 @@ import { Console } from 'console';
 export class InvoiceModalComponent {
   @Input() dclist: DCDetailModel[];
   @Input() months: InvoiceMonth[];
-  _invoiceMonth = new FormControl('', Validators.required);
+  // _invoiceMonth = new FormControl('Dec-2021', Validators.required);
   _invoiceDate = new FormControl(new Date().toISOString(), Validators.required);
   _ponumber = new FormControl('', Validators.required);
   billingDetail: BillingDetail;
@@ -34,18 +35,18 @@ export class InvoiceModalComponent {
     this.modalCtrl.dismiss({ status: 'canceled' });
   }
   async generateInvoice() {
-    if (!this._invoiceMonth.value) {
-      this.toastController
-        .create({
-          message: 'Please select invoice month.',
-          duration: 2000,
-          color: 'danger',
-        })
-        .then((tost) => {
-          tost.present();
-        });
-      return;
-    }
+    // if (!this._invoiceMonth.value) {
+    //   this.toastController
+    //     .create({
+    //       message: 'Please select invoice month.',
+    //       duration: 2000,
+    //       color: 'danger',
+    //     })
+    //     .then((tost) => {
+    //       tost.present();
+    //     });
+    //   return;
+    // }
     let result = this.dclist;
     if (result[0]?.type == '1') {
       this.createInstalltionInvoice(result[0]);
@@ -125,17 +126,26 @@ export class InvoiceModalComponent {
     taxType: string,
     machines: any
   ) {
+
     let branch: MastBranch = await (
       await this.divisionService.getBrancheByName(req['branch'])
     )[0];
+
+    let billingBranch=await(await this.salespiplineService.getMastRateByLocation(req.locationId));
+    let billfrombranch= '';
+    billfrombranch=billingBranch.branch?billingBranch.branch:branch.name;
+
+
     //let billDetail:BillingDetail= await(await this.salespiplineService.getBillingDetail(req['salesId'],req['locationId']));
-    let imonth = this.months.filter((x) => x.id == this._invoiceMonth.value)[0];
+    //let imonth = this.months.filter((x) => x.id == this._invoiceMonth.value)[0];
+    //let imonth = this.months.filter((x) => x.id == ConvertDateToMMMYYYY(new Date(this._invoiceDate.value)))[0];
     let ponumber = this._ponumber.value;
     let receiptBook = new ReceiptBook();
     receiptBook.category = 'I';
     receiptBook.type = machines==null? 'M':'C';
     receiptBook.branch = branch.initials;
-    receiptBook.year = new Date('01-' + imonth.displaymonth).getFullYear();
+    //receiptBook.year = new Date('01-' + imonth.displaymonth).getFullYear();
+    receiptBook.year = getActiveYear();
     let receiptNo = await this.salespiplineService.getlastReceiptNumber(
       receiptBook
     );
@@ -150,11 +160,19 @@ export class InvoiceModalComponent {
     let invoice = new Invoice();
     invoice.createdOn=new Date(this._invoiceDate.value);
     invoice.srNo = `${receiptBook.category}/${receiptBook.type}/${branch.initials}/${receiptBook.year}/${srNo}`;
-    invoice.month = imonth.month;
+
+     //New invoice series
+     let gstreceiptBook=await this.getGSTSrNoConsumable(billfrombranch);
+     let gstsrNo=await this.padLeadingZeros(gstreceiptBook.srnumber,4);
+     invoice.invNo=`${gstreceiptBook.branch}/${gstreceiptBook.category}/${gstreceiptBook.type}/${Number(gstreceiptBook.year-2000) + "" + Number(gstreceiptBook.year+1-2000)}/${gstsrNo}`;
+
+
+    invoice.month = new Date(this._invoiceDate.value);
     invoice.ponumber = ponumber;
-    invoice.displaymonth = imonth.displaymonth;
+    invoice.displaymonth = ConvertDateToMMMYYYY(new Date(this._invoiceDate.value));
     invoice.clientId = req.clientId;
     invoice.branch = branch.name;
+    invoice.billbranch=billfrombranch
     invoice.clientName = req.billName;
     invoice.bank = this.billingDetail.bank;
     invoice.clientLocationId = req.locationId;
@@ -196,8 +214,31 @@ export class InvoiceModalComponent {
       .subscribe((res) => {
         this.updateDC(req, invoice);
         this.updateReceiptBook(receiptBook);
+        this.updateGSTReceiptBook(gstreceiptBook);
       });
   }
+
+  async getGSTSrNoConsumable(billbranch:string){
+    let branchs: MastBranch[] = await(await this.divisionService.getBrancheByName(billbranch));
+    let receiptBook=new GSTReceiptBook();
+    receiptBook.category="I";
+    receiptBook.type="C";
+    receiptBook.branch=branchs[0].initials;
+    //receiptBook.year=Number((getActiveYear()-2000)+''+(getActiveYear()+1-2000));
+    receiptBook.year=getActiveYear();
+    let receiptNo=await this.salespiplineService.getlastGSTReceiptNumber(receiptBook);
+    if(receiptNo!=null){
+      receiptBook.id=receiptNo.id;
+      receiptBook.srnumber = receiptNo.srnumber + 1;
+    }
+    else{
+      receiptBook.srnumber=1;
+      receiptBook.id=null;
+    }
+     return receiptBook;
+  }
+
+
   updateDC(req: any, invoice: Invoice) {
     invoice.dcIds.forEach((element) => {
       this.salespiplineService
@@ -223,6 +264,10 @@ export class InvoiceModalComponent {
       .addupdateReceiptBook(receipt, receipt.id == null ? false : true)
       .subscribe();
   }
+  updateGSTReceiptBook(receipt:GSTReceiptBook){
+    this.salespiplineService.addupdateGSTReceiptBook(receipt,receipt.id==null?false:true).subscribe()
+  }
+
   async getMachineDetails(req) {
     this.salesDetail = await this.salespiplineService.getSalesPiplineById(
       req.salesId

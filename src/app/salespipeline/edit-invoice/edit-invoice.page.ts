@@ -3,7 +3,10 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LoadingController, NavController, ToastController } from '@ionic/angular';
+import { element } from 'protractor';
 import { forkJoin } from 'rxjs/internal/observable/forkJoin';
+import { MastBranch } from 'src/app/models/division.model';
+import { DivisionService } from 'src/app/services/division.service';
 import { convertTimeStampToDate, convertTimestampToDate, convertToDateTime } from 'src/app/utilities/dataconverters';
 import { Invoice, InvoiceModel, InvoiceMonth, RentalInvoice } from '../salespipeline.model';
 import { SalespipelineService } from '../salespipeline.service';
@@ -19,9 +22,11 @@ export class EditInvoicePage implements OnInit {
   invoiceMonth:InvoiceMonth[]=[];
   invoice:Invoice;
   form: FormGroup;
+  branches:MastBranch[];
   constructor(private route: ActivatedRoute,
     private navCtrl: NavController,
     private salesService: SalespipelineService,
+    private divisionService:DivisionService,
     private toastController: ToastController,
     private router: Router,
     private datePipe:DatePipe) {
@@ -31,6 +36,7 @@ export class EditInvoicePage implements OnInit {
     this.isLoading = true;
     this.invoiceMonth=await this.salesService.getInvoiceMonth();
     this.invoice=await this.salesService.getInvoiceById(this.invId);
+    await this.loadBranches();
     var result = this.initializeUpdateForm();
     this.isLoading = false;
     if (event != null) {
@@ -51,42 +57,12 @@ export class EditInvoicePage implements OnInit {
     if (!this.form.valid) {
       return;
     }
-    let mchDetail=await this.getMachineDetails(this.invoice.dc[0].salesId,this.invoice.dc[0].locationId);
-    let rentInv= await this.salesService.getRentalInvoice(this.invoice.clientId,this.invoice.clientLocationId,this.invoice.displaymonth);
-    let invoiceModel = <InvoiceModel>this.form.value;
-    let rentInvoice:RentalInvoice=null;
-    if(rentInv.length>0){
-      rentInvoice=rentInv[0];
-      rentInvoice.mchRent=mchDetail.mchRent;
-      rentInvoice.mchdeposite=mchDetail.mchdeposite;
-      rentInvoice.mchinstCharges=mchDetail.mchinstCharges;
-      rentInvoice.consumableCap=mchDetail.consumableCap;
-      rentInvoice.machines=mchDetail.machineDetail;
+    if(this.invoice.srNo.startsWith("I/M")||this.invoice.srNo.startsWith("INV/Machine"))
+    {
+     await this.updateInstalltionInvoice(this.form);
     }
-    // if(rentInvoice!=null){
-    //   forkJoin([this.salesService
-    //     .addupdateInvoice({id:this.invoice.id,
-    //       ponumber:invoiceModel.ponumber,
-    //       mchRent:invoiceModel.rent,
-    //       billName:invoiceModel.billName,
-    //       billAddress:invoiceModel.billAddress,
-    //       installAt:invoiceModel.installAt,
-    //       installAddress:invoiceModel.installAddress,
-    //       createdOn:new Date(invoiceModel.createdOn)
-    //     },true),  this.salesService
-    //     .addupdateRentalInvoice(rentInvoice,true)]).subscribe((res) => {
-    //       this.toastController
-    //       .create({
-    //         message: 'Data updated',
-    //         duration: 2000,
-    //         color: 'success',
-    //       })
-    //       .then((tost) => {
-    //         tost.present();
-    //         this.router.navigate(['/salespipeline/invoicelist/'+this.invoice.clientLocationId]);
-    //       });
-    //     });
-    // }else{
+    else{
+    let invoiceModel = <InvoiceModel>this.form.value;
       this.salesService
         .addupdateInvoice({id:this.invoice.id,
           ponumber:invoiceModel.ponumber,
@@ -98,6 +74,8 @@ export class EditInvoicePage implements OnInit {
           status:invoiceModel.status,
           recAmount:invoiceModel.recAmount,
           tranCharges:invoiceModel.tranCharges,
+          billbranch:invoiceModel.billbranch,
+          taxType:invoiceModel.taxType,
           modifiedOn:new Date(),
           createdOn:new Date(invoiceModel.createdOn),
           displaymonth:this.datePipe.transform(new Date(invoiceModel.createdOn), 'MMM-yyyy')
@@ -113,22 +91,59 @@ export class EditInvoicePage implements OnInit {
             this.router.navigate(['/salespipeline/invoicelist/'+this.invoice.clientLocationId]);
           });
         });
-      //}
+      }
+  }
 
-    // this.salesService
-    // .addupdateInvoice({id:this.invoice.id,
-    //   ponumber:invoiceModel.ponumber,
-    //   mchRent:invoiceModel.rent,
-    //   billName:invoiceModel.billName,
-    //   billAddress:invoiceModel.billAddress,
-    //   installAt:invoiceModel.installAt,
-    //   installAddress:invoiceModel.installAddress,
-    // },true)
-    // .subscribe((res) => {
+  async loadBranches(){
+    this.branches=await this.divisionService.getBranches();
+    return true;
+  }
 
-    // });
+  async updateInstalltionInvoice(fm:FormGroup){
+    let invoiceModel = <InvoiceModel>fm.value;
+    let invamt=0;
+    let tranCharges=invoiceModel.tranCharges;
+    this.invoice.dc.forEach(element=>{
+      element['machineDetails'].forEach(mch=>{
+        invamt=invamt+Number(mch.mchInstCharges);
+      });
+    });
+     await this.salesService
+        .addupdateInvoice({id:this.invoice.id,
+          ponumber:invoiceModel.ponumber,
+          mchRent:invoiceModel.rent,
+          billName:invoiceModel.billName,
+          billAddress:invoiceModel.billAddress,
+          installAt:invoiceModel.installAt,
+          installAddress:invoiceModel.installAddress,
+          status:invoiceModel.status,
+          recAmount:invoiceModel.recAmount,
+          tranCharges:invoiceModel.tranCharges,
+          billbranch:invoiceModel.billbranch,
+          taxType:invoiceModel.taxType,
+          amount:invamt,
+          totamount:invamt+invamt*0.18,
+          tax:invamt*0.18,
+          modifiedOn:new Date(),
+          createdOn:new Date(invoiceModel.createdOn),
+          displaymonth:this.datePipe.transform(new Date(invoiceModel.createdOn), 'MMM-yyyy')
+        },true).subscribe((res) => {
+          this.toastController
+          .create({
+            message: 'Data updated',
+            duration: 2000,
+            color: 'success',
+          })
+          .then((tost) => {
+            tost.present();
+            this.router.navigate(['/salespipeline/invoicelist/'+this.invoice.clientLocationId]);
+          });
+        });
 
   }
+
+
+
 
   async getMachineDetails(salesId,locationId) {
     let mchDetail = await this.salesService.getSalesPiplineById(
@@ -173,6 +188,8 @@ export class EditInvoicePage implements OnInit {
       status:new FormControl(this.invoice.status, { updateOn: 'blur' }),
       recAmount:new FormControl(this.invoice.recAmount, { updateOn: 'blur' }),
       tranCharges:new FormControl(this.invoice.tranCharges==null?0:this.invoice.tranCharges, { updateOn: 'blur' }),
+      billbranch:new FormControl(this.invoice.billbranch==null?0:this.invoice.billbranch, { updateOn: 'blur' }),
+      taxType:new FormControl(this.invoice.taxType==null?0:this.invoice.taxType, { updateOn: 'blur' }),
 
     });
   }

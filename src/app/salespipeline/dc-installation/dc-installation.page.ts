@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { LoadingController, NavController, ToastController } from '@ionic/angular';
 import { MachineDetail, MastBranch, MastStock } from 'src/app/models/division.model';
 import { DivisionService } from 'src/app/services/division.service';
+import { getActiveYear } from 'src/app/utilities/dataconverters';
 import { BillingDetail, BillingRate, ClientSales,DCAddHocMaterial,DCDetail,DCDetailModel,InstallDCDetail,Invoice,Location, ReceiptBook } from '../salespipeline.model';
 import { SalespipelineService } from '../salespipeline.service';
 
@@ -283,7 +284,7 @@ export class DcInstallationPage implements OnInit {
         receiptBook.category = 'D';
         receiptBook.type = 'M';
         receiptBook.branch = branch.initials;
-        receiptBook.year = 2021;
+        receiptBook.year =  getActiveYear();
         let receiptNo = await this.salespiplineService.getlastReceiptNumber(receiptBook);
         if (receiptNo != null) {
           receiptBook.id = receiptNo.id;

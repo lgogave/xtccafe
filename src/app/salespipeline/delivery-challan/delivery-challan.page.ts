@@ -5,6 +5,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { LoadingController, NavController, ToastController } from '@ionic/angular';
 import { MastBranch, MastStock } from 'src/app/models/division.model';
 import { DivisionService } from 'src/app/services/division.service';
+import { EntryType, StockRegister } from 'src/app/stockmanagement/stockregister/stockregister.model';
+import { StockRegisterService } from 'src/app/stockmanagement/stockregister/stockregister.service';
+import { ConvertDateToMMMYYYY, getActiveYear } from 'src/app/utilities/dataconverters';
 import { BillingDetail, BillingRate, ClientSales,DCAddHocMaterial,DCDetail,DCDetailModel,Invoice,Location, ReceiptBook } from '../salespipeline.model';
 import { SalespipelineService } from '../salespipeline.service';
 
@@ -32,7 +35,8 @@ export class DeliveryChallanPage implements OnInit {
   branches:MastBranch[];
   constructor(private route: ActivatedRoute,private navCtrl: NavController,private divisionService:DivisionService,
     private loadingCtrl: LoadingController, private router: Router,private salespiplineService:SalespipelineService,
-    private toastController: ToastController) { }
+    private toastController: ToastController,
+    private stockregService:StockRegisterService) { }
 
     async ngOnInit() {
       this.route.paramMap.subscribe(async (paramMap) => {
@@ -261,7 +265,7 @@ export class DeliveryChallanPage implements OnInit {
         receiptBook.category = 'D';
         receiptBook.type = 'C';
         receiptBook.branch = branch.initials;
-        receiptBook.year = 2021;
+        receiptBook.year = getActiveYear();
         let receiptNo = await this.salespiplineService.getlastReceiptNumber(receiptBook);
         if (receiptNo != null) {
           receiptBook.id = receiptNo.id;
@@ -282,7 +286,17 @@ export class DeliveryChallanPage implements OnInit {
                 duration: 2000,
                 color: 'success',
               })
-              .then((tost) => {
+              .then(async (tost) => {
+
+
+                let stockreg=<StockRegister> Object.assign({},fmbillingDetail);
+                stockreg.entryType=EntryType.Debit;
+                stockreg.sourceName="DC";
+                stockreg.sourceId=res;
+                stockreg.isEntyDeleted=false;
+                stockreg.date=new Date();
+                stockreg.month=ConvertDateToMMMYYYY(stockreg.date);
+                await this.stockregService.addupdate(stockreg,false);
                 this.updateReceiptBook(receiptBook);
                 tost.present();
                 this.router.navigate([
@@ -299,7 +313,6 @@ export class DeliveryChallanPage implements OnInit {
         fmbillingDetail.id=this.dcId;
         let invoice:any=await this.salespiplineService.getInvoiceByDCId(this.dcDetail.id);
         this.updateInvoice(invoice,fmbillingDetail);
-
         this.salespiplineService
         .addupdateDC(fmbillingDetail,true)
         .subscribe((res) => {
@@ -309,7 +322,18 @@ export class DeliveryChallanPage implements OnInit {
               duration: 2000,
               color: 'success',
             })
-            .then((tost) => {
+            .then(async (tost) => {
+
+              let stockreg=<StockRegister> Object.assign({},fmbillingDetail);
+              stockreg.entryType=EntryType.Debit;
+              stockreg.sourceName="DC";
+              stockreg.sourceId=res;
+              stockreg.isEntyDeleted=false;
+              stockreg.date=new Date();
+              stockreg.month=ConvertDateToMMMYYYY(stockreg.date);
+              await this.stockregService.addupdate(stockreg,true);
+
+
               tost.present();
               this.router.navigate(['/salespipeline/deliverychallanlist/'+fmbillingDetail.clientId]);
             });

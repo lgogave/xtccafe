@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LoadingController, NavController, ToastController } from '@ionic/angular';
-import { MastStock } from 'src/app/models/division.model';
+import { MastBranch, MastStock } from 'src/app/models/division.model';
 import { DivisionService } from 'src/app/services/division.service';
 import { BillingDetail, BillingRate, ClientSales,InvoiceBank,Location } from '../salespipeline.model';
 import { SalespipelineService } from '../salespipeline.service';
@@ -29,6 +29,7 @@ export class ClientBillingPage implements OnInit {
   billingDetail:BillingDetail;
   banks:InvoiceBank[];
   banknames:string[];
+  branches:MastBranch[];
   constructor(private route: ActivatedRoute,
     private navCtrl: NavController,
     private divisionService:DivisionService,
@@ -50,6 +51,7 @@ export class ClientBillingPage implements OnInit {
       this.billingDetail=await this.salespiplineService.getBillingDetail(this.saleId,this.locationId);
       await this.loadStockDetails();
       await this.loadBankDetails();
+      await this.loadBranches();
       this.loadingCtrl.create({ keyboardClose: true }).then((loadingEl) => {
         loadingEl.present();
         this.salespiplineService
@@ -81,6 +83,8 @@ export class ClientBillingPage implements OnInit {
       materialDetails:this.billingDetail!=null?this.buildMaterialDetail(this.billingDetail):new FormArray([this.createMaterialDetail()]),
       pincode:  new FormControl(this.billingDetail!=null?this.billingDetail.pincode:null, { updateOn: 'blur',validators: [Validators.required] }),
       bank: new FormControl(this.billingDetail!=null?this.billingDetail.bank.name:null, { updateOn: 'blur',validators: [Validators.required] }),
+      branch:  new FormControl(this.billingDetail!=null?this.billingDetail.branch:null, { updateOn: 'blur',validators: [Validators.required] }),
+
     });
     return true;
   }
@@ -133,6 +137,10 @@ export class ClientBillingPage implements OnInit {
     this.banknames=this.banks.map(item=>item.name).filter((value, index, self) => self.indexOf(value) === index).sort();
     return true;
   }
+  async loadBranches(){
+    this.branches=await this.divisionService.getBranches();
+    return true;
+  }
 
   addMaterial(){
     let matdetails=this.form.get('materialDetails') as FormArray;
@@ -174,6 +182,12 @@ export class ClientBillingPage implements OnInit {
     fmbillingDetail.clientId = this.clientSales.clientsale.clientId;
     fmbillingDetail.locationId = this.locationId;
     fmbillingDetail.bank=this.banks.filter(x=>x.name==fmbillingDetail.bank)[0];
+    // let nbranchs=this.branches.filter(x=>x.name==fmbillingDetail.branch);
+    // let branch='';
+    // if(nbranchs.length>0){
+    //   branch=nbranchs[0].name;
+    // }
+
     if(this.billingDetail!=null){
       fmbillingDetail.id=this.billingDetail.id;
     }

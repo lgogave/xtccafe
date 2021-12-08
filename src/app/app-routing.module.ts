@@ -52,6 +52,52 @@ const routes: Routes = [
     path: 'devices/bluetooth',
     loadChildren: () => import('./devices/bluetooth/bluetooth.module').then( m => m.BluetoothPageModule)
   },
+  {
+    path: 'menu-card',
+    loadChildren: () => import('./menu-card/menu-card.module').then( m => m.MenuCardPageModule)
+  },
+  {
+    path: 'stockmanagemt/porequest',
+    loadChildren: () => import('./stockmanagement/porequsition/porequsition.module').then( m => m.PorequsitionPageModule),
+    canLoad:[AuthGuard]
+  },
+  {
+    path: 'stockmanagemt/porequest/:id',
+    loadChildren: () => import('./stockmanagement/porequsition/porequsition.module').then( m => m.PorequsitionPageModule),
+    canLoad:[AuthGuard]
+  },
+  {
+    path: 'stockmanagemt/polist',
+    loadChildren: () => import('./stockmanagement/porequsitionlist/porequsitionlist.module').then( m => m.PorequsitionlistPageModule),
+    canLoad:[AuthGuard]
+  },
+
+  {
+    path: 'stockmanagemt/grnlist/:by/:id',
+    loadChildren: () => import('./stockmanagement/grnlist/grnlist.module').then( m => m.GrnlistPageModule),
+    canLoad:[AuthGuard]
+  },
+  {
+    path: 'stockmanagemt/grnlist',
+    loadChildren: () => import('./stockmanagement/grnlist/grnlist.module').then( m => m.GrnlistPageModule),
+    canLoad:[AuthGuard]
+  },
+  {
+    path: 'stockmanagemt/grnrequisition/:poId/:reqid',
+    loadChildren: () => import('./stockmanagement/grnrequisition/grnrequisition.module').then( m => m.GrnrequisitionPageModule),
+    canLoad:[AuthGuard]
+  },
+  {
+    path: 'stockregister',
+    loadChildren: () => import('./stockmanagement/stockregister/stockregister.module').then( m => m.StockregisterPageModule),
+    canLoad:[AuthGuard]
+  },
+  {
+    path: 'stockmanagemt/stockregisterlist',
+    loadChildren: () => import('./stockmanagement/stockregisterlist/stockregisterlist.module').then( m => m.StockregisterlistPageModule),
+    canLoad:[AuthGuard]
+  },
+
 
 ];
 

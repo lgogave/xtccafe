@@ -4,7 +4,7 @@ import { AngularFirestore } from '@angular/fire/firestore';
 import { BehaviorSubject, combineLatest, observable, of } from 'rxjs';
 import { first, map, switchMap, take, tap } from 'rxjs/operators';
 import { AuthService } from '../auth/auth.service';
-import { BillingDetail, ClientComment, ClientCommentModel, ClientSales, ClientSalesPipeline, DCDetail, DCDetailModel, InstallDCDetail, Invoice, InvoiceMonth, ReceiptBook, RentalInvoice, SalesPipeline } from './salespipeline.model';
+import { BillingDetail, ClientComment, ClientCommentModel, ClientSales, ClientSalesPipeline, DCDetail, DCDetailModel, GSTReceiptBook, InstallDCDetail, Invoice, InvoiceMonth, ReceiptBook, RentalInvoice, SalesPipeline } from './salespipeline.model';
 import type firebase from 'firebase';
 import { GetNewId } from '../utilities/dataconverters';
 
@@ -25,6 +25,8 @@ export class SalespipelineService {
 
   get clientSales() {
     return this._clientSales.asObservable();
+
+
   }
 
   get clientSalepipeline() {
@@ -554,12 +556,12 @@ export class SalespipelineService {
           dc.id=GetNewId();
           return this.firebaseService
           .collection('delivery-challan')
-          .add(Object.assign({}, dc));
+          .add(Object.assign({}, dc)).then(res=>res.id);;
         }
         else{
           return this.firebaseService
           .collection('delivery-challan').doc(dc.id)
-          .update(Object.assign({}, dc));
+          .update(Object.assign({}, dc)).then(res=>dc.id);;
         }
       }),
       map((doc) => {
@@ -570,7 +572,6 @@ export class SalespipelineService {
   }
   addupdateInvoice(invoice: Invoice,isUpdate:boolean=false,isDelete=false) {
     let fetchedUserId: string;
-
     return this.authService.userId.pipe(
       map((userId) => {
         if (!userId) {
@@ -607,6 +608,13 @@ export class SalespipelineService {
       take(1)
     );
   }
+
+
+
+
+
+
+
   addupdateRentalInvoice(invoice: RentalInvoice,isUpdate:boolean=false,isDelete=false) {
     let fetchedUserId: string;
     return this.authService.userId.pipe(
@@ -675,6 +683,39 @@ export class SalespipelineService {
     );
   }
 
+  addupdateGSTReceiptBook(receipt: GSTReceiptBook,isUpdate:boolean=false) {
+    let fetchedUserId: string;
+    return this.authService.userId.pipe(
+      map((userId) => {
+        if (!userId) {
+          throw new Error('No User Id Found!');
+        }
+        fetchedUserId = userId;
+      }),
+      switchMap(() => {
+        receipt.userId = fetchedUserId;
+        receipt.createdOn = new Date();
+        if(!isUpdate){
+          receipt.id=GetNewId();
+          return this.firebaseService
+          .collection('invoice-gst-series')
+          .add(Object.assign({}, receipt));
+        }
+        else{
+          return this.firebaseService
+          .collection('invoice-gst-series').doc(receipt.id)
+          .update(Object.assign({}, receipt));
+        }
+      }),
+      map((doc) => {
+        return doc;
+      }),
+      take(1)
+    );
+  }
+
+
+
   async getBillingDetail(salesId: string,locationId:string): Promise<any> {
     let snaps = await this.firebaseService
       .collection('billing-detail', (ref) =>
@@ -709,7 +750,7 @@ export class SalespipelineService {
         return sl;
       });
       return rows;
-    }
+  }
 
   async getMastRateByLocation(locationId:string): Promise<any> {
     let snaps = await this.firebaseService
@@ -871,7 +912,7 @@ export class SalespipelineService {
           sl.id = inv.payload.doc.id;
           return sl;
         });
-    return invoices.length>0?invoices[0]:null;
+    return invoices.length>0?invoices.filter(x=>x.isDeleted==false)[0]:null;
   }
 
   async getInvoiceById(invId:string): Promise<Invoice> {
@@ -912,6 +953,36 @@ export class SalespipelineService {
         }
   }
 
+  async getlastGSTReceiptNumber(receipt:GSTReceiptBook): Promise<GSTReceiptBook>{
+    let snaps:any;
+      snaps= await this.firebaseService
+      .collection('invoice-gst-series', (ref) =>
+      ref.where('category','==',receipt.category)
+      .where('type','==',receipt.type)
+      .where('branch','==',receipt.branch)
+      .where('year','==',receipt.year)
+      .orderBy("createdOn","desc").limit(1)
+      )
+      .snapshotChanges()
+      .pipe(first())
+      .toPromise();
+      let receiptNumber:GSTReceiptBook[]=snaps.map((receipt) => {
+          var obj = <GSTReceiptBook>{
+            ...(receipt.payload.doc.data() as {}),
+          };
+          obj.id = receipt.payload.doc.id;
+          return obj;
+        });
+        if(receiptNumber && receiptNumber.length>0){
+          return receiptNumber[0];
+        }
+        else{
+          return null;
+        }
+  }
+
+
+
   async getInvoiceMonth():Promise<InvoiceMonth[]>{
     let snaps=await this.firebaseService
     .collection('invoice-month', (ref) =>
@@ -933,8 +1004,7 @@ export class SalespipelineService {
 
 
     }
-
-    async getRentalInvoice(clientId:string,locId:string,displyMonth:string): Promise<RentalInvoice[]> {
+  async getRentalInvoice(clientId:string,locId:string,displyMonth:string): Promise<RentalInvoice[]> {
       let snaps:any;
        if(locId==null && displyMonth!=null){
         snaps= await this.firebaseService
@@ -977,6 +1047,32 @@ export class SalespipelineService {
           });
           return rentdetail;
     }
+  async deleteInvoice(invoice:Invoice,unplughdc:boolean){
+    invoice.modifiedOn=new Date();
+    let batch=this.firebaseService.firestore.batch();
+    //Invoice Update
+     if(unplughdc){
+      await Promise.all(invoice.dcIds.map(async (dc) => {
+        const docRefdc=this.firebaseService.firestore.collection('delivery-challan').doc(dc);
+        const data=await (await docRefdc.get()).data();
+        data['isUsed']=false;
+        batch.update(docRefdc,data);
+      }));
+    }
+    const docRefinv= await this.firebaseService.firestore.collection('invoice').doc(invoice.id);
+    batch.update(docRefinv,invoice);
+    await batch.commit();
+  }
+
+  async deleteRentalInvoice(invoice:RentalInvoice){
+    invoice.modifiedOn=new Date();
+    let batch=this.firebaseService.firestore.batch();
+    const docRefinv= await this.firebaseService.firestore.collection('rental-invoice').doc(invoice.id);
+    batch.update(docRefinv,invoice);
+    await batch.commit();
+
+  }
+
 
 }
 

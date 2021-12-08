@@ -13,6 +13,7 @@ import {AngularFireStorageModule} from '@angular/fire/storage';
 import { FileOpener } from '@ionic-native/file-opener/ngx';
 import { File } from '@ionic-native/File/ngx';
 import { BLE } from '@ionic-native/ble/ngx';
+import { WebBluetoothModule } from '@manekinekko/angular-web-bluetooth';
 
 @NgModule({
   declarations: [AppComponent],
@@ -21,7 +22,10 @@ import { BLE } from '@ionic-native/ble/ngx';
     AngularFireModule.initializeApp(environment.firebaseConfig),
     AngularFireAuthModule,
     AngularFirestoreModule,
-    AngularFireStorageModule
+    AngularFireStorageModule,
+    WebBluetoothModule.forRoot({
+      enableTracing: true // or false, this will enable logs in the browser's console
+    })
   ],
   providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy },File,FileOpener,BLE],
   bootstrap: [AppComponent],

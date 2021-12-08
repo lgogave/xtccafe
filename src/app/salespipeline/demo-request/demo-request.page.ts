@@ -9,6 +9,7 @@ import { ClientSales, ReceiptBook } from '../salespipeline.model';
 import { SalespipelineService } from '../salespipeline.service';
 import { DivisionService } from 'src/app/services/division.service';
 import { PercentPipe } from '@angular/common';
+import { getActiveYear } from 'src/app/utilities/dataconverters';
 
 @Component({
   selector: 'app-demo-request',
@@ -226,7 +227,7 @@ export class DemoRequestPage implements OnInit {
     receiptBook.category="DD";
     receiptBook.type="C";
     receiptBook.branch=branch.initials;
-    receiptBook.year = 2021;
+    receiptBook.year = getActiveYear();
     let receiptNo=await this.salespiplineService.getlastReceiptNumber(receiptBook);
     if(receiptNo!=null){
       receiptBook.id=receiptNo.id;

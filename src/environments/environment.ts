@@ -13,7 +13,12 @@ export const environment = {
     messagingSenderId: "678229863683",
     appId: "1:678229863683:web:cf91d1d003f1b448e1cd36",
     measurementId: "G-58CENDS2S6"
-  }
+  },
+  cloudFunctions : {
+    createOrder: 'https://us-central1-db-xtc-cafe-dev.cloudfunctions.net/createOrder',
+    capturePayment: 'https://us-central1-db-xtc-cafe-dev.cloudfunctions.net/capturePayments'
+  },
+  RAZORPAY_KEY_ID: 'rzp_test_a3qHM6OKjhZUGV'
 
 };
 

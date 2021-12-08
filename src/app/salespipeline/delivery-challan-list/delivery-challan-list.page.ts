@@ -4,7 +4,7 @@ import { AlertController, Gesture, GestureController, IonCard, IonItemSliding, I
 import { Subscription } from 'rxjs';
 import { MastBranch } from 'src/app/models/division.model';
 import { DivisionService } from 'src/app/services/division.service';
-import { convertTimestampToDate } from '../../utilities/dataconverters';
+import { ConvertDateToMMMYYYY, convertTimestampToDate } from '../../utilities/dataconverters';
 import { DCDetail, DCDetailModel, DCMaterial, InvoiceMonth } from '../salespipeline.model';
 import * as XLSX from 'xlsx';
 import * as FileSaver from 'file-saver';
@@ -20,6 +20,8 @@ import { InvoiceModalComponent } from '../invoice-modal/invoice-modal.component'
 import { DatePipe } from '@angular/common';
 import { element } from 'protractor';
 import { ReportService } from 'src/app/services/report.service';
+import { EntryType, StockRegister } from 'src/app/stockmanagement/stockregister/stockregister.model';
+import { StockRegisterService } from 'src/app/stockmanagement/stockregister/stockregister.service';
 pdfMake.vfs=pdfFonts.pdfMake.vfs;
 
 
@@ -59,7 +61,8 @@ export class DeliveryChallanListPage implements OnInit {
     private modalCtrl:ModalController,
     private datePipe:DatePipe,
     private toastController: ToastController,
-    private reportService:ReportService
+    private reportService:ReportService,
+    private stockregService:StockRegisterService
 
   ) {}
 
@@ -678,7 +681,16 @@ export class DeliveryChallanListPage implements OnInit {
           handler: () => {
             let dcDetail = <DCDetail>req;
             dcDetail.isDelete=true;
-            this.salesService.addupdateDC(dcDetail,true).subscribe();
+            this.salesService.addupdateDC(dcDetail,true).subscribe(async res=>{
+              let stockreg=<StockRegister> Object.assign({},dcDetail);
+              stockreg.entryType=EntryType.Debit;
+              stockreg.sourceName="DC";
+              stockreg.sourceId=res;
+              stockreg.isEntyDeleted=true;
+              stockreg.date=new Date();
+              stockreg.month=ConvertDateToMMMYYYY(stockreg.date);
+              await this.stockregService.addupdate(stockreg,true);
+            });
           },
         },
       ],

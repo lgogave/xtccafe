@@ -53,7 +53,7 @@
                <h6><b>Location: </b>{{inv.clientLocation}}</h6>
                <h6><b>Month: </b><ion-icon name="time-outline" size="small"></ion-icon><a style="color: #000"> {{inv.displaymonth}}</a></h6>
                <h6><b>Amount: </b><a style="color: #000"> {{inv.amount+inv.tax| currency:"INR":"symbol"}}</a></h6>
-               <h6><b>ID: </b>{{inv.srNo}}</h6>
+               <h6><b>ID: </b>{{getInvoiceNumber(inv)}}</h6>
                <h6><b>Status: </b><a style="color: #000"> {{inv.status=="Creted"}}</a></h6>
                <div [style.visibility]="inv.machines==null ? 'hidden' : 'visible'">
                 <ion-button color="warning" (click)="consumableInvoice(inv)">Consumables</ion-button>
@@ -66,8 +66,8 @@
             <ion-button color="light" (click)="editInvoice(inv)">
               <ion-icon  color="primary" name="create" slot="icon-only"></ion-icon>
             </ion-button>
-            <ion-button color="light">
-              <ion-icon  color="primary" name="trash" slot="icon-only" ></ion-icon>
+            <ion-button color="light" (click)="deleteInvoice(inv)">
+              <ion-icon  color="primary" name="trash" slot="icon-only"  ></ion-icon>
             </ion-button>
           </div>
         </div>

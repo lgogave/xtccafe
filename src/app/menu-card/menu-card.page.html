@@ -1,0 +1,136 @@
+<ion-header>
+  <ion-toolbar  style="--background:#000">
+    <div class="row">
+      <div class="text-center">
+          <div class="mb-60">
+            <ion-fab vertical="top" horizontal="start" slot="fixed">
+              <img src="../../assets/icon/xtclogob-circle_4.png" alt="">
+            </ion-fab>
+            <ion-fab vertical="top" horizontal="end" slot="fixed">
+              <ion-fab-button style="--background:#000" (click)="openMenu()" fill="clear">
+                <ion-icon name="cart" class="cart-icon"></ion-icon>
+                <span class="cart__count">{{quantity}}</span>
+              </ion-fab-button>
+            </ion-fab>
+            <!-- <ion-badge color="primary">11</ion-badge>
+            <ion-button fill="clear" class="alignleft">
+              <ion-icon slot="icon-only" name='cart' icon-start></ion-icon>
+            </ion-button> -->
+            <!-- <button ion-button icon-only  class="alignleft"  fill="outline">
+              <ion-icon slot="icon-only" name='cart' icon-start></ion-icon></button> -->
+              <div class="section-heading mb-60">
+                <span class="sub-title">menu</span>
+                <h2 class="title" style="border-bottom: solid 1px #007dbc;">Taste the freshness</h2>
+            </div>
+          </div>
+      </div>
+  </div>
+  </ion-toolbar>
+</ion-header>
+
+  <ion-menu side="end" menuId="first" contentId="main" (ionWillClose)="resetcart()">
+    <ion-header>
+      <ion-toolbar style="--background:#fff;color:#000">
+        <ion-buttons>
+          <ion-icon name="Cart" slot="icon-only" style="padding:10px" color="success"></ion-icon>
+          <ion-title class="cart-bar__title">Cart Item - {{quantity}} </ion-title>
+            <ion-button (click)="closemenu()">
+            <ion-icon name="close-circle-outline" slot="icon-only"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <ion-list [style.display]="isdispatch ? 'none' : 'block'" >
+        <div *ngFor="let product of products">
+          <ion-item *ngIf="product.quantity > 0">
+            <img [src]="product.img" alt="" style="height:70px;width:70px;padding:5px">
+            <span style="padding:5px;font-weight:700;color:#000">{{product.name}}</span>
+            <span style="padding:5px;margin: 0;color:#ff8c00"> Quantity: {{product.quantity}}</span>
+            <ion-button (click)="deletecartproduct(product)" fill="clear" color="danger">
+              <ion-icon name="close-circle-outline" slot="icon-only"></ion-icon>
+            </ion-button>
+          </ion-item>
+        </div>
+        <ion-item class="ion-text-center">
+          <ion-button style="--background:#C7A17A;">
+            Total Cart Item - {{quantity}}
+          </ion-button>
+          <ion-button color="success" (click)="checkout()">
+            CHECKOUT
+          </ion-button>
+        </ion-item>
+      </ion-list>
+
+      <ion-list [style.display]="isdispatch ? 'block' : 'none'" >
+        <ion-item class="ion-text-center">
+          <ion-button (click)="goback()" style="--background:#C7A17A;">
+            BACK
+          </ion-button>
+          <ion-button color="success" (click)="dispatch()">
+            DISPATCH
+          </ion-button>
+        </ion-item>
+        <ion-item >
+          <span style="color:#FF3300">Please put cup in a coffee tray before dispatch.</span>
+        </ion-item>
+        <div *ngFor="let product of products">
+          <ion-item *ngIf="product.quantity > 0">
+            <img [src]="product.img" alt="" style="height:70px;width:70px;padding:5px">
+            <span style="padding:5px;font-weight:700;color:#000">{{product.name}}</span>
+            <span style="padding:5px;margin: 0;color:#ff8c00"> Quantity: {{product.quantity}}</span>
+            <ion-button  fill="clear" color="success">
+              <ion-icon name="exit-outline" slot="icon-only"></ion-icon>
+            </ion-button>
+          </ion-item>
+        </div>
+
+      </ion-list>
+
+
+    </ion-content>
+  </ion-menu>
+
+<ion-content id="main" style="margin-bottom:10px">
+<section class="popular-menu__area popular-menu__area--2 dark-bg position-relative">
+  <div class="container">
+          <div class="col-xl-12">
+              <div class="pm-list-wrapper">
+                <ion-row style="padding-top:50px">
+                  <ion-col size-xl="6" size-lg="6" size-md="6" *ngFor="let product of products">
+                    <div class="popular-menu__list">
+                      <div class="thumb">
+                          <img [src]="product.img" alt="">
+                      </div>
+                      <div class="content">
+                          <!-- <h3 class="title border-effect"><a href="#">{{product.name}} </a> - <span class="price" style="padding: 10px;">${{product.rate}}.00</span></h3>
+                           -->
+                           <h3 class="title border-effect"><a href="#">{{product.name}} </a></h3>
+                           <span style="color: #fff;">{{product.description}}</span>
+                          <div class="contentlist">
+                            <div class="item-sec" style="display: block;padding: 10px;">
+                              <button
+                                class="decrease"  (click)="decreaseProductQuantity(product)"
+                                [disabled]="product.quantity == 0"
+                              >
+                                -
+                              </button>
+                              <div class="item-number">{{product.quantity}}</div>
+                              <button
+                                class="increase"  (click)="increaseProductQuantity(product)"  [disabled]="product.quantity == 10"
+                              >
+                                +
+                              </button>
+                            </div>
+                            <ion-button color="warning"  (click)="openMenu()">View Cart</ion-button>
+                          </div>
+
+                      </div>
+                  </div>
+                  </ion-col>
+                </ion-row>
+              </div>
+          </div>
+  </div>
+</section>
+</ion-content>

@@ -23,6 +23,12 @@ export function GetNewId() {
   return '_' + Math.random().toString(36).substr(2, 9);
 };
 
-
-
+export function ConvertDateToMMMYYYY(date:Date):string{
+  var monthNames = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ];
+  return  monthNames[date.getMonth()] + '-' + date.getFullYear();
+}
+export  function getActiveYear():number{
+  return  2021;
+}
 

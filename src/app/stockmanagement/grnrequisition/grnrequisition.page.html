@@ -1,0 +1,211 @@
+<ion-header>
+  <ion-toolbar  color="primary">
+    <ion-buttons>
+      <ion-back-button defaultHref="/stockmanagemt/polist">
+      </ion-back-button>
+      <ion-title>GRN - Request</ion-title>
+      <ion-button (click)="addupdateGRN()" [disabled]="!isLoading && !form.valid" [style.visibility]="(!isLoading && (poreqDetail==null  || (!poreqDetail.isDelete))) ? 'visible' : 'hidden'">
+        <ion-icon name="checkmark" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form  [formGroup]="form"  *ngIf="!isLoading">
+  <ion-grid>
+  <ion-row>
+    <ion-col size-sm="6" offset-sm="3">
+      <ion-item>
+        <ion-label position="floating" >Date <span style="color: #FF6347;">*</span></ion-label>
+        <ion-datetime
+        formControlName="date"
+        display-format="MMM DD YYYY"
+        picker-format="YY MMM DD"
+        ></ion-datetime>
+      </ion-item>
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col size-sm="6" offset-sm="3">
+      <ion-item>
+        <ion-label position="floating"> PO Status<span style="color: #FF6347;">*</span></ion-label>
+        <ion-select placeholder="Select One"  interface="popover" formControlName="status" disabled>
+          <ion-select-option>Open</ion-select-option>
+          <ion-select-option>Close</ion-select-option>
+          <ion-select-option>Cancel</ion-select-option>
+          </ion-select>
+      </ion-item>
+    </ion-col>
+  </ion-row>
+
+  <ion-row>
+    <ion-col size-sm="6" offset-sm="3">
+      <ion-item>
+        <ion-label position="floating" >PO Type <span style="color: #FF6347;">*</span></ion-label>
+        <ion-select placeholder="Select One"  interface="popover" formControlName="poType" (ionChange)="onPOTypeChange($event)" disabled>
+          <ion-select-option [value]="Single">Single</ion-select-option>
+          <ion-select-option [value]="Global">Global</ion-select-option>
+          </ion-select>
+      </ion-item>
+    </ion-col>
+  </ion-row>
+
+  <ion-row>
+    <ion-col size-sm="6" offset-sm="3">
+      <ion-item>
+        <ion-label position="floating" >Vendor <span style="color: #FF6347;">*</span></ion-label>
+        <ion-select placeholder="Select One"  interface="popover" formControlName="vendor" disabled>
+          <ion-select-option>Vendor1</ion-select-option>
+          <ion-select-option>Vendor1</ion-select-option>
+          <ion-select-option>Vendor1</ion-select-option>
+          <ion-select-option>Vendor1</ion-select-option>
+          <ion-select-option>Vendor1</ion-select-option>
+          </ion-select>
+      </ion-item>
+    </ion-col>
+  </ion-row>
+
+
+  <ion-row [style.display]="form.get('poType').value=='Single' ? 'block' : 'none'" >
+    <ion-col size-sm="6" offset-sm="3">
+      <ion-item>
+        <ion-label position="floating" >Branch <span style="color: #FF6347;">*</span></ion-label>
+        <ion-select placeholder="Select One"  interface="popover" formControlName="branch" (ionChange)="onBranchChange($event)" disabled>
+          <ion-select-option *ngFor="let branch of  getBranches()" [value]="branch.name">{{branch.name}}
+          </ion-select-option>
+          </ion-select>
+      </ion-item>
+    </ion-col>
+  </ion-row>
+
+
+
+
+  <div class="section">
+    <ion-row>
+      <ion-col size-sm="6" offset-sm="3">
+        <span style="font-size:13px">Details of Material</span>
+      </ion-col>
+    </ion-row>
+    <div *ngFor="let item of form.get('materialDetails')['controls']; let i = index;"
+      formArrayName="materialDetails">
+      <div [formGroupName]="i">
+        <ion-row>
+          <ion-col size="10">
+            <ion-row style="border: solid 1px;">
+              <ion-col  size="12">
+                <ion-item  [style.display]="form.get('poType').value=='Single' ? 'block' : 'none'">
+                <ion-label position="floating" class="label">Branch
+                </ion-label>
+                <ion-input type="text" autocomplete autocorrect [value]="form.get('branch').value" disabled></ion-input>
+                </ion-item>
+
+                <ion-item  [style.display]="form.get('poType').value=='Global' ? 'block' : 'none'">
+                  <ion-label position="floating" class="label">Branch
+                  </ion-label>
+                  <ion-select placeholder="Select One"  interface="popover" formControlName="branch" disabled>
+                    <ion-select-option *ngFor="let mbranch of  getBranches()" [value]="mbranch.name" >{{mbranch.name}}
+                    </ion-select-option>
+                    </ion-select>
+                </ion-item>
+              </ion-col>
+
+              <ion-col size="12">
+                <ion-item>
+                  <ion-label position="floating" class="label">Material
+                  </ion-label>
+                  <ion-select placeholder="Select One"  interface="popover" formControlName="category" (ionChange)="onMaterialChange($event,form.get('materialDetails')['controls'][i],i)" disabled>
+                    <ion-select-option *ngFor="let stock of stockCategory" [value]="stock" readonly>{{stock}}
+                    </ion-select-option>
+                    </ion-select>
+                </ion-item>
+              </ion-col>
+              <ion-col  size="12">
+                <ion-item>
+                  <ion-label position="floating" class="label">Type
+                  </ion-label>
+                  <ion-select placeholder="Select One"  interface="popover" formControlName="item" (ionChange)="onMaterialTypeChange($event,form.get('materialDetails')['controls'][i])" disabled>
+                    <ion-select-option *ngFor="let stock of this.materialstockType[i].stockType" [value]="stock" readonly>{{stock}}
+                    </ion-select-option>
+                    </ion-select>
+                </ion-item>
+              </ion-col>
+
+              <ion-col size="12">
+                <ion-item>
+                  <ion-label position="floating" class="label"  style="color: #fff;">HSNCode
+                  </ion-label>
+                  <ion-input type="text" autocomplete autocorrect formControlName="hsnNo" disabled></ion-input>
+                </ion-item>
+              </ion-col>
+              <ion-col size="12">
+                <ion-item>
+                  <ion-label position="floating" class="label" style="color: #fff;">GST
+                  </ion-label>
+                  <ion-input type="text" autocomplete autocorrect formControlName="gst"
+                  [value]="item.get('gst').value" disabled
+                  ></ion-input>
+                </ion-item>
+              </ion-col>
+
+              <ion-col  size="12">
+                <ion-item>
+                  <ion-label position="floating" class="label">uom
+                  </ion-label>
+                  <ion-input type="text" autocomplete autocorrect formControlName="uom" disabled></ion-input>
+                </ion-item>
+              </ion-col>
+
+              <ion-col  size="12">
+                <ion-item>
+                  <ion-label position="floating" class="label">Rate
+                  </ion-label>
+                  <ion-input type="number" autocomplete autocorrect formControlName="rate" disabled></ion-input>
+                </ion-item>
+              </ion-col>
+
+              <ion-col  size="12">
+                <ion-item>
+                  <ion-label position="floating" class="label"> Quantity Requested
+                  </ion-label>
+                  <ion-input type="number" autocomplete autocorrect formControlName="qty" readonly></ion-input>
+                </ion-item>
+              </ion-col>
+
+              <ion-col  size="12">
+                <ion-item>
+                  <ion-label position="floating" class="label"> Quantity Pending
+                  </ion-label>
+                  <ion-input type="number" autocomplete autocorrect readonly formControlName="actQty"></ion-input>
+                </ion-item>
+              </ion-col>
+
+              <ion-col  size="12">
+                <ion-item >
+                  <ion-label position="floating" class="label" > Quantity Received
+                  </ion-label>
+                  <ion-input type="number" (ionChange)="onQuantityReceivedChange($event,form.get('materialDetails')['controls'][i],i)" formControlName="actQtyRecived"></ion-input>
+                </ion-item>
+              </ion-col>
+
+
+
+
+
+
+            </ion-row>
+          </ion-col>
+
+        </ion-row>
+      </div>
+    </div>
+
+  </div>
+
+
+
+
+  </ion-grid>
+  </form>
+  </ion-content>

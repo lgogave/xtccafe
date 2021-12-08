@@ -52,10 +52,13 @@
                  <ion-item [style.display]="location.currentStatus=='S7 : Win' ? 'block' : 'none'">
                   <button [routerLink]="['/','salespipeline','clientbilling',salespipeline.id,location.id]" style="color: #000033;border:none!important; outline:none!important;background: #ffce00;padding:5px;">Billing Rates</button>
                   <!-- <button [routerLink]="['/','salespipeline','deliverychallan',salespipeline.id,location.id]" style="color: #000033;border:none!important; outline:none!important;background: #ffce00;padding:5px;margin: 12px;">Create DC</button> -->
-
                   <button (click)="presentPopover($event,salespipeline.id,location.id)" style="color: #000033;border:none!important; outline:none!important;background: #ffce00;padding:5px;margin: 12px;">Create DC</button>
                   <button [routerLink]="['/','salespipeline','deliverychallanlist',salespipeline.clientId,location.id]" style="color: #000033;border:none!important; outline:none!important;background: #ffce00;padding:5px;">View DC</button>
                   <button [routerLink]="['/','salespipeline','invoicelist',location.id]" style="color: #000033;border:none!important; outline:none!important;background: #ffce00;padding:5px;margin: 12px;">View Invoice</button>
+                </ion-item>
+
+                <ion-item>
+                  <button [routerLink]="['/','salespipeline','demorequest',salespipeline.id,i]" style="color: #000033;border:none!important; outline:none!important;background: #BA55D3;padding:10px;margin: 12px;color:#fff;">Create Demo Request</button>
                 </ion-item>
                  <ion-item>
                   <ion-label text-wrap><b> Billing Address : </b> {{location.address}} </ion-label>

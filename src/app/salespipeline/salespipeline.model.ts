@@ -121,7 +121,8 @@ export class BillingDetail {
     public userId?:string,
     public createdOn?:Date,
     public pincode?:number,
-    public bank?:InvoiceBank
+    public bank?:InvoiceBank,
+    public branch?:string,
     ){}
 }
 export class BillingRate {
@@ -295,6 +296,8 @@ constructor(
   public recAmount?:Number,
   public modifiedOn?:Date,
   public tranCharges?:Number,
+  public billbranch?:string,
+  public invNo?:string,
 ){}
 }
 
@@ -325,6 +328,11 @@ export class RentalInvoice{
     public installAddress?:string,
     public isDeleted?:boolean,
     public poNumber?:string,
+    public billbranch?:string,
+    public modifiedOn?:Date,
+    public invNo?:string,
+    public narration?:string,
+
     ){}
 
 
@@ -339,8 +347,22 @@ export class ReceiptBook{
     public year?:number,
     public srnumber?:number,
     public userId?:string,
-    public createdOn?:Date){}
+    public createdOn?:Date,
+    ){}
   }
+
+  export class GSTReceiptBook{
+    constructor(
+      public id?:string,
+      public category?:string,
+      public type?:string,
+      public branch?:string,
+      public year?:number,
+      public srnumber?:number,
+      public userId?:string,
+      public createdOn?:Date,
+      ){}
+    }
 
 
 export class InvoiceBank {
@@ -366,6 +388,8 @@ export class InvoiceModel{
     public status?:string,
     public recAmount?:number,
     public tranCharges?:number,
+    public billbranch?:string,
+    public taxType?:string,
   ){}
 }
 

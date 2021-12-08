@@ -12,6 +12,9 @@ export class ReportService {
   constructor(private firebaseService: AngularFirestore,private salesService:SalespipelineService,private divisionService: DivisionService) { }
 
   async downloadDC(){
+    var monthNames = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "July", "Aug", "Sep", "Oct", "Nov", "Dec" ];
+
     var collection="delivery-challan";
     let snaps = await this.firebaseService.collection(collection).snapshotChanges().pipe(first()).toPromise();
     let tempDoc:DCDetail[];
@@ -40,7 +43,9 @@ export class ReportService {
               totamount:mat.totamount,
               date:element.date,
               isDeleted:element.isDelete,
-              srNo:element.srNo
+              srNo:element.srNo,
+              branch:element.branch,
+              month: monthNames[(new Date(element.date)).getMonth()] + '-' + (new Date(element.date)).getFullYear(),
             }
             jsonArray.push(data)
           })
@@ -82,7 +87,8 @@ export class ReportService {
             mchRent:mch.mchRent,
             mchSecDeposite:mch.mchSecDeposite,
             pulloutDate:mch.pulloutDate,
-            pulloutreason:mch.pulloutreason
+            pulloutreason:mch.pulloutreason,
+            closureDate:new Date(loc.closureDate['seconds']*1000)
           }
         jsonArray.push(data)
         })
@@ -131,7 +137,8 @@ export class ReportService {
   "July", "August", "September", "October", "November", "December" ];
     var jsonArray=[];
     tempDoc.forEach(function(element,index){
-      if(element?.isDeleted==false){
+      //if(element?.isDeleted==false){
+      if(element.billbranch!="Test"){
         var invDate = new Date(element.createdOn['seconds']*1000);
         var arayclientCity=clientLocation.filter(x=>x.clientId==element.clientId && x.locationId==element.clientLocationId);
         var clientCity='';
@@ -167,7 +174,8 @@ export class ReportService {
             billName:element.billName,
             billAddress:element.billAddress,
             accowner:accowner,
-            city:clientCity,
+            userbranch:clientCity,
+            billingbranch:element.billbranch,
             deliverybranch:element.branch,
             installAt:element.installAt,
             installAddress:element.installAddress,
@@ -187,7 +195,9 @@ export class ReportService {
             cp:cp,
             cpAmount:cpAmount,
             gstno:gstno,
-            ponumber:element.ponumber
+            ponumber:element.ponumber,
+            invNo:element.invNo,
+            isDeleted:element.isDeleted
           }
           jsonArray.push(data);
         });
@@ -199,6 +209,8 @@ export class ReportService {
             type:(element.srNo.indexOf('I/M/')>-1 || element.srNo.indexOf('INV/Machine')>-1) ?'Installation':'Consumable',
             billName:element.billName,
             billAddress:element.billAddress,
+            userbranch:clientCity,
+            billingbranch:element.billbranch,
             deliverybranch:element.branch,
             installAt:element.installAt,
             installAddress:element.installAddress,
@@ -235,13 +247,36 @@ async downloadRentalInvoices(month:string){
       sl.id = entry.payload.doc.id;
       return sl;
     });
-     var jsonArray=[];
+  var jsonArray=[];
+
+
+  let spsnaps= await this.firebaseService.collection('client-sales-pipeline').snapshotChanges().pipe(first()).toPromise();
+  let sptempDoc:ClientSalesPipeline[];
+  sptempDoc=spsnaps.map((entry) => {
+      var sl = <ClientSalesPipeline>{
+        ...(entry.payload.doc.data() as {}),
+      };
+      sl['refId'] = entry.payload.doc.id;
+      return sl;
+    });
+  var clientLocation=[];
+  sptempDoc.forEach(element => {
+    element.locations.forEach(loc=>{
+      clientLocation.push({clientId:element.clientId,locationId:loc.id,location:loc.branchcity,accowner:loc.accowner});
+    });
+  });
+
+
 
 var monthNames = [ "January", "February", "March", "April", "May", "June",
 "July", "August", "September", "October", "November", "December" ];
   var jsonArray=[];
   tempDoc.forEach(function(element,index){
-if (element?.isDeleted == false && element.displaymonth==month) {
+// if (element?.isDeleted == false
+//   //&& element.displaymonth==month
+//   )
+if (element.billbranch!="Test")
+  {
   element.machines.forEach(function(mch,index){
     var invDate = new Date(element.createdOn['seconds'] * 1000);
     var mast= billDetail.filter(x=>x.locationId==element.clientLocationId);
@@ -249,6 +284,16 @@ if (element?.isDeleted == false && element.displaymonth==month) {
     if(mast.length>0){
       gst=mast[0].gstno;
     }
+
+    var arayclientCity=clientLocation.filter(x=>x.clientId==element.clientId && x.locationId==element.clientLocationId);
+    var clientCity='';
+		var accowner='';
+
+    if(arayclientCity.length>0){
+      clientCity=arayclientCity[0].location;
+      accowner=arayclientCity[0].accowner;
+    }
+
     var data={
       clientId:element.clientId,
       clientLocationId:element.clientLocationId,
@@ -256,12 +301,17 @@ if (element?.isDeleted == false && element.displaymonth==month) {
       type:'Rental',
       billName:element.billName,
       billAddress:element.billAddress,
+      accowner:accowner,
+      userbranch:clientCity,
+      billingbranch:element.billbranch,
+      deliverybranch:element.branch,
       //deliverybranch:element?.bank?.length>0?element.bank[0].branch:'',
       installAt:element.installAt,
       installAddress:element.installAddress,
       date: invDate.getDate() + ' ' + monthNames[invDate.getMonth()] + ' ' + invDate.getFullYear(),
       month:element.displaymonth,
       machineName:mch.machineName,
+      machinehsncode:mch.machinehsncode,
       machineCategory:mch.machineCategory,
       machineType:mch.machineType,
       machineCount:mch.machineCount,
@@ -270,7 +320,10 @@ if (element?.isDeleted == false && element.displaymonth==month) {
       amount:Number(mch.mchRent),
       tax:Number(mch.mchRent)*0.18,
       Total:(Number(mch.mchRent)+(Number(mch.mchRent)*0.18)).toString(),
-      ponumber:element.poNumber
+      ponumber:element.poNumber,
+      invNo:element.invNo,
+      narration:element.narration,
+      isDeleted:element.isDeleted
      }
     jsonArray.push(data);
   });
