@@ -8,6 +8,7 @@ import { DivisionService } from 'src/app/services/division.service';
 import { EntryType, StockRegister } from 'src/app/stockmanagement/stockregister/stockregister.model';
 import { StockRegisterService } from 'src/app/stockmanagement/stockregister/stockregister.service';
 import { ConvertDateToMMMYYYY, getActiveYear } from 'src/app/utilities/dataconverters';
+import { validateDate } from 'src/app/utilities/validators';
 import { BillingDetail, BillingRate, ClientSales,DCAddHocMaterial,DCDetail,DCDetailModel,Invoice,Location, ReceiptBook } from '../salespipeline.model';
 import { SalespipelineService } from '../salespipeline.service';
 
@@ -239,8 +240,21 @@ export class DeliveryChallanPage implements OnInit {
       }
     if(this.dcId!=null)
     this.dcDetail = await this.salespiplineService.getDCDetail(this.dcId);
-
     let fmbillingDetail = <DCDetail>this.form.value;
+
+    if(!validateDate(new Date(fmbillingDetail.date))){
+      this.toastController
+      .create({
+        message: 'Back dated DC not allowed to edit.',
+        duration: 2000,
+        color: 'danger',
+      })
+      .then((tost) => {
+        tost.present();
+      });
+      return;
+    }
+
     let branch=this.branches.filter(x=>x.name==fmbillingDetail.branch)[0];
       fmbillingDetail.salesId=this.saleId;
       fmbillingDetail.clientId = this.clientSales.clientsale.clientId;
@@ -297,6 +311,7 @@ export class DeliveryChallanPage implements OnInit {
                 stockreg.date=new Date();
                 stockreg.month=ConvertDateToMMMYYYY(stockreg.date);
                 await this.stockregService.addupdate(stockreg,false);
+
                 this.updateReceiptBook(receiptBook);
                 tost.present();
                 this.router.navigate([

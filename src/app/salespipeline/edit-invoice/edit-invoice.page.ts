@@ -10,6 +10,7 @@ import { DivisionService } from 'src/app/services/division.service';
 import { convertTimeStampToDate, convertTimestampToDate, convertToDateTime } from 'src/app/utilities/dataconverters';
 import { Invoice, InvoiceModel, InvoiceMonth, RentalInvoice } from '../salespipeline.model';
 import { SalespipelineService } from '../salespipeline.service';
+import { validateDate } from 'src/app/utilities/validators';
 
 @Component({
   selector: 'app-edit-invoice',
@@ -63,6 +64,24 @@ export class EditInvoicePage implements OnInit {
     }
     else{
     let invoiceModel = <InvoiceModel>this.form.value;
+
+    if(!validateDate(new Date(invoiceModel.createdOn))){
+      this.toastController
+      .create({
+        message: 'Back dated invoices not allowed to edit.',
+        duration: 2000,
+        color: 'danger',
+      })
+      .then((tost) => {
+        tost.present();
+      });
+      return;
+    }
+
+
+
+
+
       this.salesService
         .addupdateInvoice({id:this.invoice.id,
           ponumber:invoiceModel.ponumber,
@@ -94,6 +113,8 @@ export class EditInvoicePage implements OnInit {
       }
   }
 
+
+
   async loadBranches(){
     this.branches=await this.divisionService.getBranches();
     return true;
@@ -101,6 +122,21 @@ export class EditInvoicePage implements OnInit {
 
   async updateInstalltionInvoice(fm:FormGroup){
     let invoiceModel = <InvoiceModel>fm.value;
+    if(!validateDate(new Date(invoiceModel.createdOn))){
+      this.toastController
+      .create({
+        message: 'Back dated invoices not allowed to edit.',
+        duration: 2000,
+        color: 'danger',
+      })
+      .then((tost) => {
+        tost.present();
+      });
+      return;
+    }
+
+
+
     let invamt=0;
     let tranCharges=invoiceModel.tranCharges;
     this.invoice.dc.forEach(element=>{

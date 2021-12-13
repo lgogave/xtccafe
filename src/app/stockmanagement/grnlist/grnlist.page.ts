@@ -44,7 +44,10 @@ export class GrnlistPage implements OnInit {
     private poreqService:PORequsitionService,
     private toastController: ToastController,
     private alertCtrl:AlertController
-    ) { }
+    ) {
+
+      this.doRefresh(null);
+     }
 
   ngOnInit() {
 this.route.paramMap.subscribe(

@@ -1,9 +1,172 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-title>stockregister</ion-title>
+  <ion-toolbar  color="primary">
+    <ion-buttons>
+      <ion-back-button defaultHref="/stockmanagemt/stockregisterlist">
+      </ion-back-button>
+      <ion-title>Stock Register Entry</ion-title>
+      <ion-button (click)="addupdateStockRegister()" [disabled]="!isLoading && !form.valid" [style.visibility]="(!isLoading && (stockregDetail==null)) ? 'visible' : 'hidden'">
+        <ion-icon name="checkmark" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
+  <form  [formGroup]="form"  *ngIf="!isLoading">
+  <ion-grid>
+  <ion-row>
+    <ion-col size-sm="6" offset-sm="3">
+      <ion-item>
+        <ion-label position="floating" >Date <span style="color: #FF6347;">*</span></ion-label>
+        <ion-datetime
+        formControlName="date"
+        display-format="MMM DD YYYY"
+        picker-format="YY MMM DD"
+        ></ion-datetime>
+      </ion-item>
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col size-sm="6" offset-sm="3">
+      <ion-item>
+        <ion-label position="floating">Stock Type<span style="color: #FF6347;">*</span></ion-label>
+        <ion-select placeholder="Select One"  interface="popover" formControlName="sourceName" (ionChange)="onSourceNameChange($event)">
+          <ion-select-option>Stock Adjustment</ion-select-option>
+          <ion-select-option>Stock Transfer</ion-select-option>
+          </ion-select>
+      </ion-item>
+    </ion-col>
+  </ion-row>
 
-</ion-content>
+  <ion-row [style.display]="form.get('sourceName').value=='Stock Transfer' ? 'none' : 'block'">
+    <ion-col size-sm="6" offset-sm="3">
+      <ion-item>
+        <ion-label position="floating" >Entry Type <span style="color: #FF6347;">*</span></ion-label>
+        <ion-select placeholder="Select One"  formControlName="entryType" interface="popover">
+          <ion-select-option [value]="Credit">Add</ion-select-option>
+          <ion-select-option [value]="Debit">Remove</ion-select-option>
+          </ion-select>
+      </ion-item>
+    </ion-col>
+  </ion-row>
+
+  <ion-row [style.display]="form.get('sourceName').value=='Stock Transfer' ? 'block' : 'none'" >
+    <ion-col size-sm="6" offset-sm="3">
+      <ion-item>
+        <ion-label position="floating" > From Branch <span style="color: #FF6347;">*</span></ion-label>
+        <ion-select placeholder="Select One"  interface="popover" formControlName="branchFrom">
+          <ion-select-option *ngFor="let branch of  getBranches()" [value]="branch.name">{{branch.name}}
+          </ion-select-option>
+          </ion-select>
+      </ion-item>
+    </ion-col>
+  </ion-row>
+
+
+  <ion-row>
+    <ion-col size-sm="6" offset-sm="3">
+      <ion-item>
+        <ion-label position="floating" > To Branch <span style="color: #FF6347;">*</span></ion-label>
+        <ion-select placeholder="Select One"  interface="popover" formControlName="branch">
+          <ion-select-option *ngFor="let branch of  getBranches()" [value]="branch.name">{{branch.name}}
+          </ion-select-option>
+          </ion-select>
+      </ion-item>
+    </ion-col>
+  </ion-row>
+
+
+
+
+  <div class="section">
+    <ion-row>
+      <ion-col size-sm="6" offset-sm="3">
+        <span style="font-size:13px">Details of Material</span>
+      </ion-col>
+    </ion-row>
+    <div *ngFor="let item of form.get('materialDetails')['controls']; let i = index;"
+      formArrayName="materialDetails">
+      <div [formGroupName]="i">
+        <ion-row>
+          <ion-col size="10">
+            <ion-row style="border: solid 1px;">
+              <ion-col size="12">
+                <ion-item>
+                  <ion-label position="floating" class="label">Material
+                  </ion-label>
+                  <ion-select placeholder="Select One"  interface="popover" formControlName="category" (ionChange)="onMaterialChange($event,form.get('materialDetails')['controls'][i],i)">
+                    <ion-select-option *ngFor="let stock of stockCategory" [value]="stock" readonly>{{stock}}
+                    </ion-select-option>
+                    </ion-select>
+                </ion-item>
+              </ion-col>
+              <ion-col  size="12">
+                <ion-item>
+                  <ion-label position="floating" class="label">Type
+                  </ion-label>
+                  <ion-select placeholder="Select One"  interface="popover" formControlName="item" (ionChange)="onMaterialTypeChange($event,form.get('materialDetails')['controls'][i])">
+                    <ion-select-option *ngFor="let stock of this.materialstockType[i].stockType" [value]="stock" readonly>{{stock}}
+                    </ion-select-option>
+                    </ion-select>
+                </ion-item>
+              </ion-col>
+              <ion-col size="12">
+                <ion-item color="success">
+                  <ion-label position="floating" class="label"  style="color: #fff;">HSNCode
+                  </ion-label>
+                  <ion-input type="text" autocomplete autocorrect formControlName="hsnNo" readonly></ion-input>
+                </ion-item>
+              </ion-col>
+              <ion-col size="12">
+                <ion-item color="success">
+                  <ion-label  position="floating" class="label" style="color: #fff;">GST
+                  </ion-label>
+                  <ion-input type="text" autocomplete autocorrect formControlName="gst"
+                  [value]="item.get('gst').value" readonly
+                  ></ion-input>
+                </ion-item>
+              </ion-col>
+              <ion-col  size="12">
+                <ion-item color="success">
+                  <ion-label position="floating" class="label">uom
+                  </ion-label>
+                  <ion-input type="text" autocomplete autocorrect formControlName="uom" readonly></ion-input>
+                </ion-item>
+              </ion-col>
+              <ion-col  size="12">
+                <ion-item>
+                  <ion-label position="floating" class="label"> Quantity
+                  </ion-label>
+                  <ion-input type="number" autocomplete autocorrect formControlName="qty"></ion-input>
+                </ion-item>
+              </ion-col>
+            </ion-row>
+          </ion-col>
+          <ion-col size="2">
+            <div style="height: 95%; border-left:2px solid #FF69B4;">
+              <ion-button size="small" class=" button-assertive button-clear" style="margin-top: 75px;"
+                (click)="deleteMaterial(i)">
+                <ion-icon name="trash" slot="icon-only"></ion-icon>
+              </ion-button>
+            </div>
+          </ion-col>
+        </ion-row>
+      </div>
+    </div>
+
+    <ion-row>
+      <ion-col size-sm="6" offset-sm="3">
+        <ion-button size="small" (click)="addMaterial()">
+          <ion-icon name="add-circle"></ion-icon> Add Material
+        </ion-button>
+      </ion-col>
+    </ion-row>
+
+  </div>
+
+
+
+
+  </ion-grid>
+  </form>
+  </ion-content>

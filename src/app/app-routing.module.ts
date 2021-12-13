@@ -88,7 +88,12 @@ const routes: Routes = [
     canLoad:[AuthGuard]
   },
   {
-    path: 'stockregister',
+    path: 'stockmanagemt/stockregister',
+    loadChildren: () => import('./stockmanagement/stockregister/stockregister.module').then( m => m.StockregisterPageModule),
+    canLoad:[AuthGuard]
+  },
+  {
+    path: 'stockmanagemt/stockregister/:stockid',
     loadChildren: () => import('./stockmanagement/stockregister/stockregister.module').then( m => m.StockregisterPageModule),
     canLoad:[AuthGuard]
   },
@@ -96,6 +101,10 @@ const routes: Routes = [
     path: 'stockmanagemt/stockregisterlist',
     loadChildren: () => import('./stockmanagement/stockregisterlist/stockregisterlist.module').then( m => m.StockregisterlistPageModule),
     canLoad:[AuthGuard]
+  },
+  {
+    path: 'stockmanagemt/stockbreakup/:branch',
+    loadChildren: () => import('./stockmanagement/stockbreakup/stockbreakup.module').then( m => m.StockbreakupPageModule)
   },
 
 

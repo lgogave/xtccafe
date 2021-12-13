@@ -13,11 +13,13 @@ export class StockregisterlistPage implements OnInit {
   isLoading = false;
   constructor(
     private stockService:StockRegisterService,
-
-
-  ) { }
+  ) {
+  }
 
   ngOnInit() {
+    this.doRefresh(null);
+  }
+  ionViewWillEnter() {
     this.doRefresh(null);
   }
 
@@ -25,12 +27,13 @@ export class StockregisterlistPage implements OnInit {
     this.isLoading = true;
     this.stockEntries = await this.stockService.getAll();
     this.branchStock=this.stockService.getByBranch(this.stockEntries);
-    console.log(this.branchStock);
     this.isLoading = false;
     if (event != null) {
       event.target.complete();
     }
   }
+
+
 
 
 }

@@ -9,25 +9,15 @@ export class StockRegister {
     public sourceName?: string,
     public sourceId?: string,
     public entryType?: EntryType,
-    public category?: string,
-    public item?: string,
-    public hsnNo?: string,
-    public gst?: string,
-    public uom?: string,
-    public qty?: number,
-    public rate?: number,
-    public amount?: number,
-    public tax?: number,
-    public totamount?: number,
     public branch?: string,
     public materialDetails?:any,
-    public actQty?: number,
     public date?: Date,
     public month?: string,
     public createdOn?: Date,
     public userId?: string,
     public isEntyDeleted?: boolean,
-
+    public branchFrom?: string,
+    public refId?: string,
   ) {}
 }
 export class BranchStockRegister {

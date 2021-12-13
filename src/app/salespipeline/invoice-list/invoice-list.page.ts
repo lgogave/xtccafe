@@ -16,6 +16,7 @@ import { convertToDateTime, convertTimeStampToDate, getActiveYear } from 'src/ap
 import * as XLSX from 'xlsx';
 import * as FileSaver from 'file-saver';
 import { ReportService } from 'src/app/services/report.service';
+import { validateDate } from 'src/app/utilities/validators';
 
 
 pdfMake.vfs=pdfFonts.pdfMake.vfs;
@@ -4150,6 +4151,20 @@ deleteInvoice(inv:Invoice){
       {
         text: 'Okay',
         handler:async (data) => {
+          if(!validateDate(new Date(inv.createdOn))){
+            this.toastController
+            .create({
+              message: 'Back dated invoices not allowed to edit.',
+              duration: 2000,
+              color: 'danger',
+            })
+            .then((tost) => {
+              tost.present();
+            });
+            return;
+          }
+
+
           // Free DC
           let unplughdc:boolean=false;
           if(data.length>0){

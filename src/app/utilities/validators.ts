@@ -28,3 +28,17 @@ export function atLeastOne(): ValidatorFn {
   }
 }
 
+export function validateDate(ndate:Date){
+  let curDate=new Date();
+  let invMonth=ndate.getMonth();
+  let invYear=ndate.getFullYear();
+  let timeInMilisec: number = curDate.getTime() - ndate.getTime();
+  let daysBetweenDates: number = Math.ceil(timeInMilisec / (1000 * 60 * 60 * 24));
+  let daysInMonth = new Date(invYear, invMonth+1, 0).getDate();
+  let totalDays=daysInMonth+5;
+  if(daysBetweenDates<totalDays){
+    return true;
+  }
+  return false;
+}
+

@@ -51,6 +51,10 @@ export class StockRegisterService {
         return e;
       })
   }
+
+
+
+
 }
 
 async getAll(): Promise<StockRegister[]> {
@@ -92,6 +96,14 @@ getByBranch(stocks:StockRegister[]):BranchStockRegister[]{
           materialObj[0].qty=materialObj[0].qty+
           Number(material['actQtyRecived']);
         }
+        else if((element.sourceName=="Stock Adjustment"|| element.sourceName=="Stock Transfer") && element.entryType==EntryType.Credit){
+          materialObj[0].qty=materialObj[0].qty+
+          Number(material['qty']);
+        }
+        else if((element.sourceName=="Stock Adjustment"|| element.sourceName=="Stock Transfer") && element.entryType==EntryType.Debit){
+          materialObj[0].qty=materialObj[0].qty-
+          Number(material['qty']);
+        }
         else if(element.entryType==EntryType.Debit){
           materialObj[0].qty=materialObj[0].qty-
           Number(material['qty']);
@@ -102,6 +114,12 @@ getByBranch(stocks:StockRegister[]):BranchStockRegister[]{
         if(element.sourceName=="GRN" && element.entryType==EntryType.Credit){
           stmaterial.qty=Number(material['actQtyRecived']);
         }
+        else if((element.sourceName=="Stock Adjustment" || element.sourceName=="Stock Transfer")&& element.entryType==EntryType.Credit){
+          stmaterial.qty=Number(material['qty']);
+        }
+        else if((element.sourceName=="Stock Adjustment"|| element.sourceName=="Stock Transfer")&& element.entryType==EntryType.Debit){
+          stmaterial.qty=Number(material['qty'])*-1;
+        }
         else if(element.entryType==EntryType.Debit){
           stmaterial.qty= Number(material['qty'])*-1;
         }
@@ -111,6 +129,35 @@ getByBranch(stocks:StockRegister[]):BranchStockRegister[]{
  });
 return branchStock;
 }
+
+async getById(id: string): Promise<any> {
+  let snaps = await this.firebaseService
+  .collection('stock-register').doc(id).get().toPromise();
+  var result = <StockRegister>{
+    ...(snaps.data() as {}),
+  };
+  result.id = snaps.id;
+return result;
+}
+
+
+async getStockBrekupByBranch(branch: string): Promise<any> {
+  let snaps = await this.firebaseService
+  .collection('stock-register',
+  ref=>ref.where("branch","==",branch)
+  .orderBy('createdOn', 'desc')).snapshotChanges().pipe(first()).toPromise();
+  let result:StockRegister[];
+  result = snaps.map((stock) => {
+    var sl = <StockRegister>{
+      ...(stock.payload.doc.data() as {}),
+    };
+    sl.id = stock.payload.doc.id;
+    return sl;
+  });
+    return result;
+}
+
+
 
 
 

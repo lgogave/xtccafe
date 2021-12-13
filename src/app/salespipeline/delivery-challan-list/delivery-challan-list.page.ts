@@ -22,6 +22,7 @@ import { element } from 'protractor';
 import { ReportService } from 'src/app/services/report.service';
 import { EntryType, StockRegister } from 'src/app/stockmanagement/stockregister/stockregister.model';
 import { StockRegisterService } from 'src/app/stockmanagement/stockregister/stockregister.service';
+import { validateDate } from 'src/app/utilities/validators';
 pdfMake.vfs=pdfFonts.pdfMake.vfs;
 
 
@@ -680,6 +681,18 @@ export class DeliveryChallanListPage implements OnInit {
           text: 'Okay',
           handler: () => {
             let dcDetail = <DCDetail>req;
+            if(!validateDate(new Date(dcDetail.date))){
+              this.toastController
+              .create({
+                message: 'Back dated DC not allowed to edit.',
+                duration: 2000,
+                color: 'danger',
+              })
+              .then((tost) => {
+                tost.present();
+              });
+              return;
+            }
             dcDetail.isDelete=true;
             this.salesService.addupdateDC(dcDetail,true).subscribe(async res=>{
               let stockreg=<StockRegister> Object.assign({},dcDetail);
